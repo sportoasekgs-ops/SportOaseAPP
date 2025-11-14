@@ -56,10 +56,10 @@ MAX_STUDENTS_PER_PERIOD = 5
 BOOKING_ADVANCE_MINUTES = 60
 
 # SMTP-Konfiguration (aus Umgebungsvariablen)
-SMTP_HOST = os.environ.get('SMTP_HOST', 'smtp.example.com')
+SMTP_HOST = os.environ.get('SMTP_HOST', 'smtp.gmail.com')
 SMTP_PORT = int(os.environ.get('SMTP_PORT', '587'))
-SMTP_USER = os.environ.get('SMTP_USER', '')
-SMTP_PASS = os.environ.get('SMTP_PASS', '')
+SMTP_USER = os.environ.get('SMTP_USER', 'sportoase.kgs@gmail.com')
+SMTP_PASS = os.environ.get('SMTP_PASS', 'Unhack85!$')
 SMTP_FROM = os.environ.get('SMTP_FROM', 'sportoase@school.de')
 ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'sportoase.kg@gmail.com')
 
