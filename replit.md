@@ -52,7 +52,7 @@ Preferred communication style: Simple, everyday language.
 
 **Architecture**:
 - `database.py`: Central SQLAlchemy instance shared across the application
-- `models.py`: ORM model definitions (User, Booking) and helper functions
+- `models.py`: ORM model definitions (User, Booking, SlotName) and helper functions
 - `db_setup.py`: Explicit database initialization and admin account creation
 
 **Schema Design**:
@@ -69,11 +69,18 @@ Preferred communication style: Simple, everyday language.
   - Foreign key relationship to users table
   - Created timestamp for audit trail
 
+- `slot_names` table: Stores customizable names for fixed slots (NEW)
+  - Weekday and period as unique key
+  - Label field for custom slot names
+  - Allows admins to rename fixed slots without changing config.py
+  - Falls back to default names from FIXED_OFFERS if no custom name exists
+
 **Data Model Rationale**: 
 - PostgreSQL chosen for production deployment compatibility (Render)
 - SQLAlchemy ORM provides type safety and easier migrations
 - JSON storage for student data provides flexibility for variable numbers of students per booking
 - Centralized database instance prevents initialization conflicts
+- SlotName table enables dynamic slot renaming without code changes
 
 ### Authentication & Authorization
 
@@ -137,6 +144,29 @@ Preferred communication style: Simple, everyday language.
 - Change admin password after first login!
 
 ## Recent Changes
+
+- 2024-11-14: **New Interactive Features & UX Improvements**
+  - **Clickable Week Overview Slots**: Users can now click directly on slots in the week overview to access the booking form
+    - Added `can_book` and `available` information to week overview data
+    - Implemented visual affordance with hover effects and booking action indicators
+    - Shows availability status and free slots for each period
+    - CSS styling with gradient backgrounds and hover animations
+  - **Admin Slot Name Management**: Admins can now customize the names of fixed slots
+    - Created new `SlotName` database model for storing custom slot names
+    - Added `/admin/manage_slots` route with management interface
+    - Implemented modal-based editing UI with data attributes for security
+    - Custom names override default FIXED_OFFERS from config.py
+    - Protected against XSS with proper textContent usage
+    - Fixed JavaScript security issue with apostrophes in slot names
+  - **Database Schema Update**:
+    - Added `slot_names` table with weekday/period unique constraint
+    - Integrated custom slot names into `get_period_info()` function
+    - Custom names propagate through dashboard, week overview, and booking forms
+  - **UI/UX Enhancements**:
+    - Added admin quick-links section with accent buttons
+    - Improved CSS with clickable-slot and booking-action styles
+    - Modal interface for slot renaming with live preview
+    - Consistent color scheme using existing design variables
 
 - 2024-11-14: **Major Migration: SQLite → PostgreSQL**
   - **Database Migration**: Migrated from SQLite to PostgreSQL for production deployment

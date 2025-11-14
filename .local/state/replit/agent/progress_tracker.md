@@ -12,6 +12,11 @@
 [x] 12. Updated admin email to sportoase.kg@gmail.com
 [x] 13. Created deployment documentation for Render
 [x] 14. Created requirements.txt for production dependencies
+[x] 15. Initialized PostgreSQL database with SlotName table
+[x] 16. Implemented clickable slots in week overview for direct booking access
+[x] 17. Created admin slot management feature (/admin/manage_slots)
+[x] 18. Fixed JavaScript security issue with apostrophes in slot names
+[x] 19. Added XSS protection using textContent instead of innerHTML
 [x] 15. Configured workflow with webview output for port 5000
 [x] 16. Verified application is working correctly on Replit
 [x] 17. Import migration completed successfully
