@@ -30,3 +30,6 @@
 [x] 25. Created admin account (sportoase/mauro123) in Render database
 [x] 26. Verified application runs without database errors
 [x] 27. All database migration tasks completed successfully
+[x] 28. Fixed clickable slots in week overview - resolved pointer-events issue
+[x] 29. Added z-index and positioning to ensure links are properly clickable
+[x] 30. Applied CSS fix to prevent nested elements from blocking clicks

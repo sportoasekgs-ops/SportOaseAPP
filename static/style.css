@@ -524,10 +524,22 @@ h4 {
     color: inherit;
     width: 100%;
     height: 100%;
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
 }
 
 .slot-link:hover .period-header {
     transform: translateY(-2px);
+}
+
+/* Ensure nested elements don't block clicks */
+.slot-link > * {
+    pointer-events: none;
+}
+
+.slot-link {
+    pointer-events: auto;
 }
 
 .booking-action {
