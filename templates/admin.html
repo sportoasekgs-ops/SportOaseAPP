@@ -6,6 +6,15 @@
 <div class="admin-panel">
     <h2>Admin-Bereich</h2>
     
+    <div class="admin-quick-links">
+        <a href="{{ url_for('manage_slots') }}" class="btn btn-accent">
+            <span>📋</span> Feste Slots verwalten
+        </a>
+        <a href="{{ url_for('admin_create_booking') }}" class="btn btn-accent">
+            <span>➕</span> Neue Buchung erstellen
+        </a>
+    </div>
+    
     <!-- Neue Lehrkraft anlegen -->
     <section class="admin-section">
         <h3>Neue Lehrkraft anlegen</h3>

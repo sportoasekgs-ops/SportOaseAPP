@@ -40,28 +40,43 @@
                 <tr>
                     <td><strong>{{ period }}.</strong></td>
                     {% for day in week_overview %}
-                    <td class="period-{{ day.schedule[period-1].type }}">
-                        <div class="period-header">
-                            {% if day.schedule[period-1].type == 'fest' %}
-                            <strong>FEST:</strong> {{ day.schedule[period-1].label }}
-                            {% else %}
-                            <strong>FREI</strong>
-                            {% endif %}
-                        </div>
-                        {% if day.schedule[period-1].bookings %}
-                        <div class="booking-info">
-                            <small>
-                                <strong>{{ day.schedule[period-1].total_students }} Schüler gebucht:</strong><br>
-                                {% for booking in day.schedule[period-1].bookings %}
-                                <div style="margin-top: 3px;">
-                                    <strong>{{ booking.offer_label }}</strong><br>
-                                    {% for student in booking.students %}
-                                    - {{ student.name }} (Kl. {{ student.klasse }})<br>
+                    <td class="period-{{ day.schedule[period-1].type }} {% if day.schedule[period-1].can_book %}clickable-slot{% endif %}">
+                        {% if day.schedule[period-1].can_book %}
+                        <a href="{{ url_for('book', date_str=day.date, period=period) }}" class="slot-link">
+                        {% endif %}
+                            <div class="period-header">
+                                {% if day.schedule[period-1].type == 'fest' %}
+                                <strong>FEST:</strong> {{ day.schedule[period-1].label }}
+                                {% else %}
+                                <strong>FREI</strong>
+                                {% endif %}
+                            </div>
+                            {% if day.schedule[period-1].bookings %}
+                            <div class="booking-info">
+                                <small>
+                                    <strong>{{ day.schedule[period-1].total_students }} Schüler gebucht:</strong><br>
+                                    {% for booking in day.schedule[period-1].bookings %}
+                                    <div style="margin-top: 3px;">
+                                        <strong>{{ booking.offer_label }}</strong><br>
+                                        {% for student in booking.students %}
+                                        - {{ student.name }} (Kl. {{ student.klasse }})<br>
+                                        {% endfor %}
+                                    </div>
                                     {% endfor %}
-                                </div>
-                                {% endfor %}
-                            </small>
-                        </div>
+                                </small>
+                            </div>
+                            {% endif %}
+                            {% if day.schedule[period-1].can_book %}
+                            <div class="booking-action">
+                                <small><strong>→ Jetzt buchen ({{ day.schedule[period-1].available }} frei)</strong></small>
+                            </div>
+                            {% elif day.schedule[period-1].available == 0 %}
+                            <div class="booking-full">
+                                <small><em>Voll belegt</em></small>
+                            </div>
+                            {% endif %}
+                        {% if day.schedule[period-1].can_book %}
+                        </a>
                         {% endif %}
                     </td>
                     {% endfor %}

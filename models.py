@@ -69,6 +69,28 @@ class Booking(db.Model):
             'teacher_email': self.teacher.email if self.teacher else None
         }
 
+class SlotName(db.Model):
+    """Modell für anpassbare Slot-Namen"""
+    __tablename__ = 'slot_names'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    weekday = db.Column(db.String(3), nullable=False)
+    period = db.Column(db.Integer, nullable=False)
+    label = db.Column(db.String(200), nullable=False)
+    
+    __table_args__ = (
+        db.UniqueConstraint('weekday', 'period', name='unique_weekday_period'),
+    )
+    
+    def to_dict(self):
+        """Konvertiert SlotName zu Dictionary"""
+        return {
+            'id': self.id,
+            'weekday': self.weekday,
+            'period': self.period,
+            'label': self.label
+        }
+
 # Hilfsfunktionen für Kompatibilität mit dem alten Code
 
 def create_user(username, password, role, email=None):
@@ -205,3 +227,30 @@ def delete_booking(booking_id):
         db.session.rollback()
         print(f"Fehler beim Löschen der Buchung: {e}")
         return False
+
+def get_custom_slot_name(weekday, period):
+    """Gibt den angepassten Slot-Namen aus der Datenbank zurück"""
+    slot = SlotName.query.filter_by(weekday=weekday, period=period).first()
+    return slot.label if slot else None
+
+def update_slot_name(weekday, period, label):
+    """Aktualisiert oder erstellt einen angepassten Slot-Namen"""
+    try:
+        slot = SlotName.query.filter_by(weekday=weekday, period=period).first()
+        if slot:
+            slot.label = label
+        else:
+            slot = SlotName(weekday=weekday, period=period, label=label)
+            db.session.add(slot)
+        
+        db.session.commit()
+        return True
+    except Exception as e:
+        db.session.rollback()
+        print(f"Fehler beim Aktualisieren des Slot-Namens: {e}")
+        return False
+
+def get_all_custom_slot_names():
+    """Gibt alle angepassten Slot-Namen zurück"""
+    slots = SlotName.query.all()
+    return [s.to_dict() for s in slots]

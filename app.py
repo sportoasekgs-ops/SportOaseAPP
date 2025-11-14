@@ -81,10 +81,14 @@ def get_period_info(weekday, period):
     weekday: z.B. "Mon", "Tue", ...
     period: 1-6
     """
+    from models import get_custom_slot_name
+    
     if weekday in FIXED_OFFERS and period in FIXED_OFFERS[weekday]:
+        custom_label = get_custom_slot_name(weekday, period)
+        label = custom_label if custom_label else FIXED_OFFERS[weekday][period]
         return {
             'type': 'fest',
-            'label': FIXED_OFFERS[weekday][period]
+            'label': label
         }
     else:
         return {
@@ -251,13 +255,20 @@ def dashboard():
             period_bookings = bookings_by_date_period.get(key, [])
             
             total_students = sum(b['student_count'] for b in period_bookings)
+            available = MAX_STUDENTS_PER_PERIOD - total_students
+            
+            # Prüfe, ob Buchung für diesen Slot möglich ist
+            can_book, _ = check_booking_time(day_date, period)
+            can_book = can_book and available > 0
             
             day_schedule.append({
                 'period': period,
                 'type': info['type'],
                 'label': info['label'],
                 'bookings': period_bookings,
-                'total_students': total_students
+                'total_students': total_students,
+                'available': available,
+                'can_book': can_book
             })
         week_overview.append({
             'weekday': wd,
@@ -747,6 +758,53 @@ def delete_booking_route(booking_id):
         flash('Buchung konnte nicht gelöscht werden.', 'error')
     
     return redirect(url_for('admin'))
+
+# Route: Slots verwalten (nur Admin)
+@app.route('/admin/manage_slots', methods=['GET', 'POST'])
+@admin_required
+def manage_slots():
+    """Admin kann feste Slot-Namen umbenennen"""
+    from models import update_slot_name
+    
+    if request.method == 'POST':
+        weekday = request.form.get('weekday')
+        period = int(request.form.get('period'))
+        label = request.form.get('label', '').strip()
+        
+        if weekday and period and label:
+            if update_slot_name(weekday, period, label):
+                flash(f'Slot-Name erfolgreich aktualisiert!', 'success')
+            else:
+                flash('Fehler beim Aktualisieren des Slot-Namens.', 'error')
+        else:
+            flash('Bitte füllen Sie alle Felder aus.', 'error')
+        
+        return redirect(url_for('manage_slots'))
+    
+    fixed_slots = []
+    weekdays = {
+        'Mon': 'Montag',
+        'Tue': 'Dienstag', 
+        'Wed': 'Mittwoch',
+        'Thu': 'Donnerstag',
+        'Fri': 'Freitag'
+    }
+    
+    for weekday_code, weekday_name in weekdays.items():
+        if weekday_code in FIXED_OFFERS:
+            for period, default_label in FIXED_OFFERS[weekday_code].items():
+                period_info = get_period_info(weekday_code, period)
+                fixed_slots.append({
+                    'weekday_code': weekday_code,
+                    'weekday_name': weekday_name,
+                    'period': period,
+                    'period_time': f"{PERIOD_TIMES[period]['start']} - {PERIOD_TIMES[period]['end']}",
+                    'default_label': default_label,
+                    'current_label': period_info['label']
+                })
+    
+    return render_template('admin_manage_slots.html', 
+                         fixed_slots=fixed_slots)
 
 if __name__ == '__main__':
     # Starte die Anwendung
