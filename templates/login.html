@@ -5,25 +5,28 @@
 {% block content %}
 <div class="login-container">
     <div class="login-box">
-        <h2>Anmeldung</h2>
+        <div class="login-logo">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="SportOase Logo">
+        </div>
+        <h2>Willkommen bei SportOase</h2>
         <form method="POST" action="{{ url_for('login') }}">
             <div class="form-group">
-                <label for="email">E-Mail:</label>
-                <input type="email" id="email" name="email" required>
+                <label for="email">E-Mail-Adresse</label>
+                <input type="email" id="email" name="email" required placeholder="ihre.email@schule.de" autofocus>
             </div>
             
             <div class="form-group">
-                <label for="password">Passwort:</label>
-                <input type="password" id="password" name="password" required>
+                <label for="password">Passwort</label>
+                <input type="password" id="password" name="password" required placeholder="••••••••">
             </div>
             
             <button type="submit" class="btn btn-primary">Anmelden</button>
         </form>
         
         <div class="login-info">
-            <p><strong>Hinweis:</strong> Standard-Admin-Zugangsdaten:</p>
-            <p>E-Mail: admin@sportoase.de</p>
-            <p>Passwort: admin123</p>
+            <p><strong>📌 Login-Daten:</strong></p>
+            <p><strong>Benutzername:</strong> sportoase</p>
+            <p><strong>Passwort:</strong> mauro123</p>
         </div>
     </div>
 </div>

@@ -182,6 +182,54 @@ def get_bookings_by_date(date):
     conn.close()
     return bookings
 
+def get_bookings_for_week(start_date, end_date):
+    """Gibt alle Buchungen für eine Woche zurück"""
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT b.*, u.email as teacher_email 
+        FROM bookings b
+        JOIN users u ON b.teacher_id = u.id
+        WHERE b.date >= ? AND b.date <= ?
+        ORDER BY b.date, b.period
+    ''', (start_date, end_date))
+    bookings = cursor.fetchall()
+    conn.close()
+    return bookings
+
+def get_booking_by_id(booking_id):
+    """Gibt eine einzelne Buchung anhand der ID zurück"""
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT b.*, u.email as teacher_email 
+        FROM bookings b
+        JOIN users u ON b.teacher_id = u.id
+        WHERE b.id = ?
+    ''', (booking_id,))
+    booking = cursor.fetchone()
+    conn.close()
+    return booking
+
+def update_booking(booking_id, date, weekday, period, teacher_id, students, offer_type, offer_label, teacher_name=None, teacher_class=None):
+    """Aktualisiert eine bestehende Buchung in der Datenbank"""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    students_json = json.dumps(students, ensure_ascii=False)
+    
+    cursor.execute('''
+        UPDATE bookings 
+        SET date = ?, weekday = ?, period = ?, teacher_id = ?, teacher_name = ?, teacher_class = ?, 
+            students_json = ?, offer_type = ?, offer_label = ?
+        WHERE id = ?
+    ''', (date, weekday, period, teacher_id, teacher_name, teacher_class, students_json, offer_type, offer_label, booking_id))
+    
+    conn.commit()
+    affected = cursor.rowcount
+    conn.close()
+    return affected > 0
+
 def delete_booking(booking_id):
     """Löscht eine Buchung aus der Datenbank"""
     conn = get_db()

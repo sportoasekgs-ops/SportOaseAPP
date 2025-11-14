@@ -58,7 +58,7 @@
         <h3>Alle Buchungen</h3>
         
         <div class="filter-form">
-            <form method="GET">
+            <form method="GET" style="display: inline-block;">
                 <label for="filter_date">Nach Datum filtern:</label>
                 <input type="date" id="filter_date" name="filter_date" value="{{ filter_date }}">
                 <button type="submit" class="btn btn-secondary">Filtern</button>
@@ -66,6 +66,7 @@
                 <a href="{{ url_for('admin') }}" class="btn btn-secondary">Filter zurücksetzen</a>
                 {% endif %}
             </form>
+            <a href="{{ url_for('admin_create_booking') }}" class="btn btn-primary" style="float: right;">+ Neue Buchung erstellen</a>
         </div>
         
         <table class="admin-table bookings-table">
@@ -101,6 +102,7 @@
                         </ul>
                     </td>
                     <td>
+                        <a href="{{ url_for('admin_edit_booking', booking_id=booking.id) }}" class="btn btn-secondary" style="margin-right: 5px;">Bearbeiten</a>
                         <form method="POST" action="{{ url_for('delete_booking_route', booking_id=booking.id) }}" onsubmit="return confirm('Buchung wirklich löschen?');" style="display: inline;">
                             <button type="submit" class="btn btn-delete">Löschen</button>
                         </form>

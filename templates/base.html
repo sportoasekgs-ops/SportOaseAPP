@@ -7,25 +7,19 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <header>
+    {% if session.user_id %}
+    <div class="top-nav">
         <div class="container">
-            <div class="header-content">
-                <div class="logo-title">
-                    <img src="{{ url_for('static', filename='logo.png') }}" alt="SportOase Logo" class="logo">
-                    <h1>SportOase<br><span class="subtitle">KGS PATTENSEN</span></h1>
-                </div>
-                {% if session.user_id %}
-                <nav>
-                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
-                    {% if session.user_role == 'admin' %}
-                    <a href="{{ url_for('admin') }}">Admin</a>
-                    {% endif %}
-                    <a href="{{ url_for('logout') }}">Logout</a>
-                </nav>
+            <nav>
+                <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                {% if session.user_role == 'admin' %}
+                <a href="{{ url_for('admin') }}">Admin</a>
                 {% endif %}
-            </div>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </nav>
         </div>
-    </header>
+    </div>
+    {% endif %}
     
     <main class="container">
         {% with messages = get_flashed_messages(with_categories=true) %}

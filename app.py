@@ -181,23 +181,60 @@ def dashboard():
             'time_message': time_message
         })
     
-    # Erstelle Wochenübersicht (Montag-Freitag)
+    # Erstelle Wochenübersicht (Montag-Freitag) mit Buchungsdaten
+    from models import get_bookings_for_week
+    
+    # Berechne Montag und Freitag der aktuellen Woche
+    days_since_monday = selected_date.weekday()
+    monday = selected_date - timedelta(days=days_since_monday)
+    friday = monday + timedelta(days=4)
+    
+    # Hole alle Buchungen für diese Woche
+    week_bookings = get_bookings_for_week(monday.strftime('%Y-%m-%d'), friday.strftime('%Y-%m-%d'))
+    
+    # Organisiere Buchungen nach Datum und Stunde
+    bookings_by_date_period = {}
+    for booking in week_bookings:
+        booking_dict = dict(booking)
+        key = f"{booking_dict['date']}_{booking_dict['period']}"
+        if key not in bookings_by_date_period:
+            bookings_by_date_period[key] = []
+        
+        students = json.loads(booking_dict['students_json']) if booking_dict.get('students_json') else []
+        bookings_by_date_period[key].append({
+            'teacher_name': booking_dict.get('teacher_name', 'N/A'),
+            'teacher_class': booking_dict.get('teacher_class', 'N/A'),
+            'student_count': len(students),
+            'students': students
+        })
+    
     week_overview = []
     weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
     weekday_names = ['Mo', 'Di', 'Mi', 'Do', 'Fr']
     
     for i, wd in enumerate(weekdays):
+        day_date = monday + timedelta(days=i)
+        day_date_str = day_date.strftime('%Y-%m-%d')
+        
         day_schedule = []
         for period in range(1, 7):
             info = get_period_info(wd, period)
+            key = f"{day_date_str}_{period}"
+            period_bookings = bookings_by_date_period.get(key, [])
+            
+            total_students = sum(b['student_count'] for b in period_bookings)
+            
             day_schedule.append({
                 'period': period,
                 'type': info['type'],
-                'label': info['label']
+                'label': info['label'],
+                'bookings': period_bookings,
+                'total_students': total_students
             })
         week_overview.append({
             'weekday': wd,
             'name': weekday_names[i],
+            'date': day_date_str,
             'schedule': day_schedule
         })
     
@@ -383,17 +420,18 @@ def admin():
     # Konvertiere Buchungen für Anzeige
     bookings_display = []
     for booking in bookings:
-        students = json.loads(booking['students_json'])
+        booking_dict = dict(booking)
+        students = json.loads(booking_dict['students_json']) if booking_dict.get('students_json') else []
         bookings_display.append({
-            'id': booking['id'],
-            'date': booking['date'],
-            'weekday': booking['weekday'],
-            'period': booking['period'],
-            'teacher_email': booking['teacher_email'],
-            'teacher_name': booking.get('teacher_name', 'N/A'),
-            'teacher_class': booking.get('teacher_class', 'N/A'),
-            'offer_label': booking['offer_label'],
-            'offer_type': booking['offer_type'],
+            'id': booking_dict['id'],
+            'date': booking_dict['date'],
+            'weekday': booking_dict['weekday'],
+            'period': booking_dict['period'],
+            'teacher_email': booking_dict['teacher_email'],
+            'teacher_name': booking_dict.get('teacher_name', 'N/A'),
+            'teacher_class': booking_dict.get('teacher_class', 'N/A'),
+            'offer_label': booking_dict['offer_label'],
+            'offer_type': booking_dict['offer_type'],
             'students': students,
             'student_count': len(students)
         })
@@ -402,6 +440,269 @@ def admin():
                          users=users,
                          bookings=bookings_display,
                          filter_date=filter_date)
+
+# Route: Buchung erstellen (nur Admin)
+@app.route('/admin/create_booking', methods=['GET', 'POST'])
+@admin_required
+def admin_create_booking():
+    """Admin kann Buchungen für beliebige Lehrkräfte erstellen"""
+    from models import get_booking_by_id
+    
+    if request.method == 'POST':
+        date_str = request.form.get('date', '').strip()
+        
+        try:
+            period = int(request.form.get('period', 1))
+            teacher_id = int(request.form.get('teacher_id', 0))
+            num_students = int(request.form.get('num_students', 1))
+        except (ValueError, TypeError):
+            flash('Ungültige Eingabe für Stunde, Lehrkraft oder Schüleranzahl.', 'error')
+            users = get_all_users()
+            return render_template('admin_edit_booking.html',
+                                 booking=None,
+                                 users=users,
+                                 free_modules=FREE_MODULES,
+                                 period_times=PERIOD_TIMES)
+        
+        teacher_name = request.form.get('teacher_name', '').strip()
+        teacher_class = request.form.get('teacher_class', '').strip()
+        
+        if not date_str or not teacher_id or not teacher_name or not teacher_class or num_students < 1 or num_students > 5:
+            flash('Bitte füllen Sie alle Pflichtfelder aus und wählen Sie 1-5 Schüler.', 'error')
+            users = get_all_users()
+            return render_template('admin_edit_booking.html',
+                                 booking=None,
+                                 users=users,
+                                 free_modules=FREE_MODULES,
+                                 period_times=PERIOD_TIMES)
+        
+        try:
+            booking_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        except:
+            flash('Ungültiges Datum.', 'error')
+            users = get_all_users()
+            return render_template('admin_edit_booking.html',
+                                 booking=None,
+                                 users=users,
+                                 free_modules=FREE_MODULES,
+                                 period_times=PERIOD_TIMES)
+        
+        weekday = booking_date.strftime('%a')
+        period_info = get_period_info(weekday, period)
+        
+        # Prüfe Kapazität vor dem Erstellen der Buchung
+        current_students = count_students_for_period(date_str, period)
+        available_spots = MAX_STUDENTS_PER_PERIOD - current_students
+        
+        if num_students > available_spots:
+            flash(f'Nicht genug Plätze verfügbar. Nur noch {available_spots} Plätze frei.', 'error')
+            users = get_all_users()
+            return render_template('admin_edit_booking.html',
+                                 booking=None,
+                                 users=users,
+                                 free_modules=FREE_MODULES,
+                                 period_times=PERIOD_TIMES)
+        
+        students = []
+        for i in range(num_students):
+            name = request.form.get(f'student_name_{i}', '').strip()
+            klasse = request.form.get(f'student_class_{i}', '').strip()
+            
+            if not name or not klasse:
+                flash('Bitte füllen Sie alle Schülerfelder aus.', 'error')
+                users = get_all_users()
+                return render_template('admin_edit_booking.html',
+                                     booking=None,
+                                     users=users,
+                                     free_modules=FREE_MODULES,
+                                     period_times=PERIOD_TIMES)
+            
+            students.append({'name': name, 'klasse': klasse})
+        
+        if period_info['type'] == 'frei':
+            selected_module = request.form.get('module', '')
+            if selected_module not in FREE_MODULES:
+                flash('Bitte wählen Sie ein Modul.', 'error')
+                users = get_all_users()
+                return render_template('admin_edit_booking.html',
+                                     booking=None,
+                                     users=users,
+                                     free_modules=FREE_MODULES,
+                                     period_times=PERIOD_TIMES)
+            offer_label = selected_module
+        else:
+            offer_label = period_info['label']
+        
+        booking_id = create_booking(
+            date=date_str,
+            weekday=weekday,
+            period=period,
+            teacher_id=teacher_id,
+            students=students,
+            offer_type=period_info['type'],
+            offer_label=offer_label,
+            teacher_name=teacher_name,
+            teacher_class=teacher_class
+        )
+        
+        if booking_id:
+            flash(f'Buchung erfolgreich erstellt! {len(students)} Schüler für {offer_label} angemeldet.', 'success')
+            return redirect(url_for('admin'))
+        else:
+            flash('Fehler beim Erstellen der Buchung.', 'error')
+    
+    users = get_all_users()
+    return render_template('admin_edit_booking.html',
+                         booking=None,
+                         users=users,
+                         free_modules=FREE_MODULES,
+                         period_times=PERIOD_TIMES)
+
+# Route: Buchung bearbeiten (nur Admin)
+@app.route('/admin/edit_booking/<int:booking_id>', methods=['GET', 'POST'])
+@admin_required
+def admin_edit_booking(booking_id):
+    """Admin kann bestehende Buchungen bearbeiten"""
+    from models import get_booking_by_id, update_booking
+    
+    booking_row = get_booking_by_id(booking_id)
+    if not booking_row:
+        flash('Buchung nicht gefunden.', 'error')
+        return redirect(url_for('admin'))
+    
+    booking = dict(booking_row)
+    
+    if request.method == 'POST':
+        date_str = request.form.get('date', '').strip()
+        
+        try:
+            period = int(request.form.get('period', 1))
+            teacher_id = int(request.form.get('teacher_id', 0))
+            num_students = int(request.form.get('num_students', 1))
+        except (ValueError, TypeError):
+            flash('Ungültige Eingabe für Stunde, Lehrkraft oder Schüleranzahl.', 'error')
+            users = get_all_users()
+            students = json.loads(booking['students_json']) if booking.get('students_json') else []
+            booking_display = dict(booking)
+            booking_display['students'] = students
+            return render_template('admin_edit_booking.html',
+                                 booking=booking_display,
+                                 users=users,
+                                 free_modules=FREE_MODULES,
+                                 period_times=PERIOD_TIMES)
+        
+        teacher_name = request.form.get('teacher_name', '').strip()
+        teacher_class = request.form.get('teacher_class', '').strip()
+        
+        if not date_str or not teacher_id or not teacher_name or not teacher_class or num_students < 1 or num_students > 5:
+            flash('Bitte füllen Sie alle Pflichtfelder aus und wählen Sie 1-5 Schüler.', 'error')
+            users = get_all_users()
+            students = json.loads(booking['students_json']) if booking.get('students_json') else []
+            booking_display = dict(booking)
+            booking_display['students'] = students
+            return render_template('admin_edit_booking.html',
+                                 booking=booking_display,
+                                 users=users,
+                                 free_modules=FREE_MODULES,
+                                 period_times=PERIOD_TIMES)
+        
+        try:
+            booking_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        except:
+            flash('Ungültiges Datum.', 'error')
+            users = get_all_users()
+            students = json.loads(booking['students_json']) if booking.get('students_json') else []
+            booking_display = dict(booking)
+            booking_display['students'] = students
+            return render_template('admin_edit_booking.html',
+                                 booking=booking_display,
+                                 users=users,
+                                 free_modules=FREE_MODULES,
+                                 period_times=PERIOD_TIMES)
+        
+        weekday = booking_date.strftime('%a')
+        period_info = get_period_info(weekday, period)
+        
+        # Prüfe Kapazität: Berechne verfügbare Plätze ohne die aktuelle Buchung
+        current_students = count_students_for_period(date_str, period)
+        old_booking_students = len(json.loads(booking['students_json']) if booking.get('students_json') else [])
+        available_spots = MAX_STUDENTS_PER_PERIOD - (current_students - old_booking_students)
+        
+        if num_students > available_spots:
+            flash(f'Nicht genug Plätze verfügbar. Nur noch {available_spots} Plätze frei.', 'error')
+            users = get_all_users()
+            students = json.loads(booking['students_json']) if booking.get('students_json') else []
+            booking_display = dict(booking)
+            booking_display['students'] = students
+            return render_template('admin_edit_booking.html',
+                                 booking=booking_display,
+                                 users=users,
+                                 free_modules=FREE_MODULES,
+                                 period_times=PERIOD_TIMES)
+        
+        students = []
+        for i in range(num_students):
+            name = request.form.get(f'student_name_{i}', '').strip()
+            klasse = request.form.get(f'student_class_{i}', '').strip()
+            
+            if not name or not klasse:
+                flash('Bitte füllen Sie alle Schülerfelder aus.', 'error')
+                users = get_all_users()
+                students = json.loads(booking['students_json']) if booking.get('students_json') else []
+                booking_display = dict(booking)
+                booking_display['students'] = students
+                return render_template('admin_edit_booking.html',
+                                     booking=booking_display,
+                                     users=users,
+                                     free_modules=FREE_MODULES,
+                                     period_times=PERIOD_TIMES)
+            
+            students.append({'name': name, 'klasse': klasse})
+        
+        if period_info['type'] == 'frei':
+            selected_module = request.form.get('module', '')
+            if selected_module not in FREE_MODULES:
+                flash('Bitte wählen Sie ein Modul.', 'error')
+                users = get_all_users()
+                students = json.loads(booking['students_json']) if booking.get('students_json') else []
+                booking_display = dict(booking)
+                booking_display['students'] = students
+                return render_template('admin_edit_booking.html',
+                                     booking=booking_display,
+                                     users=users,
+                                     free_modules=FREE_MODULES,
+                                     period_times=PERIOD_TIMES)
+            offer_label = selected_module
+        else:
+            offer_label = period_info['label']
+        
+        if update_booking(
+            booking_id=booking_id,
+            date=date_str,
+            weekday=weekday,
+            period=period,
+            teacher_id=teacher_id,
+            students=students,
+            offer_type=period_info['type'],
+            offer_label=offer_label,
+            teacher_name=teacher_name,
+            teacher_class=teacher_class
+        ):
+            flash(f'Buchung erfolgreich aktualisiert!', 'success')
+            return redirect(url_for('admin'))
+        else:
+            flash('Fehler beim Aktualisieren der Buchung.', 'error')
+    
+    users = get_all_users()
+    students = json.loads(booking['students_json']) if booking.get('students_json') else []
+    booking_display = dict(booking)
+    booking_display['students'] = students
+    
+    return render_template('admin_edit_booking.html',
+                         booking=booking_display,
+                         users=users,
+                         free_modules=FREE_MODULES,
+                         period_times=PERIOD_TIMES)
 
 # Route: Buchung löschen (nur Admin)
 @app.route('/admin/delete_booking/<int:booking_id>', methods=['POST'])

@@ -39,8 +39,10 @@ Preferred communication style: Simple, everyday language.
 **Key Features**:
 - Role-based access control (teacher vs. admin)
 - Booking validation: 60-minute advance booking requirement, 5-student maximum capacity per slot
-- Weekly schedule display with fixed vs. flexible time slots
+- Weekly schedule display with fixed vs. flexible time slots with booking information (who booked, how many students)
 - Dynamic module selection for flexible time slots
+- Admin booking management: create, edit, and delete bookings with full validation
+- Capacity-aware editing that prevents overbooking
 
 ### Data Storage
 
@@ -99,6 +101,23 @@ Preferred communication style: Simple, everyday language.
 - Default admin credentials created during database initialization
 
 ## Recent Changes
+
+- 2024-11-14: Enhanced admin panel and week overview features
+  - **Admin Booking Management**: Added full CRUD operations for bookings (create, edit, delete)
+    - Admins can now create bookings on behalf of any teacher
+    - Admins can edit existing bookings with all validations
+    - Added capacity checks to prevent overbooking in admin workflows
+    - Implemented safe error handling for all user inputs
+  - **Week Plan Overview Enhancements**: 
+    - Added booking information to weekly overview showing who booked each slot
+    - Display teacher names and student counts for each booking
+    - Week overview now shows total students per period
+  - **Data Safety Improvements**:
+    - Guarded all JSON parsing against invalid/missing data
+    - Added proper exception handling for form input validation
+    - Fixed sqlite3.Row object handling throughout the application
+  - Created `admin_edit_booking.html` template for admin booking form
+  - Added database functions: `get_booking_by_id`, `update_booking`, `get_bookings_for_week`
 
 - 2024-11-14: Initial implementation of complete SportOase booking system
   - Created all core files (app.py, config.py, models.py, db_setup.py, email_service.py)

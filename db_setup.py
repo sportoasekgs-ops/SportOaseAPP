@@ -9,15 +9,14 @@ def setup_database():
     init_db()
     
     # Prüfe, ob bereits ein Admin existiert
-    admin = get_user_by_email('admin@sportoase.de')
+    admin = get_user_by_email('sportoase@sportoase.de')
     if not admin:
         # Erstelle Standard-Admin
-        admin_id = create_user('admin@sportoase.de', 'admin123', 'admin')
+        admin_id = create_user('sportoase@sportoase.de', 'mauro123', 'admin')
         if admin_id:
             print(f"Admin-Account erstellt:")
-            print(f"  E-Mail: admin@sportoase.de")
-            print(f"  Passwort: admin123")
-            print(f"  WICHTIG: Bitte ändern Sie das Passwort nach dem ersten Login!")
+            print(f"  E-Mail: sportoase@sportoase.de")
+            print(f"  Passwort: mauro123")
         else:
             print("Admin-Account konnte nicht erstellt werden.")
     else:
