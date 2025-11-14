@@ -8,7 +8,7 @@
         <div class="login-logo">
             <img src="{{ url_for('static', filename='logo.png') }}" alt="SportOase Logo">
         </div>
-        <h2>Willkommen bei SportOase</h2>
+        <h2>Willkommen im Buchungssystem der SportOase</h2>
         <form method="POST" action="{{ url_for('login') }}">
             <div class="form-group">
                 <label for="username">Benutzername</label>
@@ -22,12 +22,5 @@
             
             <button type="submit" class="btn btn-primary">Anmelden</button>
         </form>
-        
-        <div class="login-info">
-            <p><strong>📌 Login-Daten:</strong></p>
-            <p><strong>Benutzername:</strong> sportoase</p>
-            <p><strong>Passwort:</strong> mauro123</p>
         </div>
-    </div>
-</div>
 {% endblock %}
