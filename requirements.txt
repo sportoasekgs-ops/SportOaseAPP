@@ -1,5 +1,4 @@
 flask
 pytz
 gunicorn
-sqlite3-binary
 email-validator
