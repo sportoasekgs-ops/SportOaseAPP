@@ -63,18 +63,21 @@ print(os.urandom(32).hex())
 
 ## Schritt 4: Datenbank initialisieren
 
-Nach dem ersten Deployment:
+**WICHTIG**: Nach dem ersten Deployment MUSS die Datenbank initialisiert werden!
 
-1. Verbinden Sie sich mit der Render Shell (im Dashboard)
+1. Verbinden Sie sich mit der Render Shell (im Dashboard unter "Shell")
 2. Führen Sie aus:
 
 ```bash
 python db_setup.py
 ```
 
-Dies erstellt den Admin-Account:
-- **Benutzername**: sportoase
-- **Passwort**: mauro123
+Dies erstellt:
+- Alle Datenbank-Tabellen
+- Den Admin-Account mit:
+  - **Benutzername**: sportoase
+  - **Passwort**: mauro123
+  - **E-Mail**: sportoase.kg@gmail.com
 
 **WICHTIG**: Ändern Sie das Passwort nach dem ersten Login!
 
@@ -93,6 +96,8 @@ Für E-Mail-Benachrichtigungen bei Buchungen können Sie einen SMTP-Service verw
 - Port: `587`
 - User: Ihre Gmail-Adresse
 - Pass: App-spezifisches Passwort (nicht Ihr normales Passwort!)
+
+[Anleitung für Gmail App-Passwort](https://support.google.com/accounts/answer/185833)
 
 ### Professionelle Services:
 - SendGrid (kostenlos bis 100 E-Mails/Tag)
@@ -118,6 +123,7 @@ Für E-Mail-Benachrichtigungen bei Buchungen können Sie einen SMTP-Service verw
 4. **Updates deployen**:
    - Pushen Sie zu GitHub
    - Render deployt automatisch
+   - **Nach größeren Datenbank-Änderungen**: Führen Sie `python db_setup.py` erneut aus
 
 ## Troubleshooting
 
@@ -130,11 +136,34 @@ Für E-Mail-Benachrichtigungen bei Buchungen können Sie einen SMTP-Service verw
 - Verwenden Sie die **Internal Database URL** (nicht External)
 - Bestätigen Sie, dass die Datenbank "Available" ist
 - Prüfen Sie, ob Region von App und DB übereinstimmt
+- **Wichtig**: Haben Sie `python db_setup.py` ausgeführt?
+
+### "Tabelle existiert nicht" Fehler:
+- Sie haben vergessen, `python db_setup.py` auszuführen!
+- Verbinden Sie sich mit der Shell und führen Sie das Skript aus
 
 ### E-Mails werden nicht gesendet:
-- Überprüfen Sie SMTP-Einstellungen
+- Überprüfen Sie SMTP-Einstellungen in den Umgebungsvariablen
 - Testen Sie SMTP-Zugangsdaten lokal
 - Prüfen Sie, ob Port 587 erlaubt ist
+- Für Gmail: Verwenden Sie ein App-spezifisches Passwort
+
+## Lokale Entwicklung
+
+Für die lokale Entwicklung:
+
+1. Installieren Sie PostgreSQL lokal
+2. Erstellen Sie eine `.env` Datei:
+   ```
+   DATABASE_URL=postgresql://localhost:5432/sportoase_dev
+   SESSION_SECRET=dev-secret-key
+   ADMIN_EMAIL=sportoase.kg@gmail.com
+   ```
+3. Führen Sie aus:
+   ```bash
+   python db_setup.py
+   uv run python app.py
+   ```
 
 ## Support
 

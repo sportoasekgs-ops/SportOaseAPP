@@ -21,23 +21,25 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 }
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-# Importiere Modelle und initialisiere Datenbank
-from models import (
-    db, init_db, create_user, get_user_by_username, get_user_by_email, 
-    get_user_by_id, verify_password, get_all_users, create_booking,
-    get_bookings_for_date_period, count_students_for_period, get_all_bookings,
-    get_bookings_by_date, get_bookings_for_week, get_booking_by_id,
-    update_booking, delete_booking
-)
-from config import *
-from email_service import send_booking_notification
+# Importiere zentrale Datenbank-Instanz
+from database import db
 
 # Initialisiere SQLAlchemy mit der App
 db.init_app(app)
 
-# Erstelle alle Tabellen beim Start
-with app.app_context():
-    init_db()
+# Importiere Modelle und Hilfsfunktionen
+from models import (
+    create_user, get_user_by_username, get_user_by_email, 
+    get_user_by_id, verify_password, get_all_users, create_booking,
+    get_bookings_for_date_period, count_students_for_period, get_all_bookings,
+    get_bookings_by_date, get_bookings_for_week, get_booking_by_id,
+    update_booking, delete_booking, User, Booking
+)
+from config import *
+from email_service import send_booking_notification
+
+# Schema-Erstellung erfolgt explizit über db_setup.py
+# Nicht automatisch bei jedem Import!
 
 # Hilfsfunktion: Zeitzone Europe/Berlin
 def get_berlin_tz():

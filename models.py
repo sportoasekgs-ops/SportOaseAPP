@@ -1,13 +1,10 @@
 # Datenbankmodelle für die SportOase-Anwendung mit Flask-SQLAlchemy
 # Diese Datei definiert die Struktur der Datenbank-Tabellen für PostgreSQL
 
-import os
-from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import json
-
-db = SQLAlchemy()
+from database import db
 
 class User(db.Model):
     """Benutzer-Modell für Lehrkräfte und Admins"""
@@ -73,11 +70,6 @@ class Booking(db.Model):
         }
 
 # Hilfsfunktionen für Kompatibilität mit dem alten Code
-
-def init_db():
-    """Initialisiert die Datenbank und erstellt alle Tabellen"""
-    db.create_all()
-    print("Datenbank erfolgreich initialisiert!")
 
 def create_user(username, password, role, email=None):
     """Erstellt einen neuen Benutzer in der Datenbank"""
