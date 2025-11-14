@@ -2,3 +2,4 @@ flask
 gunicorn
 psycopg2-binary    # falls du Postgres benutzt
 python-dotenv      # optional, falls du lokal .env nutzt
+pytz
