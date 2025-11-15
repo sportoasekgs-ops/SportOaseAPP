@@ -53,6 +53,10 @@ def inject_csrf_token():
 # Datenbank-Konfiguration
 db_uri = os.environ.get("DATABASE_URL") or os.environ.get("SQLALCHEMY_DATABASE_URI")
 
+# Strip whitespace from database URL (in case of accidental spaces)
+if db_uri:
+    db_uri = db_uri.strip()
+
 print("DEBUG DATABASE_URL:", os.environ.get("DATABASE_URL"))
 print("DEBUG SQLALCHEMY_DATABASE_URI env:", os.environ.get("SQLALCHEMY_DATABASE_URI"))
 print("DEBUG final DB URI:", db_uri)
