@@ -199,36 +199,13 @@
             notificationSound.play().catch(e => console.log('Sound play failed:', e));
         }
 
-        function connectSSE() {
-            if (eventSource) {
-                eventSource.close();
-            }
-
-            eventSource = new EventSource('/notifications/stream');
-
-            eventSource.onmessage = function(event) {
-                try {
-                    const data = JSON.parse(event.data);
-                    
-                    if (data.type === 'ping') {
-                        return;
-                    }
-                    
-                    if (data.type === 'new_booking') {
-                        playNotificationSound();
-                        updateNotificationBadge(data.unread_count);
-                        loadRecentNotifications();
-                    }
-                } catch (error) {
-                    console.error('Fehler beim Verarbeiten der SSE-Nachricht:', error);
-                }
-            };
-
-            eventSource.onerror = function(error) {
-                console.error('SSE-Fehler:', error);
-                eventSource.close();
-                setTimeout(connectSSE, 5000);
-            };
+        // SSE deaktiviert - Polling-basierte Updates stattdessen
+        function startPolling() {
+            // Aktualisiere alle 30 Sekunden
+            setInterval(() => {
+                updateUnreadCount();
+                loadRecentNotifications();
+            }, 30000);
         }
 
         document.addEventListener('click', function(event) {
@@ -243,13 +220,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             updateUnreadCount();
             loadRecentNotifications();
-            connectSSE();
-        });
-
-        window.addEventListener('beforeunload', function() {
-            if (eventSource) {
-                eventSource.close();
-            }
+            startPolling();
         });
         {% endif %}
     </script>
