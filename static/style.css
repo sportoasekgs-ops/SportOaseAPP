@@ -1185,3 +1185,80 @@ footer {
         right: 15px;
     }
 }
+
+/* Blockierte Slots */
+.period-blocked {
+    background: linear-gradient(135deg, #FF6B6B 0%, #C92A2A 100%) !important;
+    color: var(--white) !important;
+    border: 2px solid #C92A2A !important;
+}
+
+.period-blocked .period-header,
+.period-blocked .booking-info,
+.period-blocked .admin-actions {
+    color: var(--white);
+}
+
+.blocked-header {
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.blocked-row {
+    background-color: rgba(255, 107, 107, 0.1);
+}
+
+.blocked-text {
+    color: #C92A2A;
+    font-weight: 700;
+}
+
+.admin-actions {
+    margin-top: 0.8rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-small {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--green) 0%, #5A9349 100%);
+    color: var(--white);
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #5A9349 0%, var(--green) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-block {
+    background: linear-gradient(135deg, #FF9500 0%, #E07B00 100%);
+    color: var(--white);
+}
+
+.btn-block:hover {
+    background: linear-gradient(135deg, #E07B00 0%, #FF9500 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%);
+    color: var(--white);
+    border: none;
+}
+
+.btn-warning:hover {
+    background: linear-gradient(135deg, #FF8C00 0%, #FFA500 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}

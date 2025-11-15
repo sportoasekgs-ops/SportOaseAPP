@@ -13,6 +13,24 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SESSION_SECRET', 'dev-secret-key-change-in-production')
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
+# CSRF-Token Generierung und Validierung
+import secrets
+
+def generate_csrf_token():
+    """Generiert ein CSRF-Token und speichert es in der Session"""
+    if 'csrf_token' not in session:
+        session['csrf_token'] = secrets.token_hex(32)
+    return session['csrf_token']
+
+def validate_csrf_token(token):
+    """Validiert das CSRF-Token"""
+    return token == session.get('csrf_token')
+
+@app.context_processor
+def inject_csrf_token():
+    """Macht csrf_token in allen Templates verfügbar"""
+    return dict(csrf_token=generate_csrf_token)
+
 # Datenbank-Konfiguration
 db_uri = os.environ.get("DATABASE_URL") or os.environ.get("SQLALCHEMY_DATABASE_URI")
 
@@ -204,11 +222,16 @@ def dashboard():
     weekday_name_de = weekday_names_de.get(weekday_name, weekday_name)
     
     # Erstelle Stundenplan für den Tag
+    from models import is_slot_blocked, get_blocked_slot
     schedule = []
     for period in range(1, 7):
         period_info = get_period_info(weekday, period)
         student_count = count_students_for_period(selected_date_str, period)
         available = MAX_STUDENTS_PER_PERIOD - student_count
+        
+        # Prüfe, ob Slot blockiert ist
+        blocked_slot = get_blocked_slot(selected_date_str, period)
+        is_blocked = blocked_slot is not None
         
         # Prüfe, ob Buchung zeitlich möglich ist
         can_book, time_message = check_booking_time(selected_date, period)
@@ -220,12 +243,14 @@ def dashboard():
             'label': period_info['label'],
             'booked': student_count,
             'available': available,
-            'can_book': can_book and available > 0,
-            'time_message': time_message
+            'can_book': can_book and available > 0 and not is_blocked,
+            'time_message': time_message,
+            'blocked': blocked_slot,
+            'blocked_reason': blocked_slot.get('reason', 'Beratung') if blocked_slot else None
         })
     
     # Erstelle Wochenübersicht (Montag-Freitag) mit Buchungsdaten
-    from models import get_bookings_for_week
+    from models import get_bookings_for_week, get_blocked_slots_for_week, is_slot_blocked
     
     # Berechne Montag und Freitag der aktuellen Woche
     days_since_monday = selected_date.weekday()
@@ -234,6 +259,15 @@ def dashboard():
     
     # Hole alle Buchungen für diese Woche
     week_bookings = get_bookings_for_week(monday.strftime('%Y-%m-%d'), friday.strftime('%Y-%m-%d'))
+    
+    # Hole alle blockierten Slots für diese Woche
+    blocked_slots = get_blocked_slots_for_week(monday.strftime('%Y-%m-%d'), friday.strftime('%Y-%m-%d'))
+    
+    # Organisiere blockierte Slots nach Datum und Stunde
+    blocked_by_date_period = {}
+    for blocked in blocked_slots:
+        key = f"{blocked['date']}_{blocked['period']}"
+        blocked_by_date_period[key] = blocked
     
     # Organisiere Buchungen nach Datum und Stunde
     bookings_by_date_period = {}
@@ -265,13 +299,14 @@ def dashboard():
             info = get_period_info(wd, period)
             key = f"{day_date_str}_{period}"
             period_bookings = bookings_by_date_period.get(key, [])
+            blocked_slot = blocked_by_date_period.get(key)
             
             total_students = sum(b['student_count'] for b in period_bookings)
             available = MAX_STUDENTS_PER_PERIOD - total_students
             
             # Prüfe, ob Buchung für diesen Slot möglich ist
             can_book, _ = check_booking_time(day_date, period)
-            can_book = can_book and available > 0
+            can_book = can_book and available > 0 and not blocked_slot
             
             day_schedule.append({
                 'period': period,
@@ -280,7 +315,9 @@ def dashboard():
                 'bookings': period_bookings,
                 'total_students': total_students,
                 'available': available,
-                'can_book': can_book
+                'can_book': can_book,
+                'blocked': blocked_slot,
+                'blocked_reason': blocked_slot.get('reason', 'Beratung') if blocked_slot else None
             })
         week_overview.append({
             'weekday': wd,
@@ -324,6 +361,14 @@ def book(date_str, period):
     
     if available_spots <= 0:
         flash('Diese Stunde ist bereits voll belegt.', 'error')
+        return redirect(url_for('dashboard', date=date_str))
+    
+    # Prüfe, ob Slot für Beratung blockiert ist (nur Admins können blockierte Slots sehen)
+    from models import is_slot_blocked, get_blocked_slot
+    if is_slot_blocked(date_str, period):
+        blocked_info = get_blocked_slot(date_str, period)
+        reason = blocked_info.get('reason', 'Beratung') if blocked_info else 'Beratung'
+        flash(f'Dieser Slot ist für {reason} blockiert und kann nicht gebucht werden.', 'error')
         return redirect(url_for('dashboard', date=date_str))
     
     # Prüfe Zeitfenster
@@ -817,6 +862,74 @@ def manage_slots():
     
     return render_template('admin_manage_slots.html', 
                          fixed_slots=fixed_slots)
+
+@app.route('/admin/block_slot', methods=['POST'])
+@admin_required
+def admin_block_slot():
+    """Admin blockiert einen Slot für Beratungsgespräche"""
+    from models import block_slot, is_slot_blocked
+    
+    # CSRF-Token Validierung
+    csrf_token = request.form.get('csrf_token', '')
+    if not validate_csrf_token(csrf_token):
+        flash('Ungültiges Sicherheits-Token. Bitte versuchen Sie es erneut.', 'error')
+        return redirect(request.referrer or url_for('dashboard'))
+    
+    date_str = request.form.get('date', '').strip()
+    period = request.form.get('period', type=int)
+    reason = request.form.get('reason', 'Beratung').strip()
+    
+    # Validiere Grund-Länge
+    if reason and len(reason) > 200:
+        reason = reason[:200]
+    
+    if not date_str or not period:
+        flash('Ungültige Slot-Daten.', 'error')
+        return redirect(request.referrer or url_for('dashboard'))
+    
+    try:
+        booking_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        weekday = booking_date.strftime('%a')
+    except:
+        flash('Ungültiges Datum.', 'error')
+        return redirect(request.referrer or url_for('dashboard'))
+    
+    if is_slot_blocked(date_str, period):
+        flash('Dieser Slot ist bereits blockiert.', 'warning')
+    else:
+        admin_id = session.get('user_id')
+        if block_slot(date_str, weekday, period, admin_id, reason):
+            flash(f'Slot erfolgreich für {reason} blockiert.', 'success')
+        else:
+            flash('Fehler beim Blockieren des Slots.', 'error')
+    
+    return redirect(request.referrer or url_for('dashboard'))
+
+@app.route('/admin/unblock_slot', methods=['POST'])
+@admin_required
+def admin_unblock_slot():
+    """Admin gibt einen blockierten Slot wieder frei"""
+    from models import unblock_slot
+    
+    # CSRF-Token Validierung
+    csrf_token = request.form.get('csrf_token', '')
+    if not validate_csrf_token(csrf_token):
+        flash('Ungültiges Sicherheits-Token. Bitte versuchen Sie es erneut.', 'error')
+        return redirect(request.referrer or url_for('dashboard'))
+    
+    date_str = request.form.get('date', '').strip()
+    period = request.form.get('period', type=int)
+    
+    if not date_str or not period:
+        flash('Ungültige Slot-Daten.', 'error')
+        return redirect(request.referrer or url_for('dashboard'))
+    
+    if unblock_slot(date_str, period):
+        flash('Slot erfolgreich freigegeben.', 'success')
+    else:
+        flash('Fehler beim Freigeben des Slots.', 'error')
+    
+    return redirect(request.referrer or url_for('dashboard'))
 
 if __name__ == '__main__':
     # Starte die Anwendung

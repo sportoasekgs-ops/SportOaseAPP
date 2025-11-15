@@ -91,6 +91,34 @@ class SlotName(db.Model):
             'label': self.label
         }
 
+class BlockedSlot(db.Model):
+    """Modell für von Admins blockierte Slots (z.B. für Beratungsgespräche)"""
+    __tablename__ = 'blocked_slots'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.String(10), nullable=False, index=True)
+    weekday = db.Column(db.String(3), nullable=False)
+    period = db.Column(db.Integer, nullable=False)
+    reason = db.Column(db.String(200), default='Beratung')
+    blocked_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    
+    __table_args__ = (
+        db.UniqueConstraint('date', 'period', name='unique_date_period_block'),
+    )
+    
+    def to_dict(self):
+        """Konvertiert BlockedSlot zu Dictionary"""
+        return {
+            'id': self.id,
+            'date': self.date,
+            'weekday': self.weekday,
+            'period': self.period,
+            'reason': self.reason,
+            'blocked_by': self.blocked_by,
+            'created_at': self.created_at.isoformat() if isinstance(self.created_at, datetime) else self.created_at
+        }
+
 # Hilfsfunktionen für Kompatibilität mit dem alten Code
 
 def create_user(username, password, role, email=None):
@@ -254,3 +282,65 @@ def get_all_custom_slot_names():
     """Gibt alle angepassten Slot-Namen zurück"""
     slots = SlotName.query.all()
     return [s.to_dict() for s in slots]
+
+def is_slot_blocked(date, period):
+    """Prüft, ob ein Slot für ein bestimmtes Datum und Stunde blockiert ist"""
+    blocked = BlockedSlot.query.filter_by(date=date, period=period).first()
+    return blocked is not None
+
+def get_blocked_slot(date, period):
+    """Gibt den blockierten Slot zurück, falls vorhanden"""
+    blocked = BlockedSlot.query.filter_by(date=date, period=period).first()
+    return blocked.to_dict() if blocked else None
+
+def block_slot(date, weekday, period, admin_id, reason='Beratung'):
+    """Blockiert einen Slot für Beratungsgespräche (nur Admin)"""
+    try:
+        if is_slot_blocked(date, period):
+            return False
+        
+        blocked = BlockedSlot(
+            date=date,
+            weekday=weekday,
+            period=period,
+            reason=reason,
+            blocked_by=admin_id,
+            created_at=datetime.now()
+        )
+        db.session.add(blocked)
+        db.session.commit()
+        return True
+    except Exception as e:
+        db.session.rollback()
+        print(f"Fehler beim Blockieren des Slots: {e}")
+        return False
+
+def unblock_slot(date, period):
+    """Gibt einen blockierten Slot wieder frei"""
+    try:
+        blocked = BlockedSlot.query.filter_by(date=date, period=period).first()
+        if not blocked:
+            return False
+        
+        db.session.delete(blocked)
+        db.session.commit()
+        return True
+    except Exception as e:
+        db.session.rollback()
+        print(f"Fehler beim Freigeben des Slots: {e}")
+        return False
+
+def get_blocked_slots_for_date(date):
+    """Gibt alle blockierten Slots für ein bestimmtes Datum zurück"""
+    blocked_slots = BlockedSlot.query.filter_by(date=date).all()
+    return [b.to_dict() for b in blocked_slots]
+
+def get_blocked_slots_for_week(start_date, end_date):
+    """Gibt alle blockierten Slots für eine Woche zurück"""
+    blocked_slots = BlockedSlot.query.filter(BlockedSlot.date >= start_date, BlockedSlot.date <= end_date).all()
+    return [b.to_dict() for b in blocked_slots]
+
+def get_all_blocked_slots():
+    """Gibt alle blockierten Slots zurück (für Admin-Ansicht)"""
+    blocked_slots = BlockedSlot.query.order_by(BlockedSlot.date.desc(), BlockedSlot.period).all()
+    return [b.to_dict() for b in blocked_slots]
