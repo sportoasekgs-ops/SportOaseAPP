@@ -95,6 +95,13 @@ from models import (
 from config import *
 from email_service import send_booking_notification
 
+# Google Calendar Service importieren und initialisieren
+from calendar_service import init_calendar_service, is_calendar_enabled, create_booking_event, delete_booking_event
+
+# Initialisiere Google Calendar Service (optional)
+with app.app_context():
+    init_calendar_service()
+
 # Schema-Erstellung erfolgt explizit über db_setup.py
 # Nicht automatisch bei jedem Import!
 
@@ -242,9 +249,9 @@ def logout():
 
 # Route: Passwort ändern
 @app.route('/change_password', methods=['GET', 'POST'])
-@login_required
+@admin_required
 def change_password():
-    """Ermöglicht Benutzern ihr Passwort zu ändern"""
+    """Ermöglicht Admins Passwörter zu ändern"""
     if request.method == 'POST':
         # CSRF-Token Validierung
         csrf_token = request.form.get('csrf_token', '')
@@ -609,6 +616,32 @@ def book(date_str, period):
         )
         
         if booking_id:
+            # Erstelle Google Calendar Eintrag (wenn aktiviert)
+            calendar_event_id = None
+            if is_calendar_enabled():
+                try:
+                    calendar_data = {
+                        'date': date_str,
+                        'period': period,
+                        'teacher_name': teacher_name,
+                        'teacher_class': teacher_class,
+                        'students': students,
+                        'offer_label': offer_label
+                    }
+                    calendar_result = create_booking_event(calendar_data)
+                    if calendar_result['success']:
+                        calendar_event_id = calendar_result['event_id']
+                        # Update booking mit calendar_event_id
+                        booking = Booking.query.get(booking_id)
+                        if booking:
+                            booking.calendar_event_id = calendar_event_id
+                            db.session.commit()
+                        print(f"✓ Google Calendar Eintrag erstellt: {calendar_result.get('event_link')}")
+                    else:
+                        print(f"⚠ Google Calendar Eintrag konnte nicht erstellt werden: {calendar_result.get('error')}")
+                except Exception as e:
+                    print(f"⚠ Fehler beim Erstellen des Calendar Eintrags: {e}")
+            
             # Sende E-Mail-Benachrichtigung
             booking_data = {
                 'date': date_str,
@@ -999,7 +1032,8 @@ def delete_booking_route(booking_id):
     """Löscht eine Buchung"""
     from models import delete_booking
     
-    if delete_booking(booking_id):
+    # Übergebe Calendar-Löschfunktion als Callback
+    if delete_booking(booking_id, delete_calendar_event_callback=delete_booking_event if is_calendar_enabled() else None):
         flash('Buchung erfolgreich gelöscht.', 'success')
     else:
         flash('Buchung konnte nicht gelöscht werden.', 'error')

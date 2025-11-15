@@ -50,6 +50,7 @@ class Booking(db.Model):
     students_json = db.Column(db.Text, nullable=False)
     offer_type = db.Column(db.String(10), nullable=False)
     offer_label = db.Column(db.String(100), nullable=False)
+    calendar_event_id = db.Column(db.String(200), nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     
     notifications = db.relationship('Notification', back_populates='booking', cascade='all, delete-orphan', passive_deletes=True)
@@ -67,6 +68,7 @@ class Booking(db.Model):
             'students_json': self.students_json,
             'offer_type': self.offer_type,
             'offer_label': self.offer_label,
+            'calendar_event_id': self.calendar_event_id,
             'created_at': self.created_at.isoformat() if isinstance(self.created_at, datetime) else self.created_at,
             'teacher_email': self.teacher.email if self.teacher else None
         }
@@ -217,7 +219,7 @@ def get_all_users():
     users = User.query.order_by(User.role, User.username).all()
     return [u.to_dict() for u in users]
 
-def create_booking(date, weekday, period, teacher_id, students, offer_type, offer_label, teacher_name=None, teacher_class=None):
+def create_booking(date, weekday, period, teacher_id, students, offer_type, offer_label, teacher_name=None, teacher_class=None, calendar_event_id=None):
     """Erstellt eine neue Buchung in der Datenbank"""
     try:
         students_json = json.dumps(students, ensure_ascii=False)
@@ -231,6 +233,7 @@ def create_booking(date, weekday, period, teacher_id, students, offer_type, offe
             students_json=students_json,
             offer_type=offer_type,
             offer_label=offer_label,
+            calendar_event_id=calendar_event_id,
             created_at=datetime.now()
         )
         db.session.add(booking)
@@ -334,12 +337,19 @@ def update_booking(booking_id, date, weekday, period, teacher_id, students, offe
         print(f"Fehler beim Aktualisieren der Buchung: {e}")
         return False
 
-def delete_booking(booking_id):
-    """Löscht eine Buchung aus der Datenbank"""
+def delete_booking(booking_id, delete_calendar_event_callback=None):
+    """Löscht eine Buchung aus der Datenbank und optional den Google Calendar Eintrag"""
     try:
         booking = Booking.query.get(booking_id)
         if not booking:
             return False
+        
+        # Wenn Callback für Calendar-Löschung übergeben wurde, nutze ihn
+        if delete_calendar_event_callback and booking.calendar_event_id:
+            try:
+                delete_calendar_event_callback(booking.calendar_event_id)
+            except Exception as e:
+                print(f"Warnung: Calendar Eintrag konnte nicht gelöscht werden: {e}")
         
         db.session.delete(booking)
         db.session.commit()
