@@ -149,3 +149,7 @@
 [x] 144. ✅ Automatische E-Mail-Benachrichtigungen bei Buchungen aktiviert
 [x] 145. ✅ Test-E-Mail erfolgreich versendet und empfangen
 [x] 146. ✅ E-Mail-System vollständig funktionsfähig
+[x] 147. ✅ Tagesplan "Buchungsmöglichkeiten" aus Dashboard entfernt
+[x] 148. ✅ Kontakt-Informationsbox unter Wochenplan hinzugefügt
+[x] 149. ✅ Logo und Kontaktdaten (E-Mail & Telefon) in Box integriert
+[x] 150. ✅ Responsive Design für Kontaktbox (Desktop & Mobile) implementiert
