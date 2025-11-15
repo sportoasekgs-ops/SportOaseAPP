@@ -122,3 +122,7 @@
 [x] 117. ✅ CSS-Klassen für unbuchbare Slots hinzugefügt (weekend-row, unbookable-row)
 [x] 118. ✅ Template-Anpassungen für visuelle Wochenend-Kennzeichnung
 [x] 119. ✅ Backend-Validierung in Buchungs-Route für Wochenenden
+[x] 120. ✅ DATABASE_URL updated to external Render PostgreSQL (dpg-d4bihtshg0os73evn36g-a.frankfurt-postgres.render.com/spo_m4dy)
+[x] 121. ✅ Restarted workflow and verified successful connection to external Render database
+[x] 122. ✅ Application running successfully with external database connection
+[x] 123. ✅ All database migration tasks completed - SportOase App fully operational on Replit with external Render PostgreSQL
