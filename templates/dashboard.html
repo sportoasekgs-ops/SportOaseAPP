@@ -130,7 +130,7 @@
             </thead>
             <tbody>
                 {% for slot in schedule %}
-                <tr {% if slot.blocked %}class="blocked-row"{% elif slot.is_past %}class="past-row"{% endif %}>
+                <tr {% if slot.blocked %}class="blocked-row"{% elif slot.is_weekend %}class="weekend-row"{% elif slot.is_past %}class="past-row"{% endif %}>
                     <td><strong>{{ slot.period }}.</strong></td>
                     <td>{{ slot.time }}</td>
                     <td class="period-{{ slot.type }} {% if slot.blocked %}period-blocked{% elif slot.is_past %}period-past{% endif %}">
@@ -157,7 +157,9 @@
                         {% endif %}
                     </td>
                     <td>
-                        {% if slot.is_past %}
+                        {% if slot.is_weekend %}
+                        <span class="disabled">Wochenende</span>
+                        {% elif slot.is_past %}
                         <span class="disabled past-text">Vergangen</span>
                         {% elif slot.blocked %}
                             {% if user_role == 'admin' %}

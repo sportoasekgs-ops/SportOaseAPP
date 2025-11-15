@@ -116,3 +116,9 @@
 [x] 111. ✅ Fixed student data formatting in booking notifications
 [x] 112. ✅ Both test emails received at sportoase.kg@gmail.com
 [x] 113. ✅ Email notification system fully operational
+[x] 114. ✅ Doppelbuchungs-Prüfung implementiert - Schüler können nicht doppelt gebucht werden
+[x] 115. ✅ Wochenend-Blockierung implementiert - Samstag/Sonntag unbuchbar
+[x] 116. ✅ Zeitbeschränkung <60 Min implementiert - Slots kurz vor Beginn unbuchbar
+[x] 117. ✅ CSS-Klassen für unbuchbare Slots hinzugefügt (weekend-row, unbookable-row)
+[x] 118. ✅ Template-Anpassungen für visuelle Wochenend-Kennzeichnung
+[x] 119. ✅ Backend-Validierung in Buchungs-Route für Wochenenden

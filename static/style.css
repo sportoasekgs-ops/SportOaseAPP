@@ -657,6 +657,26 @@ h4 {
     opacity: 0.5;
 }
 
+.unbookable-row {
+    opacity: 0.6;
+    background: var(--bg-tertiary) !important;
+    pointer-events: none;
+}
+
+.unbookable-row td {
+    color: var(--text-tertiary);
+}
+
+.weekend-row {
+    opacity: 0.5;
+    background: #FEF3C7 !important;
+}
+
+.time-restricted-row {
+    opacity: 0.65;
+    background: #FEF3C7 !important;
+}
+
 .capacity {
     display: inline-block;
     padding: 0.25rem 0.625rem;

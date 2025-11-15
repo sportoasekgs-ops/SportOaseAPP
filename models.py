@@ -237,6 +237,41 @@ def count_students_for_period(date, period):
         total += len(students)
     return total
 
+def check_student_double_booking(student_name, student_class, date, period, exclude_booking_id=None):
+    """
+    Prüft, ob ein Schüler bereits für dieses Datum und diese Stunde gebucht ist.
+    
+    Args:
+        student_name: Name des Schülers
+        student_class: Klasse des Schülers
+        date: Datum (YYYY-MM-DD)
+        period: Stunde (1-6)
+        exclude_booking_id: Optional - Buchungs-ID die ausgeschlossen werden soll (für Updates)
+    
+    Returns:
+        Dict mit 'is_booked' (bool) und 'booking_info' (str) oder None
+    """
+    bookings = get_bookings_for_date_period(date, period)
+    
+    for booking in bookings:
+        # Überspringe die Buchung, die ausgeschlossen werden soll
+        if exclude_booking_id and booking['id'] == exclude_booking_id:
+            continue
+            
+        students = json.loads(booking['students_json'])
+        
+        # Prüfe ob der Schüler in dieser Buchung ist
+        for student in students:
+            if (student.get('name', '').strip().lower() == student_name.strip().lower() and 
+                student.get('klasse', '').strip().lower() == student_class.strip().lower()):
+                
+                return {
+                    'is_booked': True,
+                    'booking_info': f"{student_name} ({student_class}) ist bereits in '{booking['offer_label']}' bei {booking['teacher_name']} gebucht."
+                }
+    
+    return {'is_booked': False, 'booking_info': None}
+
 def get_all_bookings():
     """Gibt alle Buchungen zurück (für Admin-Ansicht)"""
     bookings = Booking.query.order_by(Booking.date.desc(), Booking.period).all()

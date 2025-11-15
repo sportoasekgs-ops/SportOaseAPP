@@ -85,7 +85,7 @@ from models import (
     update_booking, delete_booking, User, Booking,
     create_notification, get_unread_notifications, get_recent_notifications,
     mark_notification_as_read, mark_all_notifications_as_read,
-    get_unread_notification_count, get_booking_by_id
+    get_unread_notification_count, get_booking_by_id, check_student_double_booking
 )
 from config import *
 from email_service import send_booking_notification
@@ -280,14 +280,21 @@ def dashboard():
         # Prüfe, ob Termin in der Vergangenheit liegt
         is_past = is_past_date(selected_date, period)
         
+        # Prüfe, ob es ein Wochenende ist
+        is_weekend = selected_date.weekday() in [5, 6]
+        
         # Prüfe, ob Buchung zeitlich möglich ist
         can_book, time_message = check_booking_time(selected_date, period)
         
-        # can_book muss False sein für vergangene Termine
+        # can_book muss False sein für vergangene Termine oder Wochenenden
         if is_past:
             can_book = False
             if not time_message:
                 time_message = "Dieser Termin liegt in der Vergangenheit."
+        elif is_weekend:
+            can_book = False
+            if not time_message:
+                time_message = "Buchungen sind am Wochenende nicht möglich."
         
         schedule.append({
             'period': period,
@@ -296,11 +303,12 @@ def dashboard():
             'label': period_info['label'],
             'booked': student_count,
             'available': available,
-            'can_book': can_book and available > 0 and not is_blocked and not is_past,
+            'can_book': can_book and available > 0 and not is_blocked and not is_past and not is_weekend,
             'time_message': time_message,
             'blocked': blocked_slot,
             'blocked_reason': blocked_slot.get('reason', 'Beratung') if blocked_slot else None,
-            'is_past': is_past
+            'is_past': is_past,
+            'is_weekend': is_weekend
         })
     
     # Erstelle Wochenübersicht (Montag-Freitag) mit Buchungsdaten
@@ -369,9 +377,12 @@ def dashboard():
             # Prüfe, ob Termin in der Vergangenheit liegt
             is_past = is_past_date(day_date, period)
             
+            # Prüfe, ob es ein Wochenende ist
+            is_weekend = day_date.weekday() in [5, 6]
+            
             # Prüfe, ob Buchung für diesen Slot möglich ist
             can_book, _ = check_booking_time(day_date, period)
-            can_book = can_book and available > 0 and not blocked_slot and not is_past
+            can_book = can_book and available > 0 and not blocked_slot and not is_past and not is_weekend
             
             day_schedule.append({
                 'period': period,
@@ -383,7 +394,8 @@ def dashboard():
                 'can_book': can_book,
                 'blocked': blocked_slot,
                 'blocked_reason': blocked_slot.get('reason', 'Beratung') if blocked_slot else None,
-                'is_past': is_past
+                'is_past': is_past,
+                'is_weekend': is_weekend
             })
         week_overview.append({
             'weekday': wd,
@@ -426,6 +438,11 @@ def book(date_str, period):
     # Prüfe, ob Termin in der Vergangenheit liegt
     if is_past_date(booking_date, period):
         flash('Dieser Termin liegt in der Vergangenheit und kann nicht gebucht werden.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # Prüfe, ob es ein Wochenende ist (Samstag=5, Sonntag=6)
+    if booking_date.weekday() in [5, 6]:
+        flash('Buchungen sind am Wochenende nicht möglich.', 'error')
         return redirect(url_for('dashboard'))
     
     # Ermittle Wochentag und Stundeninfo
@@ -487,7 +504,7 @@ def book(date_str, period):
             flash(f'Nicht genug Plätze verfügbar. Nur noch {available_spots} Plätze frei.', 'error')
             return redirect(url_for('dashboard', date=date_str))
         
-        # Sammle Schülerdaten
+        # Sammle Schülerdaten und prüfe Doppelbuchungen
         students = []
         for i in range(num_students):
             name = request.form.get(f'student_name_{i}', '').strip()
@@ -495,6 +512,18 @@ def book(date_str, period):
             
             if not name or not klasse:
                 flash('Bitte füllen Sie alle Schülerfelder aus.', 'error')
+                return render_template('book.html', 
+                                     date_str=date_str,
+                                     period=period,
+                                     period_info=period_info,
+                                     period_time=PERIOD_TIMES[period],
+                                     available_spots=available_spots,
+                                     free_modules=FREE_MODULES)
+            
+            # Prüfe auf Doppelbuchung
+            double_booking = check_student_double_booking(name, klasse, date_str, period)
+            if double_booking['is_booked']:
+                flash(f'⚠️ Doppelbuchung verhindert: {double_booking["booking_info"]}', 'error')
                 return render_template('book.html', 
                                      date_str=date_str,
                                      period=period,
