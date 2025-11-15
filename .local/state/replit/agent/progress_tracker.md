@@ -164,3 +164,13 @@
 [x] 159. ✅ Workflow restarted successfully with new database connection
 [x] 160. ✅ Application running smoothly on port 5000 with external Render PostgreSQL
 [x] 161. ✅ Login page verified and displaying correctly with new database connection
+[x] 162. ✅ Passwort-Änderung auf Admins beschränkt - nur Admins können ihr eigenes Passwort ändern
+[x] 163. ✅ Google Calendar Integration implementiert mit Service Account
+[x] 164. ✅ calendar_service.py erstellt für Standard Google Calendar API
+[x] 165. ✅ Automatische Kalender-Einträge bei neuen Buchungen
+[x] 166. ✅ Automatisches Löschen von Kalender-Einträgen bei Buchungslöschung
+[x] 167. ✅ calendar_event_id Spalte zur bookings Tabelle hinzugefügt
+[x] 168. ✅ Datenbank-Migration erfolgreich ausgeführt
+[x] 169. ✅ GOOGLE_CALENDAR_SETUP.md Setup-Anleitung erstellt
+[x] 170. ✅ Graceful degradation - App funktioniert mit und ohne Calendar-Credentials
+[x] 171. ✅ Production-ready für Render und andere Nicht-Replit-Umgebungen
