@@ -97,3 +97,8 @@
 [x] 92. Verified successful connection to Render database at frankfurt-postgres.render.com
 [x] 93. Application running without database errors - login page loading successfully
 [x] 94. ✅ DATABASE_URL permanently configured - will not be overwritten during development
+[x] 95. Fixed CASCADE DELETE issue - notifications now properly deleted with bookings
+[x] 96. Updated Booking.notifications relationship with cascade='all, delete-orphan'
+[x] 97. Set booking_id as nullable=False to match database constraint
+[x] 98. Fixed JavaScript syntax error in notification sound playback
+[x] 99. ✅ Buchungen können jetzt wieder gelöscht und geändert werden

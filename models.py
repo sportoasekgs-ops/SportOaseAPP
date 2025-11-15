@@ -52,6 +52,8 @@ class Booking(db.Model):
     offer_label = db.Column(db.String(100), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     
+    notifications = db.relationship('Notification', back_populates='booking', cascade='all, delete-orphan', passive_deletes=True)
+    
     def to_dict(self):
         """Konvertiert Booking zu Dictionary für Kompatibilität"""
         return {
@@ -124,7 +126,7 @@ class Notification(db.Model):
     __tablename__ = 'notifications'
     
     id = db.Column(db.Integer, primary_key=True)
-    booking_id = db.Column(db.Integer, db.ForeignKey('bookings.id', ondelete='CASCADE'), nullable=True, index=True)
+    booking_id = db.Column(db.Integer, db.ForeignKey('bookings.id', ondelete='CASCADE'), nullable=False, index=True)
     recipient_role = db.Column(db.String(20), nullable=False, default='admin')
     notification_type = db.Column(db.String(50), nullable=False, default='new_booking')
     message = db.Column(db.String(500), nullable=False)
@@ -133,7 +135,7 @@ class Notification(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, index=True)
     metadata_json = db.Column(db.Text, nullable=True)
     
-    booking = db.relationship('Booking', backref='notifications', lazy=True)
+    booking = db.relationship('Booking', back_populates='notifications')
     
     def to_dict(self):
         """Konvertiert Notification zu Dictionary"""
