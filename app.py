@@ -89,7 +89,6 @@ from models import (
 )
 from config import *
 from email_service import send_booking_notification
-from notification_service import send_booking_notification as send_gmail_notification
 
 # Schema-Erstellung erfolgt explizit über db_setup.py
 # Nicht automatisch bei jedem Import!
@@ -1084,30 +1083,31 @@ def admin_unblock_slot():
 # Notifications & Server-Sent Events (SSE) Routes
 # ============================================================================
 
-@app.route('/notifications/stream')
-@admin_required
-def notifications_stream():
-    """SSE-Endpunkt für Echtzeit-Benachrichtigungen (nur für Admins)"""
-    def event_stream():
-        """Generator für Server-Sent Events"""
-        q = queue.Queue(maxsize=50)
-        
-        with subscribers_lock:
-            notification_subscribers.append(q)
-        
-        try:
-            while True:
-                try:
-                    message = q.get(timeout=30)
-                    yield f"data: {json.dumps(message)}\n\n"
-                except queue.Empty:
-                    yield f"data: {json.dumps({'type': 'ping'})}\n\n"
-        finally:
-            with subscribers_lock:
-                if q in notification_subscribers:
-                    notification_subscribers.remove(q)
-    
-    return Response(event_stream(), mimetype='text/event-stream')
+# SSE deaktiviert - verursacht Worker-Timeouts in Produktion mit Gunicorn
+# @app.route('/notifications/stream')
+# @admin_required
+# def notifications_stream():
+#     """SSE-Endpunkt für Echtzeit-Benachrichtigungen (nur für Admins)"""
+#     def event_stream():
+#         """Generator für Server-Sent Events"""
+#         q = queue.Queue(maxsize=50)
+#         
+#         with subscribers_lock:
+#             notification_subscribers.append(q)
+#         
+#         try:
+#             while True:
+#                 try:
+#                     message = q.get(timeout=30)
+#                     yield f"data: {json.dumps(message)}\n\n"
+#                 except queue.Empty:
+#                     yield f"data: {json.dumps({'type': 'ping'})}\n\n"
+#         finally:
+#             with subscribers_lock:
+#                 if q in notification_subscribers:
+#                     notification_subscribers.remove(q)
+#     
+#     return Response(event_stream(), mimetype='text/event-stream')
 
 @app.route('/api/notifications/recent', methods=['GET'])
 @admin_required

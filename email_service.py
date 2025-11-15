@@ -1,127 +1,162 @@
-# E-Mail-Service für Buchungsbenachrichtigungen
-# Sendet E-Mails über SMTP an Admins und Lehrkräfte
-
+import os
 import smtplib
+import json
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from datetime import datetime
 from config import SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM, ADMIN_EMAIL
-import json
 
-def send_booking_notification(booking_data, teacher_email):
-    """
-    Sendet eine E-Mail-Benachrichtigung über eine neue Buchung
-    
-    booking_data: Dictionary mit Buchungsinformationen
-    teacher_email: E-Mail-Adresse der Lehrkraft
-    """
-    
-    # Wenn SMTP nicht konfiguriert ist, Nachricht nur ausgeben
-    if not SMTP_USER or not SMTP_PASS or SMTP_HOST == 'smtp.example.com':
-        print("\n=== E-Mail-Benachrichtigung (SMTP nicht konfiguriert) ===")
-        print(f"An: {ADMIN_EMAIL}")
-        print(f"Betreff: Neue SportOase-Buchung für {booking_data['date']}")
-        print(f"\nDatum: {booking_data['date']}")
-        print(f"Stunde: {booking_data['period']}")
-        print(f"Angebot: {booking_data['offer_label']} ({booking_data['offer_type']})")
-        print(f"Lehrkraft: {booking_data.get('teacher_name', 'N/A')} (Klasse {booking_data.get('teacher_class', 'N/A')})")
-        print(f"Schüler:")
-        for student in booking_data['students']:
-            print(f"  - {student['name']} (Klasse {student['klasse']})")
-        print("=" * 50 + "\n")
-        return True
-    
+
+def send_email_smtp(to_email, subject, body_html, body_text=None):
+    """Sendet E-Mail über SMTP"""
     try:
-        # E-Mail-Inhalt erstellen
-        students_list = "\n".join([
-            f"  - {s['name']} (Klasse {s['klasse']})" 
-            for s in booking_data['students']
-        ])
+        if not SMTP_USER or not SMTP_PASS:
+            print(f"WARNUNG: SMTP nicht konfiguriert - E-Mail an {to_email} wird nicht gesendet")
+            print(f"Betreff: {subject}")
+            print(f"Body: {body_text or body_html[:200]}")
+            return False
         
-        subject = f"Neue SportOase-Buchung für {booking_data['date']}"
-        body = f"""
-Neue Buchung in der SportOase:
-
-Datum: {booking_data['date']} ({booking_data['weekday']})
-Stunde: {booking_data['period']}. Stunde
-Angebot: {booking_data['offer_label']} ({booking_data['offer_type']})
-Lehrkraft: {booking_data.get('teacher_name', 'N/A')} (Klasse {booking_data.get('teacher_class', 'N/A')})
-
-Angemeldete Schüler:
-{students_list}
-
-Anzahl Schüler: {len(booking_data['students'])}
-
----
-Diese E-Mail wurde automatisch vom SportOase-Buchungssystem generiert.
-"""
+        message = MIMEMultipart('alternative')
+        message['From'] = SMTP_FROM
+        message['To'] = to_email
+        message['Subject'] = subject
         
-        # E-Mail an Admin senden
-        msg = MIMEMultipart()
-        msg['From'] = SMTP_FROM
-        msg['To'] = ADMIN_EMAIL
-        msg['Subject'] = subject
-        msg.attach(MIMEText(body, 'plain', 'utf-8'))
+        if body_text:
+            part1 = MIMEText(body_text, 'plain', 'utf-8')
+            message.attach(part1)
         
-        # SMTP-Verbindung aufbauen und E-Mail senden
-        server = smtplib.SMTP(SMTP_HOST, SMTP_PORT)
+        part2 = MIMEText(body_html, 'html', 'utf-8')
+        message.attach(part2)
+        
+        server = smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=10)
         server.starttls()
         server.login(SMTP_USER, SMTP_PASS)
-        server.send_message(msg)
+        server.send_message(message)
         server.quit()
         
-        print(f"E-Mail-Benachrichtigung an {ADMIN_EMAIL} gesendet.")
-        
-        # Optional: Bestätigung an Lehrkraft senden
-        send_teacher_confirmation(booking_data, teacher_email)
-        
+        print(f"E-Mail erfolgreich gesendet an {to_email}")
         return True
         
     except Exception as e:
-        print(f"Fehler beim E-Mail-Versand: {e}")
+        print(f"FEHLER beim E-Mail-Versand an {to_email}: {e}")
         return False
 
-def send_teacher_confirmation(booking_data, teacher_email):
-    """Sendet eine Bestätigung an die Lehrkraft"""
+
+def create_booking_notification_email(booking_data):
+    """Erstellt eine formatierte E-Mail für Buchungsbenachrichtigungen"""
+    teacher_name = booking_data.get('teacher_name', 'Unbekannt')
+    teacher_class = booking_data.get('teacher_class', '')
+    date = booking_data.get('date', '')
+    weekday = booking_data.get('weekday', '')
+    period = booking_data.get('period', '')
+    offer_label = booking_data.get('offer_label', '')
+    offer_type = booking_data.get('offer_type', '')
     
-    if not SMTP_USER or not SMTP_PASS or SMTP_HOST == 'smtp.example.com':
-        return  # SMTP nicht konfiguriert
-    
+    students = []
     try:
-        students_list = "\n".join([
-            f"  - {s['name']} (Klasse {s['klasse']})" 
-            for s in booking_data['students']
-        ])
-        
-        subject = f"Buchungsbestätigung SportOase - {booking_data['date']}"
-        body = f"""
-Ihre Buchung wurde erfolgreich registriert:
+        students_json = booking_data.get('students_json', '[]')
+        if isinstance(students_json, str):
+            students = json.loads(students_json)
+        else:
+            students = students_json
+    except:
+        students = []
+    
+    students_count = len(students)
+    
+    if students:
+        students_names = ', '.join([f"{s['name']} ({s['klasse']})" for s in students])
+        students_list_html = '<br>'.join([f"• {s['name']} (Klasse {s['klasse']})" for s in students])
+    else:
+        students_names = 'Keine Schüler angegeben'
+        students_list_html = 'Keine Schüler angegeben'
+    
+    subject = f"📅 SportOase Buchung: {offer_label} am {date}"
+    
+    body_html = f"""
+    <html>
+    <head>
+        <style>
+            body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+            .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+            .header {{ background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%); 
+                       color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: center; }}
+            .header h2 {{ margin: 0; }}
+            .content {{ background: #f8f9fa; padding: 20px; border-radius: 8px; }}
+            .info-row {{ margin: 10px 0; padding: 12px; background: white; border-radius: 4px; border-left: 4px solid #38bdf8; }}
+            .label {{ font-weight: bold; color: #38bdf8; }}
+            .students-section {{ margin-top: 15px; padding: 15px; background: white; border-radius: 4px; }}
+            .footer {{ margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd; 
+                      text-align: center; color: #666; font-size: 12px; }}
+            .badge {{ background: #38bdf8; color: white; padding: 4px 10px; 
+                     border-radius: 12px; font-size: 11px; margin-left: 8px; }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h2>🏫 SportOase - Neue Buchung</h2>
+            </div>
+            <div class="content">
+                <div class="info-row">
+                    <span class="label">👤 Lehrkraft:</span> {teacher_name}
+                    {f' (Klasse {teacher_class})' if teacher_class else ''}
+                </div>
+                <div class="info-row">
+                    <span class="label">📅 Datum:</span> {date} ({weekday})
+                </div>
+                <div class="info-row">
+                    <span class="label">🕐 Stunde:</span> {period}. Stunde
+                </div>
+                <div class="info-row">
+                    <span class="label">📋 Angebot:</span> {offer_label}
+                    <span class="badge">{offer_type.upper()}</span>
+                </div>
+                <div class="students-section">
+                    <div><span class="label">👥 Schüler ({students_count}):</span></div>
+                    <div style="margin-top: 10px; margin-left: 10px;">
+                        {students_list_html}
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <p>Diese Nachricht wurde automatisch vom SportOase Buchungssystem generiert.</p>
+                <p>Zeit: {datetime.now().strftime('%d.%m.%Y um %H:%M Uhr')}</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    
+    body_text = f"""
+SportOase - Neue Buchung
 
-Datum: {booking_data['date']} ({booking_data['weekday']})
-Stunde: {booking_data['period']}. Stunde
-Angebot: {booking_data['offer_label']}
+Lehrkraft: {teacher_name} {f'(Klasse {teacher_class})' if teacher_class else ''}
+Datum: {date} ({weekday})
+Stunde: {period}. Stunde
+Angebot: {offer_label} ({offer_type.upper()})
 
-Angemeldete Schüler:
-{students_list}
+Schüler ({students_count}):
+{students_names}
 
-Vielen Dank für Ihre Buchung!
+Zeit: {datetime.now().strftime('%d.%m.%Y um %H:%M Uhr')}
 
 ---
-Diese E-Mail wurde automatisch vom SportOase-Buchungssystem generiert.
-"""
+Diese Nachricht wurde automatisch vom SportOase Buchungssystem generiert.
+    """
+    
+    return subject, body_html, body_text
+
+
+def send_booking_notification(booking_data, admin_email=None):
+    """Sendet Buchungsbenachrichtigung an Admin"""
+    try:
+        if not admin_email:
+            admin_email = ADMIN_EMAIL
         
-        msg = MIMEMultipart()
-        msg['From'] = SMTP_FROM
-        msg['To'] = teacher_email
-        msg['Subject'] = subject
-        msg.attach(MIMEText(body, 'plain', 'utf-8'))
-        
-        server = smtplib.SMTP(SMTP_HOST, SMTP_PORT)
-        server.starttls()
-        server.login(SMTP_USER, SMTP_PASS)
-        server.send_message(msg)
-        server.quit()
-        
-        print(f"Bestätigungs-E-Mail an {teacher_email} gesendet.")
+        subject, body_html, body_text = create_booking_notification_email(booking_data)
+        return send_email_smtp(admin_email, subject, body_html, body_text)
         
     except Exception as e:
-        print(f"Fehler beim Versand der Bestätigung: {e}")
+        print(f"Fehler beim Senden der Buchungsbenachrichtigung: {e}")
+        return False
