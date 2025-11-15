@@ -3,66 +3,123 @@
 {% block title %}Buchung - SportOase{% endblock %}
 
 {% block content %}
-<div class="booking-form">
-    <h2>Neue Buchung</h2>
-    
-    <div class="booking-info">
-        <p><strong>Datum:</strong> {{ date_str }}</p>
-        <p><strong>Stunde:</strong> {{ period }}. Stunde ({{ period_time.start }} - {{ period_time.end }})</p>
-        <p><strong>Angebot:</strong> 
-            {% if period_info.type == 'fest' %}
-            <span class="period-fest">FEST: {{ period_info.label }}</span>
-            {% else %}
-            <span class="period-frei">FREI (Modulwahl möglich)</span>
-            {% endif %}
-        </p>
-        <p><strong>Verfügbare Plätze:</strong> {{ available_spots }} / 5</p>
+<div class="booking-container">
+    <div class="booking-header-card">
+        <h2>✓ Neue Buchung</h2>
+        <p class="booking-subtitle">Füllen Sie das Formular aus, um Ihre Buchung abzuschließen</p>
     </div>
     
-    <form method="POST" id="bookingForm">
-        <div class="teacher-info-section">
-            <h3>Ihre Angaben</h3>
-            <div class="form-group">
-                <label for="teacher_name">Ihr Name:</label>
-                <input type="text" id="teacher_name" name="teacher_name" required placeholder="z.B. Max Mustermann">
+    <div class="booking-info-card">
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-icon">📅</span>
+                <div class="info-content">
+                    <span class="info-label">Datum</span>
+                    <span class="info-value">{{ date_str }}</span>
+                </div>
             </div>
-            
-            <div class="form-group">
-                <label for="teacher_class">Ihre Klasse:</label>
-                <input type="text" id="teacher_class" name="teacher_class" required placeholder="z.B. 5a">
+            <div class="info-item">
+                <span class="info-icon">🕐</span>
+                <div class="info-content">
+                    <span class="info-label">Stunde</span>
+                    <span class="info-value">{{ period }}. ({{ period_time.start }} - {{ period_time.end }})</span>
+                </div>
+            </div>
+            <div class="info-item">
+                <span class="info-icon">🎯</span>
+                <div class="info-content">
+                    <span class="info-label">Angebot</span>
+                    <span class="info-value">
+                        {% if period_info.type == 'fest' %}
+                        <span class="badge badge-fest">FEST: {{ period_info.label }}</span>
+                        {% else %}
+                        <span class="badge badge-frei">FREI (Modulwahl möglich)</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            <div class="info-item">
+                <span class="info-icon">👥</span>
+                <div class="info-content">
+                    <span class="info-label">Verfügbare Plätze</span>
+                    <span class="info-value capacity-indicator">{{ available_spots }} / 5</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <form method="POST" id="bookingForm" class="booking-form-modern">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <div class="form-card teacher-card">
+            <div class="card-header">
+                <span class="card-icon">👨‍🏫</span>
+                <h3>Ihre Angaben</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="teacher_name">Ihr Name</label>
+                        <input type="text" id="teacher_name" name="teacher_name" required placeholder="z.B. Max Mustermann">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="teacher_class">Ihre Klasse</label>
+                        <input type="text" id="teacher_class" name="teacher_class" required placeholder="z.B. 5a">
+                    </div>
+                </div>
             </div>
         </div>
         
-        <div class="form-group">
-            <label for="num_students">Anzahl Schüler (1-5):</label>
-            <select id="num_students" name="num_students" onchange="updateStudentFields()" required>
-                <option value="1">1 Schüler</option>
-                <option value="2">2 Schüler</option>
-                <option value="3">3 Schüler</option>
-                <option value="4">4 Schüler</option>
-                <option value="5">5 Schüler</option>
-            </select>
-        </div>
-        
-        <div id="studentFields">
-            <!-- Wird dynamisch mit JavaScript gefüllt -->
+        <div class="form-card students-card">
+            <div class="card-header">
+                <span class="card-icon">👥</span>
+                <h3>Schüler-Informationen</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="num_students">Anzahl Schüler (1-5)</label>
+                    <select id="num_students" name="num_students" onchange="updateStudentFields()" required>
+                        <option value="1">1 Schüler</option>
+                        <option value="2">2 Schüler</option>
+                        <option value="3">3 Schüler</option>
+                        <option value="4">4 Schüler</option>
+                        <option value="5">5 Schüler</option>
+                    </select>
+                </div>
+                
+                <div id="studentFields" class="student-fields-container">
+                    <!-- Wird dynamisch mit JavaScript gefüllt -->
+                </div>
+            </div>
         </div>
         
         {% if period_info.type == 'frei' %}
-        <div class="form-group">
-            <label for="module">Modul wählen:</label>
-            <select id="module" name="module" required>
-                <option value="">-- Bitte wählen --</option>
-                {% for module in free_modules %}
-                <option value="{{ module }}">{{ module }}</option>
-                {% endfor %}
-            </select>
+        <div class="form-card module-card">
+            <div class="card-header">
+                <span class="card-icon">📚</span>
+                <h3>Modul-Auswahl</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="module">Wählen Sie ein Modul</label>
+                    <select id="module" name="module" required>
+                        <option value="">-- Bitte wählen --</option>
+                        {% for module in free_modules %}
+                        <option value="{{ module }}">{{ module }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
         </div>
         {% endif %}
         
-        <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Buchung abschließen</button>
-            <a href="{{ url_for('dashboard', date=date_str) }}" class="btn btn-secondary">Abbrechen</a>
+        <div class="form-actions-modern">
+            <a href="{{ url_for('dashboard', date=date_str) }}" class="btn btn-secondary">
+                <span>←</span> Abbrechen
+            </a>
+            <button type="submit" class="btn btn-primary btn-large">
+                <span>✓</span> Buchung abschließen
+            </button>
         </div>
     </form>
 </div>
@@ -75,16 +132,18 @@ function updateStudentFields() {
     
     for (let i = 0; i < numStudents; i++) {
         const div = document.createElement('div');
-        div.className = 'student-entry';
+        div.className = 'student-entry-modern';
         div.innerHTML = `
-            <h4>Schüler ${i + 1}</h4>
-            <div class="form-group">
-                <label for="student_name_${i}">Name:</label>
-                <input type="text" id="student_name_${i}" name="student_name_${i}" required>
-            </div>
-            <div class="form-group">
-                <label for="student_class_${i}">Klasse:</label>
-                <input type="text" id="student_class_${i}" name="student_class_${i}" required>
+            <div class="student-number">Schüler ${i + 1}</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="student_name_${i}">Name</label>
+                    <input type="text" id="student_name_${i}" name="student_name_${i}" required placeholder="Name des Schülers">
+                </div>
+                <div class="form-group">
+                    <label for="student_class_${i}">Klasse</label>
+                    <input type="text" id="student_class_${i}" name="student_class_${i}" required placeholder="z.B. 5a">
+                </div>
             </div>
         `;
         container.appendChild(div);

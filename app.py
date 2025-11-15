@@ -29,7 +29,7 @@ def validate_csrf_token(token):
 @app.context_processor
 def inject_csrf_token():
     """Macht csrf_token in allen Templates verfügbar"""
-    return dict(csrf_token=generate_csrf_token)
+    return dict(csrf_token=generate_csrf_token())
 
 # Datenbank-Konfiguration
 db_uri = os.environ.get("DATABASE_URL") or os.environ.get("SQLALCHEMY_DATABASE_URI")
@@ -125,6 +125,27 @@ def get_period_info(weekday, period):
             'type': 'frei',
             'label': 'Freie Wahl'
         }
+
+# Hilfsfunktion: Prüft, ob ein Datum in der Vergangenheit liegt
+def is_past_date(check_date, period=None):
+    """
+    Prüft, ob ein Datum (und optional eine Stunde) in der Vergangenheit liegt
+    """
+    berlin_tz = get_berlin_tz()
+    now = datetime.now(berlin_tz)
+    
+    if period is not None:
+        # Prüfe mit spezifischer Stunde
+        period_start_time = PERIOD_TIMES[period]['start']
+        hour, minute = map(int, period_start_time.split(':'))
+        period_datetime = berlin_tz.localize(
+            datetime.combine(check_date, datetime.min.time()).replace(hour=hour, minute=minute)
+        )
+        return period_datetime < now
+    else:
+        # Prüfe nur Datum
+        today = now.date()
+        return check_date < today
 
 # Hilfsfunktion: Prüft, ob eine Buchung zeitlich möglich ist
 def check_booking_time(booking_date, period):
@@ -233,8 +254,17 @@ def dashboard():
         blocked_slot = get_blocked_slot(selected_date_str, period)
         is_blocked = blocked_slot is not None
         
+        # Prüfe, ob Termin in der Vergangenheit liegt
+        is_past = is_past_date(selected_date, period)
+        
         # Prüfe, ob Buchung zeitlich möglich ist
         can_book, time_message = check_booking_time(selected_date, period)
+        
+        # can_book muss False sein für vergangene Termine
+        if is_past:
+            can_book = False
+            if not time_message:
+                time_message = "Dieser Termin liegt in der Vergangenheit."
         
         schedule.append({
             'period': period,
@@ -243,10 +273,11 @@ def dashboard():
             'label': period_info['label'],
             'booked': student_count,
             'available': available,
-            'can_book': can_book and available > 0 and not is_blocked,
+            'can_book': can_book and available > 0 and not is_blocked and not is_past,
             'time_message': time_message,
             'blocked': blocked_slot,
-            'blocked_reason': blocked_slot.get('reason', 'Beratung') if blocked_slot else None
+            'blocked_reason': blocked_slot.get('reason', 'Beratung') if blocked_slot else None,
+            'is_past': is_past
         })
     
     # Erstelle Wochenübersicht (Montag-Freitag) mit Buchungsdaten
@@ -304,9 +335,12 @@ def dashboard():
             total_students = sum(b['student_count'] for b in period_bookings)
             available = MAX_STUDENTS_PER_PERIOD - total_students
             
+            # Prüfe, ob Termin in der Vergangenheit liegt
+            is_past = is_past_date(day_date, period)
+            
             # Prüfe, ob Buchung für diesen Slot möglich ist
             can_book, _ = check_booking_time(day_date, period)
-            can_book = can_book and available > 0 and not blocked_slot
+            can_book = can_book and available > 0 and not blocked_slot and not is_past
             
             day_schedule.append({
                 'period': period,
@@ -317,7 +351,8 @@ def dashboard():
                 'available': available,
                 'can_book': can_book,
                 'blocked': blocked_slot,
-                'blocked_reason': blocked_slot.get('reason', 'Beratung') if blocked_slot else None
+                'blocked_reason': blocked_slot.get('reason', 'Beratung') if blocked_slot else None,
+                'is_past': is_past
             })
         week_overview.append({
             'weekday': wd,
@@ -349,6 +384,11 @@ def book(date_str, period):
     
     if period < 1 or period > 6:
         flash('Ungültige Stunde.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # Prüfe, ob Termin in der Vergangenheit liegt
+    if is_past_date(booking_date, period):
+        flash('Dieser Termin liegt in der Vergangenheit und kann nicht gebucht werden.', 'error')
         return redirect(url_for('dashboard'))
     
     # Ermittle Wochentag und Stundeninfo

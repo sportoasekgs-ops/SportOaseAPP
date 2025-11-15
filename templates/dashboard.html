@@ -40,7 +40,7 @@
                 <tr>
                     <td><strong>{{ period }}.</strong></td>
                     {% for day in week_overview %}
-                    <td class="period-{{ day.schedule[period-1].type }} {% if day.schedule[period-1].blocked %}period-blocked{% endif %} {% if day.schedule[period-1].can_book %}clickable-slot{% endif %}">
+                    <td class="period-{{ day.schedule[period-1].type }} {% if day.schedule[period-1].blocked %}period-blocked{% elif day.schedule[period-1].is_past %}period-past{% endif %} {% if day.schedule[period-1].can_book %}clickable-slot{% endif %}">
                         {% if day.schedule[period-1].blocked %}
                             <div class="period-header blocked-header">
                                 <strong>BLOCKIERT:</strong> {{ day.schedule[period-1].blocked_reason }}
@@ -48,7 +48,7 @@
                             {% if user_role == 'admin' %}
                             <div class="admin-actions">
                                 <form method="POST" action="{{ url_for('admin_unblock_slot') }}" style="display:inline;">
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                                     <input type="hidden" name="date" value="{{ day.date }}">
                                     <input type="hidden" name="period" value="{{ period }}">
                                     <button type="submit" class="btn-small btn-success">Freigeben</button>
@@ -96,7 +96,7 @@
                             {% if user_role == 'admin' and not day.schedule[period-1].blocked %}
                             <div class="admin-actions">
                                 <form method="POST" action="{{ url_for('admin_block_slot') }}" style="display:inline;">
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                                     <input type="hidden" name="date" value="{{ day.date }}">
                                     <input type="hidden" name="period" value="{{ period }}">
                                     <input type="hidden" name="reason" value="Beratung">
@@ -129,10 +129,10 @@
             </thead>
             <tbody>
                 {% for slot in schedule %}
-                <tr {% if slot.blocked %}class="blocked-row"{% endif %}>
+                <tr {% if slot.blocked %}class="blocked-row"{% elif slot.is_past %}class="past-row"{% endif %}>
                     <td><strong>{{ slot.period }}.</strong></td>
                     <td>{{ slot.time }}</td>
-                    <td class="period-{{ slot.type }} {% if slot.blocked %}period-blocked{% endif %}">
+                    <td class="period-{{ slot.type }} {% if slot.blocked %}period-blocked{% elif slot.is_past %}period-past{% endif %}">
                         {% if slot.blocked %}
                         <strong>BLOCKIERT:</strong> {{ slot.blocked_reason }}
                         {% elif slot.type == 'fest' %}
@@ -156,10 +156,12 @@
                         {% endif %}
                     </td>
                     <td>
-                        {% if slot.blocked %}
+                        {% if slot.is_past %}
+                        <span class="disabled past-text">Vergangen</span>
+                        {% elif slot.blocked %}
                             {% if user_role == 'admin' %}
                             <form method="POST" action="{{ url_for('admin_unblock_slot') }}" style="display:inline;">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                                 <input type="hidden" name="date" value="{{ selected_date }}">
                                 <input type="hidden" name="period" value="{{ slot.period }}">
                                 <button type="submit" class="btn btn-success">Freigeben</button>
@@ -171,7 +173,7 @@
                         <a href="{{ url_for('book', date_str=selected_date, period=slot.period) }}" class="btn btn-primary">Buchen</a>
                         {% if user_role == 'admin' %}
                         <form method="POST" action="{{ url_for('admin_block_slot') }}" style="display:inline; margin-left: 10px;">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                             <input type="hidden" name="date" value="{{ selected_date }}">
                             <input type="hidden" name="period" value="{{ slot.period }}">
                             <input type="hidden" name="reason" value="Beratung">
