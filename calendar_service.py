@@ -106,7 +106,7 @@ def create_booking_event(booking_data):
         
         # Erstelle Schülerliste für Beschreibung
         students_list = '\n'.join([
-            f"  • {s['name']} ({s['class']})" 
+            f"  • {s['name']} ({s.get('klasse', s.get('class', 'N/A'))})" 
             for s in booking_data['students']
         ])
         
