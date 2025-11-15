@@ -452,10 +452,11 @@ h4 {
 /* Period Styles */
 .period-header {
     font-weight: 600;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.625rem;
     padding: 0.5rem;
     border-radius: var(--radius-sm);
     font-size: 0.75rem;
+    text-align: center;
 }
 
 .period-fest .period-header {
@@ -469,7 +470,7 @@ h4 {
 }
 
 .period-blocked {
-    background: #FEE2E2 !important;
+    background: #FEF2F2 !important;
 }
 
 .blocked-header {
@@ -482,65 +483,111 @@ h4 {
     background: var(--bg-secondary) !important;
 }
 
-/* Clickable Slots */
-.clickable-slot {
-    cursor: pointer;
-    position: relative;
+.slot-detail {
+    font-size: 0.6875rem;
+    font-weight: 400;
+    margin-top: 0.25rem;
+    opacity: 0.8;
 }
 
-.clickable-slot:hover {
-    background: var(--primary-light) !important;
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-sm);
-}
-
-.slot-link {
-    display: block;
-    text-decoration: none;
-    color: inherit;
-}
-
-/* Booking Info */
+/* Booking Info - Optimized */
 .booking-info {
     margin-top: 0.5rem;
     padding: 0.5rem;
     background: var(--bg-secondary);
     border-radius: var(--radius-sm);
-    font-size: 0.75rem;
+    font-size: 0.6875rem;
     text-align: left;
 }
 
-.booking-info strong {
-    color: var(--text-primary);
-}
-
-.booking-action {
-    margin-top: 0.5rem;
-    padding: 0.5rem;
-    background: var(--primary-light);
-    color: var(--primary);
-    border-radius: var(--radius-sm);
-    font-size: 0.75rem;
+.slot-stat {
     font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.375rem;
+    text-align: center;
 }
 
-.booking-full {
-    margin-top: 0.5rem;
-    padding: 0.5rem;
-    background: #FEE2E2;
-    color: #991B1B;
+.booking-entry {
+    margin-top: 0.375rem;
+    padding-top: 0.375rem;
+    border-top: 1px solid var(--border-light);
+}
+
+.booking-entry:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+
+.booking-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.student-name {
+    font-size: 0.6875rem;
+    color: var(--text-secondary);
+    margin-left: 0.5rem;
+}
+
+/* Slot Actions - All Buttons Equal Size */
+.slot-actions {
+    margin-top: 0.625rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.slot-actions form {
+    margin: 0;
+}
+
+.slot-btn {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-align: center;
     border-radius: var(--radius-sm);
-    font-size: 0.75rem;
-    font-style: italic;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
 }
 
-/* Admin Actions */
-.admin-actions {
-    margin-top: 0.5rem;
+.slot-btn-primary {
+    background: var(--primary);
+    color: white;
 }
 
-.admin-actions form {
-    display: inline;
+.slot-btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.slot-btn-success {
+    background: var(--accent);
+    color: white;
+}
+
+.slot-btn-success:hover {
+    background: #059669;
+}
+
+.slot-btn-block {
+    background: #DC2626;
+    color: white;
+}
+
+.slot-btn-block:hover {
+    background: #B91C1C;
+}
+
+.slot-btn-disabled {
+    background: var(--bg-tertiary);
+    color: var(--text-tertiary);
+    cursor: not-allowed;
 }
 
 /* Day Schedule - Modern Table */

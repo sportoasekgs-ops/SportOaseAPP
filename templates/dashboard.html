@@ -51,67 +51,60 @@
                     <td class="period-{{ day.schedule[period-1].type }} {% if day.schedule[period-1].blocked %}period-blocked{% elif day.schedule[period-1].is_past %}period-past{% endif %} {% if day.schedule[period-1].can_book %}clickable-slot{% endif %}">
                         {% if day.schedule[period-1].blocked %}
                             <div class="period-header blocked-header">
-                                <strong>BLOCKIERT:</strong> {{ day.schedule[period-1].blocked_reason }}
+                                <strong>BLOCKIERT</strong>
+                                <div class="slot-detail">{{ day.schedule[period-1].blocked_reason }}</div>
                             </div>
                             {% if user_role == 'admin' %}
-                            <div class="admin-actions">
-                                <form method="POST" action="{{ url_for('admin_unblock_slot') }}" style="display:inline;">
+                            <div class="slot-actions">
+                                <form method="POST" action="{{ url_for('admin_unblock_slot') }}">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                                     <input type="hidden" name="date" value="{{ day.date }}">
                                     <input type="hidden" name="period" value="{{ period }}">
-                                    <button type="submit" class="btn-small btn-success">Freigeben</button>
+                                    <button type="submit" class="slot-btn slot-btn-success">Freigeben</button>
                                 </form>
                             </div>
                             {% endif %}
                         {% else %}
-                            {% if day.schedule[period-1].can_book %}
-                            <a href="{{ url_for('book', date_str=day.date, period=period) }}" class="slot-link">
-                            {% endif %}
-                                <div class="period-header">
-                                    {% if day.schedule[period-1].type == 'fest' %}
-                                    <strong>FEST:</strong> {{ day.schedule[period-1].label }}
-                                    {% else %}
-                                    <strong>FREI</strong>
-                                    {% endif %}
-                                </div>
-                                {% if day.schedule[period-1].bookings %}
-                                <div class="booking-info">
-                                    <small>
-                                        <strong>{{ day.schedule[period-1].total_students }} Schüler gebucht:</strong><br>
-                                        {% for booking in day.schedule[period-1].bookings %}
-                                        <div style="margin-top: 3px;">
-                                            <strong>{{ booking.offer_label }}</strong><br>
-                                            {% for student in booking.students %}
-                                            - {{ student.name }} (Kl. {{ student.klasse }})<br>
-                                            {% endfor %}
-                                        </div>
-                                        {% endfor %}
-                                    </small>
-                                </div>
+                            <div class="period-header">
+                                {% if day.schedule[period-1].type == 'fest' %}
+                                <strong>{{ day.schedule[period-1].label }}</strong>
+                                {% else %}
+                                <strong>FREIE WAHL</strong>
                                 {% endif %}
+                            </div>
+                            {% if day.schedule[period-1].bookings %}
+                            <div class="booking-info">
+                                <div class="slot-stat">{{ day.schedule[period-1].total_students }}/5 belegt</div>
+                                {% for booking in day.schedule[period-1].bookings %}
+                                <div class="booking-entry">
+                                    <div class="booking-title">{{ booking.offer_label }}</div>
+                                    {% for student in booking.students %}
+                                    <div class="student-name">{{ student.name }} ({{ student.klasse }})</div>
+                                    {% endfor %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            
+                            <div class="slot-actions">
                                 {% if day.schedule[period-1].can_book %}
-                                <div class="booking-action">
-                                    <small><strong>→ Jetzt buchen ({{ day.schedule[period-1].available }} frei)</strong></small>
-                                </div>
-                                {% elif day.schedule[period-1].available == 0 %}
-                                <div class="booking-full">
-                                    <small><em>Voll belegt</em></small>
-                                </div>
+                                <a href="{{ url_for('book', date_str=day.date, period=period) }}" class="slot-btn slot-btn-primary">
+                                    Buchen ({{ day.schedule[period-1].available }} frei)
+                                </a>
+                                {% elif day.schedule[period-1].available == 0 and not day.schedule[period-1].is_past %}
+                                <div class="slot-btn slot-btn-disabled">Ausgebucht</div>
                                 {% endif %}
-                            {% if day.schedule[period-1].can_book %}
-                            </a>
-                            {% endif %}
-                            {% if user_role == 'admin' and not day.schedule[period-1].blocked %}
-                            <div class="admin-actions">
-                                <form method="POST" action="{{ url_for('admin_block_slot') }}" style="display:inline;">
+                                
+                                {% if user_role == 'admin' and not day.schedule[period-1].is_past %}
+                                <form method="POST" action="{{ url_for('admin_block_slot') }}">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                                     <input type="hidden" name="date" value="{{ day.date }}">
                                     <input type="hidden" name="period" value="{{ period }}">
                                     <input type="hidden" name="reason" value="Beratung">
-                                    <button type="submit" class="btn-small btn-block">Blockieren</button>
+                                    <button type="submit" class="slot-btn slot-btn-block">Blockieren</button>
                                 </form>
+                                {% endif %}
                             </div>
-                            {% endif %}
                         {% endif %}
                     </td>
                     {% endfor %}
