@@ -6,12 +6,30 @@ import os
 # Zeitplan der Schulstunden (Beginn und Ende jeder Stunde)
 # Format: "HH:MM" für Start und Ende
 PERIOD_TIMES = {
-    1: {"start": "07:50", "end": "08:35"},
-    2: {"start": "08:35", "end": "09:20"},
-    3: {"start": "09:40", "end": "10:25"},
-    4: {"start": "10:25", "end": "11:20"},
-    5: {"start": "11:40", "end": "12:25"},
-    6: {"start": "12:25", "end": "13:10"}
+    1: {
+        "start": "07:50",
+        "end": "08:35"
+    },
+    2: {
+        "start": "08:35",
+        "end": "09:20"
+    },
+    3: {
+        "start": "09:40",
+        "end": "10:25"
+    },
+    4: {
+        "start": "10:25",
+        "end": "11:20"
+    },
+    5: {
+        "start": "11:40",
+        "end": "12:25"
+    },
+    6: {
+        "start": "12:25",
+        "end": "13:10"
+    }
 }
 
 # Feste Angebote pro Wochentag und Stunde
@@ -43,9 +61,7 @@ FIXED_OFFERS = {
 
 # Module, die bei freien Stunden wählbar sind
 FREE_MODULES = [
-    "Aktivierung",
-    "Regulation / Entspannung",
-    "Konflikt-Reset",
+    "Aktivierung", "Regulation / Entspannung", "Konflikt-Reset",
     "Egal / flexibel"
 ]
 
@@ -58,13 +74,15 @@ BOOKING_ADVANCE_MINUTES = 60
 # SMTP-Konfiguration (aus Umgebungsvariablen)
 SMTP_HOST = os.environ.get('SMTP_HOST', 'smtp.gmail.com')
 SMTP_PORT = int(os.environ.get('SMTP_PORT', '587'))
-SMTP_USER = os.environ.get('SMTP_USER', '')
-SMTP_PASS = os.environ.get('SMTP_PASS', '')
-SMTP_FROM = os.environ.get('SMTP_FROM', 'sportoase.kg@gmail.com')
-ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'sportoase.kg@gmail.com')
+SMTP_USER = os.environ.get('SMTP_USER', 'sportoase.kgs@gmail.com')
+SMTP_PASS = os.environ.get('SMTP_PASS', 'Unhack85!$')
+SMTP_FROM = os.environ.get('SMTP_FROM', 'sportoase.kgs@gmail.com')
+ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'sportoase.kgs@gmail.com')
 
 # Flask Session Secret (aus Umgebungsvariable)
-SECRET_KEY = os.environ.get('SESSION_SECRET', 'dev-secret-key-change-in-production')
+SECRET_KEY = os.environ.get('SESSION_SECRET',
+                            'dev-secret-key-change-in-production')
 
 # Datenbank-Konfiguration (PostgreSQL)
-DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql://localhost/sportoase')
+DATABASE_URL = os.environ.get('DATABASE_URL',
+                              'postgresql://localhost/sportoase')
