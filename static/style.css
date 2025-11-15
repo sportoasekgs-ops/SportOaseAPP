@@ -470,12 +470,17 @@ h4 {
 }
 
 .period-blocked {
-    background: #FEF2F2 !important;
+    background: #FEE2E2 !important;
+}
+
+.period-blocked:hover {
+    background: #FECACA !important;
 }
 
 .blocked-header {
     background: #FEE2E2;
     color: #991B1B;
+    border: 1px solid #FCA5A5;
 }
 
 .period-past {
