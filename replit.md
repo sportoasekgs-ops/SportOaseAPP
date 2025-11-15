@@ -69,11 +69,18 @@ Preferred communication style: Simple, everyday language.
   - Foreign key relationship to users table
   - Created timestamp for audit trail
 
-- `slot_names` table: Stores customizable names for fixed slots (NEW)
+- `slot_names` table: Stores customizable names for fixed slots
   - Weekday and period as unique key
   - Label field for custom slot names
   - Allows admins to rename fixed slots without changing config.py
   - Falls back to default names from FIXED_OFFERS if no custom name exists
+
+- `blocked_slots` table: Stores temporarily blocked time slots for admin use
+  - Date and period as unique key
+  - Reason field for blocking purpose (e.g., "Beratung")
+  - Foreign key to users table (which admin blocked it)
+  - Prevents regular users from booking blocked periods
+  - Admins can block/unblock slots via dashboard UI
 
 **Data Model Rationale**: 
 - PostgreSQL chosen for production deployment compatibility (Render)
@@ -144,6 +151,26 @@ Preferred communication style: Simple, everyday language.
 - Change admin password after first login!
 
 ## Recent Changes
+
+- 2024-11-15: **Admin Slot Blocking for Consultation Meetings**
+  - **Slot Blocking Feature**: Admins can now block time slots for consultation meetings (Beratungsgespräche)
+    - Created `BlockedSlot` database model with date/period unique constraint
+    - Foreign key to users table tracks which admin blocked each slot
+    - Reason field stores blocking purpose (e.g., "Beratung")
+    - Admin routes with CSRF protection for secure slot management
+  - **Dashboard UI Enhancements**:
+    - Added "Blockieren" buttons for admins on all unblocked slots
+    - Added "Freigeben" buttons for admins on blocked slots
+    - Blocked slots displayed in distinctive red styling (.period-blocked class)
+    - Both weekly overview and daily view show blocking controls
+  - **Booking Logic Updates**:
+    - Booking route validates blocked status before displaying form (GET)
+    - POST requests also validate and reject bookings for blocked slots
+    - Flash messages inform users when attempting to book blocked slots
+  - **Security**:
+    - CSRF token validation on all admin block/unblock routes
+    - Invalid tokens rejected with error message and redirect
+    - Admin-only access enforced via @admin_required decorator
 
 - 2024-11-14: **New Interactive Features & UX Improvements**
   - **Clickable Week Overview Slots**: Users can now click directly on slots in the week overview to access the booking form
