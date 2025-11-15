@@ -288,6 +288,14 @@ def dashboard():
     monday = selected_date - timedelta(days=days_since_monday)
     friday = monday + timedelta(days=4)
     
+    # Berechne Kalenderwoche
+    calendar_week = monday.isocalendar()[1]
+    calendar_year = monday.isocalendar()[0]
+    
+    # Berechne vorherige und nächste Woche für Navigation
+    prev_week_monday = monday - timedelta(days=7)
+    next_week_monday = monday + timedelta(days=7)
+    
     # Hole alle Buchungen für diese Woche
     week_bookings = get_bookings_for_week(monday.strftime('%Y-%m-%d'), friday.strftime('%Y-%m-%d'))
     
@@ -367,7 +375,13 @@ def dashboard():
                          weekday=weekday_name_de,
                          schedule=schedule,
                          week_overview=week_overview,
-                         user_role=session.get('user_role'))
+                         user_role=session.get('user_role'),
+                         calendar_week=calendar_week,
+                         calendar_year=calendar_year,
+                         prev_week_date=prev_week_monday.strftime('%Y-%m-%d'),
+                         next_week_date=next_week_monday.strftime('%Y-%m-%d'),
+                         monday_date=monday.strftime('%d.%m.%Y'),
+                         friday_date=friday.strftime('%d.%m.%Y'))
 
 # Route: Buchungsseite
 @app.route('/book/<date_str>/<int:period>', methods=['GET', 'POST'])

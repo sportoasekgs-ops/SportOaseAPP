@@ -386,6 +386,51 @@ h4 {
     border: 1px solid rgba(93, 173, 226, 0.1);
 }
 
+.week-header-with-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid var(--blue-sky);
+    gap: 1rem;
+}
+
+.week-header-with-nav h3 {
+    color: var(--blue-dark);
+    font-size: 1.6rem;
+    margin: 0;
+    padding: 0;
+    border: none;
+    flex: 1;
+    text-align: center;
+}
+
+.week-nav-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--blue-sky) 0%, var(--blue-dark) 100%);
+    color: var(--white);
+    border-radius: 50%;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(93, 173, 226, 0.3);
+    flex-shrink: 0;
+}
+
+.week-nav-arrow:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(93, 173, 226, 0.5);
+}
+
+.week-nav-arrow .arrow-icon {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
 .week-overview h3 {
     color: var(--blue-dark);
     font-size: 1.8rem;

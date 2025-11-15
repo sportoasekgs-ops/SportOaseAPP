@@ -20,7 +20,15 @@
     
     <!-- Wochenübersicht -->
     <div class="week-overview">
-        <h3>Wochenplan-Übersicht</h3>
+        <div class="week-header-with-nav">
+            <a href="{{ url_for('dashboard', date=prev_week_date) }}" class="week-nav-arrow" title="Vorherige Woche">
+                <span class="arrow-icon">◀</span>
+            </a>
+            <h3>Wochenplan-Übersicht | KW {{ calendar_week }}/{{ calendar_year }} ({{ monday_date }} - {{ friday_date }})</h3>
+            <a href="{{ url_for('dashboard', date=next_week_date) }}" class="week-nav-arrow" title="Nächste Woche">
+                <span class="arrow-icon">▶</span>
+            </a>
+        </div>
         <table class="week-table">
             <thead>
                 <tr>
