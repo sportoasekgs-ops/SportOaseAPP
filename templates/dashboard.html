@@ -48,7 +48,7 @@
                 <tr>
                     <td><strong>{{ period }}.</strong></td>
                     {% for day in week_overview %}
-                    <td class="period-{{ day.schedule[period-1].type }} {% if day.schedule[period-1].blocked %}period-blocked{% elif day.schedule[period-1].is_past %}period-past{% endif %} {% if day.schedule[period-1].can_book %}clickable-slot{% endif %}">
+                    <td class="period-{{ day.schedule[period-1].type }} {% if day.schedule[period-1].blocked %}period-blocked{% elif day.schedule[period-1].is_weekend %}period-past{% elif day.schedule[period-1].is_past %}period-past{% endif %} {% if day.schedule[period-1].can_book %}clickable-slot{% endif %}">
                         {% if day.schedule[period-1].blocked %}
                             <div class="period-header blocked-header">
                                 <span class="blocked-icon">✕</span>
