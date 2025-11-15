@@ -10,3 +10,8 @@ flask-sqlalchemy
 gunicorn
 psycopg2-binary
 werkzeug
+email_validator
+flask
+flask-sqlalchemy
+gunicorn
+psycopg2-binary
