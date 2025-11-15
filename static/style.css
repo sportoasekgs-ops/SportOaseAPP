@@ -1,30 +1,30 @@
 /* 
-   SportOase Buchungssystem - Modern UI Design
-   Modernes, cleanes Design inspiriert von zeitgemäßen Web-Apps
+   SportOase Buchungssystem - Todoist-inspired Design
+   Clean, minimal design with focus on clarity and usability
 */
 
 :root {
-    --primary: #0066FF;
-    --primary-dark: #0052CC;
-    --primary-light: #E6F0FF;
-    --accent: #10B981;
-    --accent-warn: #F59E0B;
-    --text-primary: #0F172A;
-    --text-secondary: #64748B;
-    --text-tertiary: #94A3B8;
-    --bg-primary: #FFFFFF;
-    --bg-secondary: #F8FAFC;
-    --bg-tertiary: #F1F5F9;
-    --border: #E2E8F0;
-    --border-light: #F1F5F9;
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-    --radius-sm: 6px;
-    --radius: 8px;
-    --radius-lg: 12px;
-    --radius-xl: 16px;
+    --primary: #db4c3f;
+    --primary-dark: #c44133;
+    --primary-light: #fef5f4;
+    --accent: #058527;
+    --accent-warn: #ff9a14;
+    --text-primary: #202020;
+    --text-secondary: #666666;
+    --text-tertiary: #999999;
+    --bg-primary: #ffffff;
+    --bg-secondary: #fafafa;
+    --bg-tertiary: #f5f5f5;
+    --border: #e0e0e0;
+    --border-light: #f0f0f0;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.1);
+    --radius-sm: 3px;
+    --radius: 5px;
+    --radius-lg: 8px;
+    --radius-xl: 10px;
 }
 
 * {
@@ -34,10 +34,10 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-    line-height: 1.5;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
     color: var(--text-primary);
-    background: var(--bg-secondary);
+    background: var(--bg-primary);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -48,12 +48,11 @@ body {
     padding: 0 2rem;
 }
 
-/* Top Navigation - Modern Minimal */
+/* Top Navigation - Todoist Style */
 .top-nav {
     background: var(--bg-primary);
-    border-bottom: 1px solid var(--border);
-    padding: 0.75rem 0;
-    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-light);
+    padding: 1rem 0;
     position: sticky;
     top: 0;
     z-index: 100;
@@ -85,14 +84,15 @@ body {
 main {
     min-height: 85vh;
     padding: 2rem 0;
+    background: var(--bg-secondary);
 }
 
 h2 {
-    font-size: 1.875rem;
+    font-size: 1.75rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
     color: var(--text-primary);
-    letter-spacing: -0.025em;
+    letter-spacing: -0.015em;
 }
 
 h3 {
@@ -126,33 +126,34 @@ h4 {
 
 .message-success {
     border-color: var(--accent);
-    color: var(--accent);
-    background: #F0FDF4;
+    color: #065f46;
+    background: #ecfdf5;
 }
 
 .message-error {
-    border-color: #EF4444;
-    color: #DC2626;
-    background: #FEF2F2;
+    border-color: var(--primary);
+    color: #991b1b;
+    background: var(--primary-light);
 }
 
-/* Login Page - Modern Centered Card */
+/* Login Page - Todoist Style */
 .login-container {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--bg-secondary);
     padding: 1rem;
 }
 
 .login-box {
     background: var(--bg-primary);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-lg);
-    padding: 2.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 3rem 2.5rem;
     width: 100%;
-    max-width: 420px;
+    max-width: 400px;
+    border: 1px solid var(--border-light);
 }
 
 .login-logo {
@@ -161,10 +162,9 @@ h4 {
 }
 
 .login-logo img {
-    width: 80px;
-    height: 80px;
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
-    box-shadow: var(--shadow-md);
 }
 
 .login-box h2 {
@@ -204,8 +204,8 @@ h4 {
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--primary-light);
+    border-color: var(--text-secondary);
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
 }
 
 /* Buttons - Modern Minimal */
@@ -231,17 +231,17 @@ h4 {
 
 .btn-primary:hover {
     background: var(--primary-dark);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
 }
 
 .btn-secondary {
-    background: var(--bg-tertiary);
-    color: var(--text-primary);
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
 }
 
 .btn-secondary:hover {
-    background: var(--border);
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
 }
 
 .btn-success {
@@ -278,14 +278,13 @@ h4 {
     margin-bottom: 2rem;
 }
 
-/* Date Selector - Modern */
+/* Date Selector - Todoist Style */
 .date-selector {
     background: var(--bg-primary);
-    padding: 1rem;
-    border-radius: var(--radius-lg);
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius);
     margin-bottom: 1.5rem;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-light);
 }
 
 .date-selector form {
@@ -320,25 +319,23 @@ h4 {
 }
 
 .selected-date-info h3 {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    background: var(--primary);
     color: white;
     padding: 1rem 1.5rem;
     margin: 0;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius);
     text-align: center;
     font-size: 1.125rem;
     font-weight: 600;
-    box-shadow: var(--shadow-md);
 }
 
-/* Week Overview - Modern Card */
+/* Week Overview - Todoist Style */
 .week-overview {
     background: var(--bg-primary);
     padding: 1.5rem;
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius);
     margin-bottom: 2rem;
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-light);
 }
 
 .week-header-with-nav {
@@ -605,13 +602,12 @@ h4 {
     cursor: not-allowed;
 }
 
-/* Day Schedule - Modern Table */
+/* Day Schedule - Todoist Style */
 .day-schedule {
     background: var(--bg-primary);
     padding: 1.5rem;
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-light);
 }
 
 .day-schedule h3 {
@@ -683,13 +679,12 @@ h4 {
     margin-top: 0.25rem;
 }
 
-/* Booking Form - Modern */
+/* Booking Form - Todoist Style */
 .booking-form {
     background: var(--bg-primary);
     padding: 2rem;
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-light);
     max-width: 600px;
     margin: 0 auto;
 }
@@ -750,7 +745,7 @@ h4 {
     color: var(--primary);
 }
 
-/* Admin Panel - Modern Layout */
+/* Admin Panel - Todoist Style */
 .admin-panel {
     display: grid;
     gap: 1.5rem;
@@ -759,9 +754,8 @@ h4 {
 .admin-section {
     background: var(--bg-primary);
     padding: 1.5rem;
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-light);
 }
 
 .admin-section h3 {
@@ -803,13 +797,13 @@ h4 {
 }
 
 .badge-admin {
-    background: #DBEAFE;
-    color: #1E40AF;
+    background: var(--primary-light);
+    color: var(--primary);
 }
 
 .badge-teacher {
-    background: #D1FAE5;
-    color: #065F46;
+    background: #ecfdf5;
+    color: var(--accent);
 }
 
 /* Filter Form */
