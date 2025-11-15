@@ -153,3 +153,9 @@
 [x] 148. ✅ Kontakt-Informationsbox unter Wochenplan hinzugefügt
 [x] 149. ✅ Logo und Kontaktdaten (E-Mail & Telefon) in Box integriert
 [x] 150. ✅ Responsive Design für Kontaktbox (Desktop & Mobile) implementiert
+[x] 151. ✅ Hauptüberschrift mit blauem Gradient-Header und Kalender-Icon 📅 verschönert
+[x] 152. ✅ Wochenplan-Überschrift mit Diagramm-Icon 📊 und Datums-Badge modernisiert
+[x] 153. ✅ Blockieren-Buttons von Rot auf Orange geändert (freundlicher)
+[x] 154. ✅ Blockieren-Buttons mit Gradient, Schloss-Icon 🔒 und Hover-Effekt verbessert
+[x] 155. ✅ Datumswahl mit Kalender-Icon 📆 ergänzt
+[x] 156. ✅ Navigationspfeile modernisiert (❮ ❯ statt ◀ ▶)

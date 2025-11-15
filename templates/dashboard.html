@@ -4,12 +4,17 @@
 
 {% block content %}
 <div class="dashboard">
-    <h2>Buchungsübersicht für die SportOASE</h2>
+    <div class="dashboard-header">
+        <h2 class="dashboard-title">
+            <span class="title-icon">📅</span>
+            Buchungsübersicht SportOASE
+        </h2>
+    </div>
     
     <!-- Datumswahl -->
     <div class="date-selector">
         <form method="GET" action="{{ url_for('dashboard') }}">
-            <label for="date">Datum wählen:</label>
+            <label for="date">📆 Datum wählen:</label>
             <input type="date" id="date" name="date" value="{{ selected_date }}" onchange="this.form.submit()">
         </form>
     </div>
@@ -22,11 +27,15 @@
     <div class="week-overview">
         <div class="week-header-with-nav">
             <a href="{{ url_for('dashboard', date=prev_week_date) }}" class="week-nav-arrow" title="Vorherige Woche">
-                <span class="arrow-icon">◀</span>
+                <span class="arrow-icon">❮</span>
             </a>
-            <h3>Wochenplan-Übersicht | KW {{ calendar_week }}/{{ calendar_year }} ({{ monday_date }} - {{ friday_date }})</h3>
+            <h3 class="week-title">
+                <span class="week-icon">📊</span>
+                Wochenplan KW {{ calendar_week }}/{{ calendar_year }}
+                <span class="week-dates">{{ monday_date }} - {{ friday_date }}</span>
+            </h3>
             <a href="{{ url_for('dashboard', date=next_week_date) }}" class="week-nav-arrow" title="Nächste Woche">
-                <span class="arrow-icon">▶</span>
+                <span class="arrow-icon">❯</span>
             </a>
         </div>
         <table class="week-table">
@@ -101,7 +110,10 @@
                                     <input type="hidden" name="date" value="{{ day.date }}">
                                     <input type="hidden" name="period" value="{{ period }}">
                                     <input type="hidden" name="reason" value="Beratung">
-                                    <button type="submit" class="slot-btn slot-btn-block">Blockieren</button>
+                                    <button type="submit" class="slot-btn slot-btn-block">
+                                        <span class="btn-icon">🔒</span>
+                                        Blockieren
+                                    </button>
                                 </form>
                                 {% endif %}
                             </div>
