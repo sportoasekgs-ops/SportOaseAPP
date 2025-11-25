@@ -1,0 +1,125 @@
+162.158.87.167 - - [25/Nov/2025:16:35:26 +0000] "GET /favicon.ico HTTP/1.1" 404 10216 "https://sportoase.app/admin" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+[2025-11-25 16:35:28,045] ERROR in app: Exception on /admin/bulk_block [GET]
+Traceback (most recent call last):
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/flask/app.py", line 1455, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/flask/app.py", line 869, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/flask/app.py", line 867, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/flask/app.py", line 852, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/app.py", line 158, in decorated_function
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/app.py", line 1400, in admin_bulk_block
+    return render_template('admin_bulk_block.html', blocked_slots=blocked_slots)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/flask/templating.py", line 152, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/flask/templating.py", line 133, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/opt/render/project/src/templates/admin_bulk_block.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/opt/render/project/src/templates/base.html", line 51, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/templates/admin_bulk_block.html", line 14, in block 'content'
+    <a href="{{ url_for('admin_manage_slots') }}" class="btn btn-secondary">Slot-Verwaltung</a>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/flask/app.py", line 1071, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/flask/app.py", line 1060, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/werkzeug/routing/map.py", line 919, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'admin_manage_slots'. Did you mean 'manage_slots' instead?
+162.158.87.168 - - [25/Nov/2025:16:35:28 +0000] "GET /admin/bulk_block HTTP/1.1" 500 10312 "https://sportoase.app/admin" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+162.158.87.168 - - [25/Nov/2025:16:35:28 +0000] "GET /static/style.css?v=20251125 HTTP/1.1" 304 0 "https://sportoase.app/admin/bulk_block" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+162.158.87.167 - - [25/Nov/2025:16:35:28 +0000] "GET /api/notifications/unread_count HTTP/1.1" 200 27 "https://sportoase.app/admin/bulk_block" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+162.158.87.168 - - [25/Nov/2025:16:35:28 +0000] "GET /api/notifications/recent?limit=10 HTTP/1.1" 200 2521 "https://sportoase.app/admin/bulk_block" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+162.158.87.168 - - [25/Nov/2025:16:35:29 +0000] "GET /logout HTTP/1.1" 302 199 "https://sportoase.app/admin/bulk_block" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+162.158.87.167 - - [25/Nov/2025:16:35:29 +0000] "GET /login HTTP/1.1" 200 3487 "https://sportoase.app/admin/bulk_block" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+162.158.87.168 - - [25/Nov/2025:16:35:29 +0000] "GET /static/style.css?v=20251125 HTTP/1.1" 304 0 "https://sportoase.app/login" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+162.158.87.168 - - [25/Nov/2025:16:35:29 +0000] "GET /static/logo.png HTTP/1.1" 200 0 "https://sportoase.app/login" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+162.158.87.167 - - [25/Nov/2025:16:35:30 +0000] "GET /login/iserv HTTP/1.1" 302 811 "https://sportoase.app/login" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+🔍 Bestimme Rolle für: morelli.maurizio@kgs-pattensen.de
+   Komplette UserInfo: {'exp': 1764092130, 'iat': 1764088530, 'iss': 'https://kgs-pattensen.de', 'aud': '283_4g9xbmsz042s8ws0wowcgwk00ggcgsgsc0sc8s0wck0gskgcss', 'sub': '190747ef-9091-4e29-be8e-bfc78f57ccde', 'nonce': 'lCcd7H0Xv6v0GnOHKCcw', 'email': 'morelli.maurizio@kgs-pattensen.de', 'email_verified': True, 'groups': {'1001': {'id': 1001, 'uuid': 'ac642077-e693-4b9f-896c-5a258858853c', 'act': 'admins', 'name': 'Admins'}, '10290': {'id': 10290, 'uuid': '5ca49ea7-5bde-4018-8d33-abd57c9c2452', 'act': 'beratung', 'name': 'Beratung'}, '12018': {'id': 12018, 'uuid': '13a054d4-ab9c-43aa-aec7-710badb8ed46', 'act': 'beratungsbuero', 'name': 'Beratungsbüro'}, '12951': {'id': 12951, 'uuid': '4a25926f-3a34-4ba2-8667-836ae705acf1', 'act': 'buddy', 'name': 'Buddy'}, '12420': {'id': 12420, 'uuid': 'd67c986d-48cd-42a2-a03e-c68e0f85264d', 'act': 'but-lernfoerderung', 'name': 'BuT-Lernförderung'}, '12432': {'id': 12432, 'uuid': '4dfc1fcf-d888-47ff-8abe-ddd7a061c78f', 'act': 'fairplaycoaches', 'name': 'Fairplaycoaches'}, '2211': {'id': 2211, 'uuid': 'f5223646-9ee4-4c1c-817c-a7d67269891f', 'act': 'mitarbeiter', 'name': 'Mitarbeiter'}, '11995': {'id': 11995, 'uuid': 'd27f1084-8a07-4661-a9a6-2c58fd9600de', 'act': 'multiprofessionelles.team', 'name': 'Multiprofessionelles Team'}, '10784': {'id': 10784, 'uuid': '3639e7c7-dfe8-411f-b790-a41cbf2f942e', 'act': 'oase', 'name': 'Oase'}, '11592': {'id': 11592, 'uuid': '009d908d-69fb-4c49-abe7-1cac48119c71', 'act': 'oasen-vierklang', 'name': 'OASEN-Vierklang'}, '11183': {'id': 11183, 'uuid': '97832722-580d-4bf4-b60e-bb148bda707f', 'act': 'paedagogische.mitarbeiter', 'name': 'Pädagogische Mitarbeiter'}, '3128': {'id': 3128, 'uuid': '25e83a96-a1fb-4b12-8443-1a9b88bc96f1', 'act': 'schulvorstand', 'name': 'Schulvorstand'}, '2612': {'id': 2612, 'uuid': 'c361cb95-408b-4ad7-b02b-cbf125919340', 'act': 'sozialpaedagogen', 'name': 'Sozialpädagogen'}}, 'preferred_username': 'morelli.maurizio', 'name': 'Maurizio Morelli', 'nickname': 'Maurizio', 'given_name': 'Maurizio', 'family_name': 'Morelli', 'locale': 'de-DE', 'roles': [{'uuid': 'f66aee04-c335-4299-9cfe-ca7176cc0213', 'id': 'ROLE_ADMIN', 'displayName': 'Administrator'}, {'uuid': '5992ed18-9359-481b-9a5c-34b671673e6c', 'id': 'ROLE_MITARBEITENDE', 'displayName': 'Mitarbeitende'}, {'uuid': '2bf60e21-8a95-4cd2-86eb-9ceec80a00c9', 'id': 'ROLE_PAEDAGOGISCHE_MITARBEITER', 'displayName': 'Pädagogische Mitarbeiter'}, {'uuid': 'c9b85a22-1a6c-46e1-99eb-36cb88001fda', 'id': 'ROLE_TEACHER', 'displayName': 'Lehrer'}, {'uuid': None, 'id': 'ROLE_USER', 'displayName': 'Benutzer'}]}
+   groups: {'1001': {'id': 1001, 'uuid': 'ac642077-e693-4b9f-896c-5a258858853c', 'act': 'admins', 'name': 'Admins'}, '10290': {'id': 10290, 'uuid': '5ca49ea7-5bde-4018-8d33-abd57c9c2452', 'act': 'beratung', 'name': 'Beratung'}, '12018': {'id': 12018, 'uuid': '13a054d4-ab9c-43aa-aec7-710badb8ed46', 'act': 'beratungsbuero', 'name': 'Beratungsbüro'}, '12951': {'id': 12951, 'uuid': '4a25926f-3a34-4ba2-8667-836ae705acf1', 'act': 'buddy', 'name': 'Buddy'}, '12420': {'id': 12420, 'uuid': 'd67c986d-48cd-42a2-a03e-c68e0f85264d', 'act': 'but-lernfoerderung', 'name': 'BuT-Lernförderung'}, '12432': {'id': 12432, 'uuid': '4dfc1fcf-d888-47ff-8abe-ddd7a061c78f', 'act': 'fairplaycoaches', 'name': 'Fairplaycoaches'}, '2211': {'id': 2211, 'uuid': 'f5223646-9ee4-4c1c-817c-a7d67269891f', 'act': 'mitarbeiter', 'name': 'Mitarbeiter'}, '11995': {'id': 11995, 'uuid': 'd27f1084-8a07-4661-a9a6-2c58fd9600de', 'act': 'multiprofessionelles.team', 'name': 'Multiprofessionelles Team'}, '10784': {'id': 10784, 'uuid': '3639e7c7-dfe8-411f-b790-a41cbf2f942e', 'act': 'oase', 'name': 'Oase'}, '11592': {'id': 11592, 'uuid': '009d908d-69fb-4c49-abe7-1cac48119c71', 'act': 'oasen-vierklang', 'name': 'OASEN-Vierklang'}, '11183': {'id': 11183, 'uuid': '97832722-580d-4bf4-b60e-bb148bda707f', 'act': 'paedagogische.mitarbeiter', 'name': 'Pädagogische Mitarbeiter'}, '3128': {'id': 3128, 'uuid': '25e83a96-a1fb-4b12-8443-1a9b88bc96f1', 'act': 'schulvorstand', 'name': 'Schulvorstand'}, '2612': {'id': 2612, 'uuid': 'c361cb95-408b-4ad7-b02b-cbf125919340', 'act': 'sozialpaedagogen', 'name': 'Sozialpädagogen'}}
+   roles: [{'uuid': 'f66aee04-c335-4299-9cfe-ca7176cc0213', 'id': 'ROLE_ADMIN', 'displayName': 'Administrator'}, {'uuid': '5992ed18-9359-481b-9a5c-34b671673e6c', 'id': 'ROLE_MITARBEITENDE', 'displayName': 'Mitarbeitende'}, {'uuid': '2bf60e21-8a95-4cd2-86eb-9ceec80a00c9', 'id': 'ROLE_PAEDAGOGISCHE_MITARBEITER', 'displayName': 'Pädagogische Mitarbeiter'}, {'uuid': 'c9b85a22-1a6c-46e1-99eb-36cb88001fda', 'id': 'ROLE_TEACHER', 'displayName': 'Lehrer'}, {'uuid': None, 'id': 'ROLE_USER', 'displayName': 'Benutzer'}]
+   Alle gefundenen Namen (lowercase): ['admins', 'beratung', 'beratungsbüro', 'buddy', 'but-lernförderung', 'fairplaycoaches', 'mitarbeiter', 'multiprofessionelles team', 'oase', 'oasen-vierklang', 'pädagogische mitarbeiter', 'schulvorstand', 'sozialpädagogen', 'administrator', 'mitarbeitende', 'pädagogische mitarbeiter', 'lehrer', 'benutzer']
+   → Admin (E-Mail-Fallback)
+🔐 IServ Login: morelli.maurizio@kgs-pattensen.de
+   Sub-ID: 190747ef-9091-4e29-be8e-bfc78f57ccde
+   Rolle: admin
+   UserInfo: {'exp': 1764092130, 'iat': 1764088530, 'iss': 'https://kgs-pattensen.de', 'aud': '283_4g9xbmsz042s8ws0wowcgwk00ggcgsgsc0sc8s0wck0gskgcss', 'sub': '190747ef-9091-4e29-be8e-bfc78f57ccde', 'nonce': 'lCcd7H0Xv6v0GnOHKCcw', 'email': 'morelli.maurizio@kgs-pattensen.de', 'email_verified': True, 'groups': {'1001': {'id': 1001, 'uuid': 'ac642077-e693-4b9f-896c-5a258858853c', 'act': 'admins', 'name': 'Admins'}, '10290': {'id': 10290, 'uuid': '5ca49ea7-5bde-4018-8d33-abd57c9c2452', 'act': 'beratung', 'name': 'Beratung'}, '12018': {'id': 12018, 'uuid': '13a054d4-ab9c-43aa-aec7-710badb8ed46', 'act': 'beratungsbuero', 'name': 'Beratungsbüro'}, '12951': {'id': 12951, 'uuid': '4a25926f-3a34-4ba2-8667-836ae705acf1', 'act': 'buddy', 'name': 'Buddy'}, '12420': {'id': 12420, 'uuid': 'd67c986d-48cd-42a2-a03e-c68e0f85264d', 'act': 'but-lernfoerderung', 'name': 'BuT-Lernförderung'}, '12432': {'id': 12432, 'uuid': '4dfc1fcf-d888-47ff-8abe-ddd7a061c78f', 'act': 'fairplaycoaches', 'name': 'Fairplaycoaches'}, '2211': {'id': 2211, 'uuid': 'f5223646-9ee4-4c1c-817c-a7d67269891f', 'act': 'mitarbeiter', 'name': 'Mitarbeiter'}, '11995': {'id': 11995, 'uuid': 'd27f1084-8a07-4661-a9a6-2c58fd9600de', 'act': 'multiprofessionelles.team', 'name': 'Multiprofessionelles Team'}, '10784': {'id': 10784, 'uuid': '3639e7c7-dfe8-411f-b790-a41cbf2f942e', 'act': 'oase', 'name': 'Oase'}, '11592': {'id': 11592, 'uuid': '009d908d-69fb-4c49-abe7-1cac48119c71', 'act': 'oasen-vierklang', 'name': 'OASEN-Vierklang'}, '11183': {'id': 11183, 'uuid': '97832722-580d-4bf4-b60e-bb148bda707f', 'act': 'paedagogische.mitarbeiter', 'name': 'Pädagogische Mitarbeiter'}, '3128': {'id': 3128, 'uuid': '25e83a96-a1fb-4b12-8443-1a9b88bc96f1', 'act': 'schulvorstand', 'name': 'Schulvorstand'}, '2612': {'id': 2612, 'uuid': 'c361cb95-408b-4ad7-b02b-cbf125919340', 'act': 'sozialpaedagogen', 'name': 'Sozialpädagogen'}}, 'preferred_username': 'morelli.maurizio', 'name': 'Maurizio Morelli', 'nickname': 'Maurizio', 'given_name': 'Maurizio', 'family_name': 'Morelli', 'locale': 'de-DE', 'roles': [{'uuid': 'f66aee04-c335-4299-9cfe-ca7176cc0213', 'id': 'ROLE_ADMIN', 'displayName': 'Administrator'}, {'uuid': '5992ed18-9359-481b-9a5c-34b671673e6c', 'id': 'ROLE_MITARBEITENDE', 'displayName': 'Mitarbeitende'}, {'uuid': '2bf60e21-8a95-4cd2-86eb-9ceec80a00c9', 'id': 'ROLE_PAEDAGOGISCHE_MITARBEITER', 'displayName': 'Pädagogische Mitarbeiter'}, {'uuid': 'c9b85a22-1a6c-46e1-99eb-36cb88001fda', 'id': 'ROLE_TEACHER', 'displayName': 'Lehrer'}, {'uuid': None, 'id': 'ROLE_USER', 'displayName': 'Benutzer'}]}
+✅ Benutzer gefunden und aktualisiert: morelli.maurizio@kgs-pattensen.de (ID: 6, Rolle: admin)
+162.158.87.168 - - [25/Nov/2025:16:35:30 +0000] "GET /oauth/callback?state=0o516l5gbNa49zOKqUdh9Q5uSJguDc&code=ZDBmMTU5NWMxMGJmOWVhMGNjZGRhZmYyMGU3ZTUxZjIwOWRjYmQ1OWJiOTYzNDg0NDNjMTY4ZDE1NjdmNWI1Mg HTTP/1.1" 302 207 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+162.158.87.168 - - [25/Nov/2025:16:35:30 +0000] "GET /dashboard HTTP/1.1" 200 49548 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+162.158.87.167 - - [25/Nov/2025:16:35:31 +0000] "GET /static/logo.png HTTP/1.1" 304 0 "https://sportoase.app/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+162.158.87.168 - - [25/Nov/2025:16:35:31 +0000] "GET /static/style.css?v=20251125 HTTP/1.1" 304 0 "https://sportoase.app/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+162.158.87.168 - - [25/Nov/2025:16:35:31 +0000] "GET /api/notifications/recent?limit=10 HTTP/1.1" 200 2521 "https://sportoase.app/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+162.158.87.167 - - [25/Nov/2025:16:35:31 +0000] "GET /api/notifications/unread_count HTTP/1.1" 200 27 "https://sportoase.app/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+162.158.87.168 - - [25/Nov/2025:16:35:34 +0000] "GET /admin HTTP/1.1" 200 19300 "https://sportoase.app/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+162.158.87.168 - - [25/Nov/2025:16:35:34 +0000] "GET /static/style.css?v=20251125 HTTP/1.1" 304 0 "https://sportoase.app/admin" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+162.158.87.167 - - [25/Nov/2025:16:35:34 +0000] "GET /api/notifications/recent?limit=10 HTTP/1.1" 200 2521 "https://sportoase.app/admin" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+162.158.87.168 - - [25/Nov/2025:16:35:34 +0000] "GET /api/notifications/unread_count HTTP/1.1" 200 27 "https://sportoase.app/admin" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+[2025-11-25 16:35:35,351] ERROR in app: Exception on /admin/bulk_block [GET]
+Traceback (most recent call last):
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/flask/app.py", line 1455, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/flask/app.py", line 869, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/flask/app.py", line 867, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/flask/app.py", line 852, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/app.py", line 158, in decorated_function
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/app.py", line 1400, in admin_bulk_block
+    return render_template('admin_bulk_block.html', blocked_slots=blocked_slots)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/flask/templating.py", line 152, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/flask/templating.py", line 133, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/opt/render/project/src/templates/admin_bulk_block.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/opt/render/project/src/templates/base.html", line 51, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/templates/admin_bulk_block.html", line 14, in block 'content'
+    <a href="{{ url_for('admin_manage_slots') }}" class="btn btn-secondary">Slot-Verwaltung</a>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/flask/app.py", line 1071, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/flask/app.py", line 1060, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/werkzeug/routing/map.py", line 919, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'admin_manage_slots'. Did you mean 'manage_slots' inste
