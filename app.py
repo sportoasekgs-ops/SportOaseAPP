@@ -23,6 +23,18 @@ if not session_secret:
 app.secret_key = session_secret
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
+# Cookie-Einstellungen für iFrame-Kompatibilität (IServ Embed)
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+app.config['SESSION_COOKIE_SECURE'] = True
+
+@app.after_request
+def add_iframe_headers(response):
+    """Erlaubt Einbettung in IServ iFrame"""
+    # Erlaube Einbettung von kgs-pattensen.de
+    response.headers['X-Frame-Options'] = 'ALLOW-FROM https://kgs-pattensen.de'
+    response.headers['Content-Security-Policy'] = "frame-ancestors 'self' https://kgs-pattensen.de"
+    return response
+
 # SSE Broadcaster für Echtzeit-Benachrichtigungen
 notification_subscribers = []
 subscribers_lock = threading.Lock()
@@ -222,6 +234,96 @@ def index():
     if 'user_id' in session:
         return redirect(url_for('dashboard'))
     return redirect(url_for('login_iserv'))
+
+# Route: Direkter IServ-Embed Login (für iFrame-Integration)
+@app.route('/iserv/embed')
+def iserv_embed_login():
+    """
+    Direkter Login für IServ-Embed (iFrame) Integration.
+    IServ sendet Benutzer-Informationen über URL-Parameter:
+    - %user% → user Parameter
+    - %email% → email Parameter
+    - %domain% → domain Parameter (zur Verifizierung)
+    
+    Sicherheit:
+    - Nur @kgs-pattensen.de E-Mails
+    - Nur bereits registrierte Benutzer (neue müssen OAuth nutzen)
+    - Zusätzliche Token-Validierung über ISERV_EMBED_SECRET
+    """
+    import hmac
+    import hashlib
+    import time
+    
+    user = request.args.get('user', '').strip()
+    email = request.args.get('email', '').strip().lower()
+    domain = request.args.get('domain', '').strip().lower()
+    token = request.args.get('token', '').strip()
+    timestamp = request.args.get('ts', '').strip()
+    
+    # Prüfe ob alle Parameter vorhanden sind
+    if not user or not email:
+        flash('Ungültige IServ-Anmeldung.', 'error')
+        return render_template('login.html')
+    
+    # Prüfe ob Domain korrekt ist (Sicherheitscheck)
+    allowed_domains = ['kgs-pattensen.de', 'kgs-pattensen']
+    if domain and domain not in allowed_domains:
+        flash('Ungültige Domain.', 'error')
+        return render_template('login.html')
+    
+    # Prüfe ob E-Mail zur Schule gehört
+    if not email.endswith('@kgs-pattensen.de'):
+        flash('Nur @kgs-pattensen.de E-Mail-Adressen sind erlaubt.', 'error')
+        return render_template('login.html')
+    
+    # Optional: HMAC-Token Validierung (wenn ISERV_EMBED_SECRET gesetzt ist)
+    embed_secret = os.environ.get('ISERV_EMBED_SECRET')
+    if embed_secret:
+        # Wenn Secret konfiguriert, muss Token gültig sein
+        if not token or not timestamp:
+            print(f"⚠️ IServ Embed: Token fehlt für {email}")
+            flash('Ungültige Anmeldung (Token fehlt).', 'error')
+            return render_template('login.html')
+        
+        # Prüfe Zeitstempel (max 5 Minuten alt)
+        try:
+            ts = int(timestamp)
+            if abs(time.time() - ts) > 300:
+                print(f"⚠️ IServ Embed: Token abgelaufen für {email}")
+                flash('Anmeldung abgelaufen. Bitte erneut versuchen.', 'error')
+                return render_template('login.html')
+        except ValueError:
+            flash('Ungültige Anmeldung.', 'error')
+            return render_template('login.html')
+        
+        # Validiere HMAC
+        expected = hmac.new(
+            embed_secret.encode(),
+            f"{email}:{timestamp}".encode(),
+            hashlib.sha256
+        ).hexdigest()
+        
+        if not hmac.compare_digest(token, expected):
+            print(f"⚠️ IServ Embed: Ungültiger Token für {email}")
+            flash('Ungültige Anmeldung.', 'error')
+            return render_template('login.html')
+    
+    # Hole bestehenden Benutzer aus der Datenbank
+    existing_user = get_user_by_email(email)
+    
+    if existing_user:
+        # Benutzer existiert bereits - direkt einloggen
+        session['user_id'] = existing_user['id']
+        session['user_username'] = existing_user['username']
+        session['user_email'] = existing_user['email']
+        session['user_role'] = existing_user['role']
+        
+        print(f"🔐 IServ Embed Login: {email} (bestehender Benutzer)")
+        return redirect(url_for('dashboard'))
+    else:
+        # Neuer Benutzer - muss sich erst über OAuth registrieren
+        flash('Bitte melden Sie sich einmalig über "Mit IServ anmelden" an.', 'info')
+        return render_template('login.html')
 
 # Route: Login-Seite (nur IServ-Button)
 @app.route('/login')
