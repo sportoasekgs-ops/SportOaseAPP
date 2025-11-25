@@ -15,14 +15,8 @@ class User(db.Model):
     email = db.Column(db.String(120), index=True)
     password_hash = db.Column(db.String(256), nullable=True)
     role = db.Column(db.String(20), nullable=False)
-    oauth_provider = db.Column(db.String(50), nullable=True)
-    oauth_id = db.Column(db.String(200), nullable=True)
     
     bookings = db.relationship('Booking', backref='teacher', lazy=True)
-    
-    __table_args__ = (
-        db.UniqueConstraint('oauth_provider', 'oauth_id', name='unique_oauth_user'),
-    )
     
     def set_password(self, password):
         """Setzt das Passwort (gehasht)"""
@@ -39,9 +33,7 @@ class User(db.Model):
             'username': self.username,
             'email': self.email,
             'password_hash': self.password_hash,
-            'role': self.role,
-            'oauth_provider': self.oauth_provider,
-            'oauth_id': self.oauth_id
+            'role': self.role
         }
 
 class Booking(db.Model):
@@ -195,60 +187,25 @@ def get_user_by_email(email):
     return user.to_dict() if user else None
 
 def get_or_create_oauth_user(email, username, oauth_provider, oauth_id, role='teacher'):
-    """Erstellt oder aktualisiert einen OAuth-Benutzer - mit Fallback für alte DB-Struktur"""
+    """Erstellt oder aktualisiert einen Benutzer basierend auf E-Mail (IServ SSO)"""
     try:
-        user = None
-        has_oauth_columns = True
-        
-        # Versuche zuerst nach oauth_provider + oauth_id zu suchen
-        try:
-            user = User.query.filter_by(oauth_provider=oauth_provider, oauth_id=oauth_id).first()
-        except Exception as oauth_err:
-            # OAuth-Spalten existieren nicht in der DB
-            print(f"⚠️ OAuth-Spalten nicht in DB vorhanden: {oauth_err}")
-            has_oauth_columns = False
+        # Suche nach E-Mail
+        user = User.query.filter_by(email=email).first()
         
         if user:
-            # Benutzer mit OAuth gefunden, aktualisiere
-            user.email = email
+            # Benutzer existiert, aktualisiere Rolle falls nötig
             user.role = role
-            print(f"✅ OAuth-Benutzer aktualisiert: {email} (ID: {user.id}, Rolle: {role})")
+            print(f"✅ Benutzer gefunden und aktualisiert: {email} (ID: {user.id}, Rolle: {role})")
         else:
-            # Suche nach E-Mail (funktioniert immer)
-            existing_user = User.query.filter_by(email=email).first()
-            
-            if existing_user:
-                # Benutzer mit E-Mail gefunden
-                existing_user.role = role
-                if has_oauth_columns:
-                    try:
-                        existing_user.oauth_provider = oauth_provider
-                        existing_user.oauth_id = oauth_id
-                    except:
-                        pass
-                user = existing_user
-                print(f"✅ Benutzer per E-Mail gefunden und aktualisiert: {email} (ID: {user.id}, Rolle: {role})")
-            else:
-                # Neuen Benutzer erstellen - OHNE OAuth-Spalten falls nicht vorhanden
-                if has_oauth_columns:
-                    user = User(
-                        username=email,
-                        email=email,
-                        role=role,
-                        oauth_provider=oauth_provider,
-                        oauth_id=oauth_id,
-                        password_hash=None
-                    )
-                else:
-                    # Fallback: Benutzer ohne OAuth-Spalten erstellen
-                    user = User(
-                        username=email,
-                        email=email,
-                        role=role,
-                        password_hash=None
-                    )
-                db.session.add(user)
-                print(f"✅ Neuer Benutzer erstellt: {email} (Rolle: {role}, OAuth-Spalten: {has_oauth_columns})")
+            # Neuen Benutzer erstellen
+            user = User(
+                username=email,
+                email=email,
+                role=role,
+                password_hash=None
+            )
+            db.session.add(user)
+            print(f"✅ Neuer Benutzer erstellt: {email} (Rolle: {role})")
         
         db.session.commit()
         return user.to_dict()

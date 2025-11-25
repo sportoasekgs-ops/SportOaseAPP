@@ -1,0 +1,10 @@
+❌ FEHLER beim Erstellen/Aktualisieren des OAuth-Benutzers: (psycopg2.errors.NotNullViolation) null value in column "password_hash" of relation "users" violates not-null constraint
+DETAIL:  Failing row contains (5, morelli.maurizio@kgs-pattensen.de, morelli.maurizio@kgs-pattensen.de, null, admin, iserv, 190747ef-9091-4e29-be8e-bfc78f57ccde).
+[SQL: INSERT INTO users (username, email, password_hash, role, oauth_provider, oauth_id) VALUES (%(username)s, %(email)s, %(password_hash)s, %(role)s, %(oauth_provider)s, %(oauth_id)s) RETURNING users.id]
+[parameters: {'username': 'morelli.maurizio@kgs-pattensen.de', 'email': 'morelli.maurizio@kgs-pattensen.de', 'password_hash': None, 'role': 'admin', 'oauth_provider': 'iserv', 'oauth_id': '190747ef-9091-4e29-be8e-bfc78f57ccde'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+   E-Mail: morelli.maurizio@kgs-pattensen.de, OAuth-Provider: iserv, OAuth-ID: 190747ef-9091-4e29-be8e-bfc78f57ccde
+172.71.172.28 - - [25/Nov/2025:09:49:35 +0000] "GET /oauth/callback?state=bJhEvdfQhHcAQmlxs4wcFI84FLGLmA&code=MDUwZGE1NmQ4MGE5NmYwZTY1MzJjYTViZWJlZGUwYzQ4MjBjMjkwMzA4ZTZkOWZjNDI5N2IxZWVjN2RhNjRiYw HTTP/1.1" 302 199 "-" "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Mobile/15E148 Safari/604.1"
+172.71.172.29 - - [25/Nov/2025:09:49:35 +0000] "GET /login HTTP/1.1" 200 3502 "-" "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Mobile/15E148 Safari/604.1"
+172.71.172.28 - - [25/Nov/2025:09:49:35 +0000] "GET /static/style.css?v=20251125 HTTP/1.1" 304 0 "https://sportoase.app/login" "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Mobile/15E148 Safari/604.1"
+172.71.172.29 - - [25/Nov/2025:09:49:35 +0000] "GET /static/logo.png HTTP/1.1" 304 0 "https://sportoase.app/login" "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Mobile/15E148 Safari/604.1"
