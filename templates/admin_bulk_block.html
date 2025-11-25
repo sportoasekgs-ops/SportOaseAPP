@@ -1,123 +1,142 @@
 {% extends "base.html" %}
 
-{% block title %}Bulk-Sperrung - Admin{% endblock %}
+{% block title %}Bulk-Verwaltung - Admin{% endblock %}
 
 {% block content %}
 <div class="admin-page">
     <div class="admin-header">
-        <h2>🔒 Bulk-Sperrung von Slots</h2>
-        <p>Sperren Sie mehrere Slots auf einmal (z.B. für Ferien, Fortbildungstage etc.)</p>
+        <h2>Slot-Verwaltung (Bulk)</h2>
+        <p>Sperren oder entsperren Sie mehrere Slots auf einmal</p>
     </div>
     
     <div class="admin-nav">
         <a href="{{ url_for('admin') }}" class="btn btn-secondary">← Zurück zur Admin-Übersicht</a>
-        <a href="{{ url_for('manage_slots') }}" class="btn btn-secondary">Slot-Verwaltung</a>
+        <a href="{{ url_for('manage_slots') }}" class="btn btn-secondary">Slot-Namen</a>
     </div>
     
     <div class="bulk-block-section">
+        <!-- Sperren-Karte -->
         <div class="bulk-block-card">
-            <h3>📅 Zeitraum sperren</h3>
+            <h3>🔒 Zeitraum sperren</h3>
+            <p class="card-description">Sperren Sie Slots für Ferien, Fortbildungen etc.</p>
             <form method="POST" action="{{ url_for('admin_bulk_block') }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <input type="hidden" name="action" value="block">
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="start_date">Startdatum:</label>
-                        <input type="date" id="start_date" name="start_date" required>
+                        <label for="block_start_date">Von:</label>
+                        <input type="date" id="block_start_date" name="start_date" required>
                     </div>
                     <div class="form-group">
-                        <label for="end_date">Enddatum:</label>
-                        <input type="date" id="end_date" name="end_date" required>
+                        <label for="block_end_date">Bis:</label>
+                        <input type="date" id="block_end_date" name="end_date" required>
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="reason">Grund der Sperrung:</label>
+                    <label for="reason">Grund:</label>
                     <input type="text" id="reason" name="reason" value="Ferien" maxlength="200" 
-                           placeholder="z.B. Weihnachtsferien, Fortbildung, etc.">
+                           placeholder="z.B. Weihnachtsferien, Fortbildung">
                 </div>
                 
                 <div class="form-group">
-                    <label>Stunden (leer = alle):</label>
+                    <label>Stunden:</label>
                     <div class="periods-grid">
+                        {% for i in range(1, 7) %}
                         <label class="period-checkbox">
-                            <input type="checkbox" name="periods" value="1">
-                            <span>1. Stunde</span>
+                            <input type="checkbox" name="periods" value="{{ i }}">
+                            <span>{{ i }}.</span>
                         </label>
-                        <label class="period-checkbox">
-                            <input type="checkbox" name="periods" value="2">
-                            <span>2. Stunde</span>
-                        </label>
-                        <label class="period-checkbox">
-                            <input type="checkbox" name="periods" value="3">
-                            <span>3. Stunde</span>
-                        </label>
-                        <label class="period-checkbox">
-                            <input type="checkbox" name="periods" value="4">
-                            <span>4. Stunde</span>
-                        </label>
-                        <label class="period-checkbox">
-                            <input type="checkbox" name="periods" value="5">
-                            <span>5. Stunde</span>
-                        </label>
-                        <label class="period-checkbox">
-                            <input type="checkbox" name="periods" value="6">
-                            <span>6. Stunde</span>
-                        </label>
+                        {% endfor %}
                     </div>
-                    <small class="form-hint">Keine Auswahl = alle 6 Stunden werden gesperrt</small>
+                    <small class="form-hint">Keine Auswahl = alle Stunden</small>
                 </div>
                 
-                <div class="bulk-actions">
-                    <button type="submit" name="action" value="block" class="btn btn-danger">
-                        🔒 Zeitraum sperren
-                    </button>
-                    <button type="submit" name="action" value="unblock" class="btn btn-success">
-                        🔓 Zeitraum freigeben
-                    </button>
-                </div>
+                <button type="submit" class="btn btn-block btn-full-width">
+                    🔒 Sperren
+                </button>
             </form>
         </div>
         
-        <div class="bulk-block-card">
-            <h3>📋 Aktuell gesperrte Slots ({{ blocked_slots|length }})</h3>
-            {% if blocked_slots %}
-            <div class="blocked-slots-list">
-                <table class="blocked-table">
-                    <thead>
-                        <tr>
-                            <th>Datum</th>
-                            <th>Stunde</th>
-                            <th>Grund</th>
-                            <th>Aktion</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for slot in blocked_slots[:50] %}
-                        <tr>
-                            <td>{{ slot.date }}</td>
-                            <td>{{ slot.period }}. Stunde</td>
-                            <td>{{ slot.reason }}</td>
-                            <td>
-                                <form method="POST" action="{{ url_for('admin_unblock_slot') }}" style="display:inline;">
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                                    <input type="hidden" name="date" value="{{ slot.date }}">
-                                    <input type="hidden" name="period" value="{{ slot.period }}">
-                                    <button type="submit" class="btn btn-xs btn-success" title="Freigeben">🔓</button>
-                                </form>
-                            </td>
-                        </tr>
+        <!-- Entsperren-Karte -->
+        <div class="bulk-block-card bulk-unblock-card">
+            <h3>🔓 Zeitraum entsperren</h3>
+            <p class="card-description">Geben Sie gesperrte Slots wieder frei</p>
+            <form method="POST" action="{{ url_for('admin_bulk_block') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <input type="hidden" name="action" value="unblock">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="unblock_start_date">Von:</label>
+                        <input type="date" id="unblock_start_date" name="start_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="unblock_end_date">Bis:</label>
+                        <input type="date" id="unblock_end_date" name="end_date" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Stunden:</label>
+                    <div class="periods-grid">
+                        {% for i in range(1, 7) %}
+                        <label class="period-checkbox">
+                            <input type="checkbox" name="periods" value="{{ i }}">
+                            <span>{{ i }}.</span>
+                        </label>
                         {% endfor %}
-                    </tbody>
-                </table>
-                {% if blocked_slots|length > 50 %}
-                <p class="hint">... und {{ blocked_slots|length - 50 }} weitere Sperren</p>
-                {% endif %}
-            </div>
-            {% else %}
-            <p class="no-data">Keine Slots sind derzeit gesperrt.</p>
+                    </div>
+                    <small class="form-hint">Keine Auswahl = alle Stunden</small>
+                </div>
+                
+                <button type="submit" class="btn btn-success btn-full-width">
+                    🔓 Entsperren
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Aktuell gesperrte Slots -->
+    <div class="bulk-block-card blocked-overview">
+        <h3>📋 Aktuell gesperrte Slots ({{ blocked_slots|length }})</h3>
+        {% if blocked_slots %}
+        <div class="blocked-slots-list">
+            <table class="blocked-table">
+                <thead>
+                    <tr>
+                        <th>Datum</th>
+                        <th>Stunde</th>
+                        <th>Grund</th>
+                        <th>Aktion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for slot in blocked_slots[:50] %}
+                    <tr>
+                        <td>{{ slot.date }}</td>
+                        <td>{{ slot.period }}.</td>
+                        <td>{{ slot.reason }}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('admin_unblock_slot') }}" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                                <input type="hidden" name="date" value="{{ slot.date }}">
+                                <input type="hidden" name="period" value="{{ slot.period }}">
+                                <button type="submit" class="btn btn-xs btn-success" title="Freigeben">🔓</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if blocked_slots|length > 50 %}
+            <p class="hint">... und {{ blocked_slots|length - 50 }} weitere</p>
             {% endif %}
         </div>
+        {% else %}
+        <p class="no-data">Keine Slots sind derzeit gesperrt.</p>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

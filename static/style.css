@@ -1887,10 +1887,30 @@ footer {
 
 .bulk-block-card h3 {
     color: var(--text-primary);
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
     font-size: 1.125rem;
+}
+
+.card-description {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
     padding-bottom: 0.75rem;
     border-bottom: 1px solid var(--border);
+}
+
+.bulk-unblock-card {
+    border-color: var(--accent);
+}
+
+.blocked-overview {
+    grid-column: 1 / -1;
+    margin-top: 1rem;
+}
+
+.btn-full-width {
+    width: 100%;
+    margin-top: 1rem;
 }
 
 .form-row {
