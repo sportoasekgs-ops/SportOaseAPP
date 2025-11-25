@@ -1935,6 +1935,40 @@ footer {
     margin-top: 0.5rem;
 }
 
+/* Reason Icon Buttons für Slot-Sperrung */
+.reason-icons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.reason-icon-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 1.5rem;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.reason-icon-btn:hover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    transform: scale(1.1);
+}
+
+.reason-icon-btn.active {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
 .period-checkbox {
     display: flex;
     align-items: center;

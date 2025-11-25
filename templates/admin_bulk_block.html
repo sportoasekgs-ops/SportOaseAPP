@@ -35,6 +35,22 @@
                 </div>
                 
                 <div class="form-group">
+                    <label>Schnellauswahl:</label>
+                    <div class="reason-icons">
+                        <button type="button" class="reason-icon-btn" data-reason="🎄 Weihnachtsferien" title="Weihnachtsferien">🎄</button>
+                        <button type="button" class="reason-icon-btn" data-reason="☀️ Sommerferien" title="Sommerferien">☀️</button>
+                        <button type="button" class="reason-icon-btn" data-reason="🐣 Osterferien" title="Osterferien">🐣</button>
+                        <button type="button" class="reason-icon-btn" data-reason="🍂 Herbstferien" title="Herbstferien">🍂</button>
+                        <button type="button" class="reason-icon-btn" data-reason="🌸 Pfingstferien" title="Pfingstferien">🌸</button>
+                        <button type="button" class="reason-icon-btn" data-reason="❄️ Winterferien" title="Winterferien">❄️</button>
+                        <button type="button" class="reason-icon-btn" data-reason="🎉 Feiertag" title="Feiertag">🎉</button>
+                        <button type="button" class="reason-icon-btn" data-reason="📚 Fortbildung" title="Fortbildung">📚</button>
+                        <button type="button" class="reason-icon-btn" data-reason="🔧 Wartung" title="Wartung">🔧</button>
+                        <button type="button" class="reason-icon-btn" data-reason="🏃 Sportevent" title="Sportevent">🏃</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
                     <label for="reason">Grund:</label>
                     <input type="text" id="reason" name="reason" value="Ferien" maxlength="200" 
                            placeholder="z.B. Weihnachtsferien, Fortbildung">
@@ -139,4 +155,19 @@
         {% endif %}
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const reasonInput = document.getElementById('reason');
+    const iconButtons = document.querySelectorAll('.reason-icon-btn');
+    
+    iconButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            iconButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            reasonInput.value = this.dataset.reason;
+        });
+    });
+});
+</script>
 {% endblock %}
