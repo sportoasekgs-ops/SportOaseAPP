@@ -39,15 +39,15 @@
             </select>
         </div>
         
-        <h3>Schüler</h3>
+        <h3>Schüler*innen</h3>
         <div class="form-group">
-            <label for="num_students">Anzahl Schüler (1-5)</label>
+            <label for="num_students">Anzahl Schüler*innen (1-5)</label>
             <select id="num_students" name="num_students" onchange="updateStudentFields()" required>
-                <option value="1">1 Schüler</option>
-                <option value="2">2 Schüler</option>
-                <option value="3">3 Schüler</option>
-                <option value="4">4 Schüler</option>
-                <option value="5">5 Schüler</option>
+                <option value="1">1 Schüler*in</option>
+                <option value="2">2 Schüler*innen</option>
+                <option value="3">3 Schüler*innen</option>
+                <option value="4">4 Schüler*innen</option>
+                <option value="5">5 Schüler*innen</option>
             </select>
         </div>
         
@@ -76,7 +76,7 @@
 </div>
 
 <script>
-// Klassenliste für Schüler-Dropdown
+// Klassenliste für Schüler*innen-Dropdown
 const schoolClasses = {{ school_classes | tojson | safe }};
 
 function updateStudentFields() {
@@ -95,11 +95,11 @@ function updateStudentFields() {
         div.className = 'student-item';
         div.innerHTML = `
             <div class="form-group">
-                <label for="student_name_${i}">Schüler ${i + 1} - Name</label>
-                <input type="text" id="student_name_${i}" name="student_name_${i}" required placeholder="Name des Schülers">
+                <label for="student_name_${i}">Schüler*in ${i + 1} - Name</label>
+                <input type="text" id="student_name_${i}" name="student_name_${i}" required placeholder="Name">
             </div>
             <div class="form-group">
-                <label for="student_class_${i}">Schüler ${i + 1} - Klasse</label>
+                <label for="student_class_${i}">Schüler*in ${i + 1} - Klasse</label>
                 <select id="student_class_${i}" name="student_class_${i}" required>
                     ${classOptions}
                 </select>
@@ -109,7 +109,7 @@ function updateStudentFields() {
     }
 }
 
-// Initialisiere mit 1 Schüler
+// Initialisiere mit 1 Schüler*in
 updateStudentFields();
 </script>
 {% endblock %}

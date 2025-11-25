@@ -95,7 +95,7 @@
                     <th>Stunde</th>
                     <th>Angebot</th>
                     <th>Lehrkraft</th>
-                    <th>Schüler</th>
+                    <th>Schüler*innen</th>
                     <th>Aktion</th>
                 </tr>
             </thead>
@@ -113,7 +113,7 @@
                         <small>Klasse: {{ booking.teacher_class }}</small>
                     </td>
                     <td>
-                        <strong>{{ booking.student_count }} Schüler:</strong>
+                        <strong>{{ booking.student_count }} Schüler*innen:</strong>
                         <ul class="student-list">
                             {% for student in booking.students %}
                             <li>{{ student.name }} (Klasse {{ student.klasse }})</li>
