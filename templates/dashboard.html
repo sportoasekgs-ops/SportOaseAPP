@@ -11,6 +11,73 @@
         </h2>
     </div>
     
+    <!-- Gebrauchsanleitung & FAQ (aufklappbar) -->
+    <details class="help-section">
+        <summary class="help-toggle">
+            <span class="help-icon">ℹ️</span>
+            <span>Anleitung & FAQ</span>
+            <span class="toggle-arrow">▼</span>
+        </summary>
+        <div class="help-content">
+            <div class="help-grid">
+                <!-- Schnellanleitung -->
+                <div class="help-card">
+                    <h4>🚀 Schnellanleitung</h4>
+                    <ol class="help-steps">
+                        <li><strong>Slot auswählen:</strong> Klicken Sie auf "Buchen" bei einem freien Slot</li>
+                        <li><strong>Daten eingeben:</strong> Name, Klasse und Schülerdaten eintragen</li>
+                        <li><strong>Modul wählen:</strong> Bei "Freie Wahl" ein Modul auswählen</li>
+                        <li><strong>Absenden:</strong> "Buchung abschließen" klicken</li>
+                    </ol>
+                </div>
+                
+                <!-- Funktionen -->
+                <div class="help-card">
+                    <h4>✨ Funktionen</h4>
+                    <ul class="feature-list">
+                        <li><span class="feature-icon">📅</span> Wochenübersicht mit allen Slots</li>
+                        <li><span class="feature-icon">📝</span> Einfache Buchung für 1-5 Schüler</li>
+                        <li><span class="feature-icon">🔒</span> Datenschutz: Schülernamen nur für eigene Buchungen sichtbar</li>
+                        <li><span class="feature-icon">⏰</span> Buchung bis 60 Min. vor Beginn möglich</li>
+                        <li><span class="feature-icon">🚫</span> Automatische Doppelbuchungs-Prüfung</li>
+                    </ul>
+                </div>
+                
+                <!-- FAQ -->
+                <div class="help-card">
+                    <h4>❓ Häufige Fragen</h4>
+                    <div class="faq-item">
+                        <strong>Was bedeuten die Farben?</strong>
+                        <p>Grün = Feste Angebote, Blau = Freie Wahl (Modul wählbar)</p>
+                    </div>
+                    <div class="faq-item">
+                        <strong>Wie viele Schüler pro Slot?</strong>
+                        <p>Maximal 5 Schüler pro Stunde insgesamt</p>
+                    </div>
+                    <div class="faq-item">
+                        <strong>Kann ich eine Buchung stornieren?</strong>
+                        <p>Bitte wenden Sie sich an den Admin</p>
+                    </div>
+                </div>
+                
+                <!-- Slot-Typen -->
+                <div class="help-card">
+                    <h4>📋 Angebots-Typen</h4>
+                    <div class="slot-type-info">
+                        <div class="slot-type">
+                            <span class="type-badge type-fest">Fest</span>
+                            <span>Vorgegebenes Angebot (z.B. Koordinationszirkel)</span>
+                        </div>
+                        <div class="slot-type">
+                            <span class="type-badge type-frei">Frei</span>
+                            <span>Modul wählbar: Aktivierung, Entspannung, Konflikt-Reset</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </details>
+    
     <!-- Datumswahl -->
     <div class="date-selector">
         <form method="GET" action="{{ url_for('dashboard') }}">
