@@ -271,6 +271,12 @@ def oauth_callback():
         print(f"   Rolle: {role}")
         print(f"   UserInfo: {userinfo}")
         
+        # Prüfe ob Benutzer Zugang hat (nur Lehrer, Mitarbeitende, Administrator)
+        if role is None:
+            flash('Kein Zugang. Nur Lehrer und Mitarbeitende können sich anmelden.', 'error')
+            print(f"❌ Zugang verweigert für: {email} (keine berechtigte Gruppe)")
+            return redirect(url_for('login'))
+        
         # Verwende E-Mail direkt als Username für OAuth-Benutzer
         user = get_or_create_oauth_user(
             email=email,

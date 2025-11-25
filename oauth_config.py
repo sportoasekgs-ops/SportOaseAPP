@@ -35,13 +35,18 @@ def is_admin_email(email):
 
 def determine_user_role(userinfo):
     """
-    Bestimmt die Rolle des Benutzers basierend auf IServ-Gruppen oder E-Mail
+    Bestimmt die Rolle des Benutzers basierend auf IServ-Gruppen
+    
+    Nur Benutzer in diesen Gruppen haben Zugang:
+    - Administrator → admin
+    - Lehrer → teacher
+    - Mitarbeitende → teacher
     
     Args:
         userinfo: Dictionary mit Benutzerdaten von IServ (email, name, groups, etc.)
     
     Returns:
-        'admin' oder 'teacher'
+        'admin', 'teacher' oder None (kein Zugang)
     """
     email = userinfo.get('email', '').lower().strip()
     
@@ -65,6 +70,11 @@ def determine_user_role(userinfo):
     
     print(f"   Gruppennamen: {group_names}")
     
+    # Admin-E-Mail hat immer Zugang (Fallback für morelli.maurizio@kgs-pattensen.de)
+    if is_admin_email(email):
+        print(f"   → Admin (E-Mail-Fallback)")
+        return 'admin'
+    
     # Administrator-Gruppe hat Admin-Rechte
     if 'Administrator' in group_names or 'Administratoren' in group_names:
         print(f"   → Admin (Gruppen-Match: Administrator)")
@@ -75,16 +85,6 @@ def determine_user_role(userinfo):
         print(f"   → Teacher (Gruppen-Match)")
         return 'teacher'
     
-    # Fallback zu E-Mail-Check für morelli.maurizio@kgs-pattensen.de
-    if is_admin_email(email):
-        print(f"   → Admin (E-Mail-Fallback)")
-        return 'admin'
-    
-    # Alle Benutzer mit @kgs-pattensen.de bekommen teacher-Rechte
-    if email.endswith('@kgs-pattensen.de'):
-        print(f"   → Teacher (KGS-Domain)")
-        return 'teacher'
-    
-    # Fallback: teacher
-    print(f"   → Teacher (Fallback)")
-    return 'teacher'
+    # Kein Zugang für andere Benutzer (z.B. Schüler)
+    print(f"   → KEIN ZUGANG (keine berechtigte Gruppe)")
+    return None
