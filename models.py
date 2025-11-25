@@ -197,13 +197,14 @@ def get_or_create_oauth_user(email, username, oauth_provider, oauth_id, role='te
             user.role = role
             print(f"✅ Benutzer gefunden und aktualisiert: {email} (ID: {user.id}, Rolle: {role})")
         else:
-            # Neuen Benutzer erstellen
+            # Neuen Benutzer erstellen mit Dummy-Passwort-Hash (für OAuth-Benutzer)
             user = User(
                 username=email,
                 email=email,
-                role=role,
-                password_hash=None
+                role=role
             )
+            # Setze einen Dummy-Hash für OAuth-Benutzer (wird nie verwendet)
+            user.password_hash = generate_password_hash('oauth_user_no_password')
             db.session.add(user)
             print(f"✅ Neuer Benutzer erstellt: {email} (Rolle: {role})")
         
