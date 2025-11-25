@@ -19,7 +19,7 @@ def init_oauth(app):
         client_secret=os.environ.get('ISERV_CLIENT_SECRET'),
         server_metadata_url=f'{iserv_base_url}/.well-known/openid-configuration',
         client_kwargs={
-            'scope': 'openid profile email'
+            'scope': 'openid profile email groups'
         }
     )
     
@@ -35,7 +35,7 @@ def is_admin_email(email):
 
 def determine_user_role(userinfo):
     """
-    Bestimmt die Rolle des Benutzers basierend auf IServ-Gruppen
+    Bestimmt die Rolle des Benutzers basierend auf IServ-Gruppen oder E-Mail
     
     Args:
         userinfo: Dictionary mit Benutzerdaten von IServ (email, name, groups, etc.)
@@ -43,25 +43,48 @@ def determine_user_role(userinfo):
     Returns:
         'admin' oder 'teacher'
     """
+    email = userinfo.get('email', '').lower().strip()
+    
+    # Log für Debugging
+    print(f"🔍 Bestimme Rolle für: {email}")
+    
     # Prüfe IServ-Gruppen (falls vorhanden)
     groups = userinfo.get('groups', [])
+    print(f"   Gruppen: {groups}")
     
-    # Wenn groups ein String ist, in Liste konvertieren
-    if isinstance(groups, str):
-        groups = [groups]
+    # Extrahiere Gruppennamen (IServ gibt [{name: "...", id: "..."}] zurück)
+    group_names = []
+    if isinstance(groups, list):
+        for g in groups:
+            if isinstance(g, dict):
+                group_names.append(g.get('name', ''))
+            elif isinstance(g, str):
+                group_names.append(g)
+    elif isinstance(groups, str):
+        group_names = [groups]
+    
+    print(f"   Gruppennamen: {group_names}")
     
     # Administrator-Gruppe hat Admin-Rechte
-    if 'Administrator' in groups:
+    if 'Administrator' in group_names or 'Administratoren' in group_names:
+        print(f"   → Admin (Gruppen-Match: Administrator)")
         return 'admin'
     
     # Lehrer und Mitarbeitende haben Teacher-Rechte
-    if 'Lehrer' in groups or 'Mitarbeitende' in groups:
+    if 'Lehrer' in group_names or 'Mitarbeitende' in group_names:
+        print(f"   → Teacher (Gruppen-Match)")
         return 'teacher'
     
     # Fallback zu E-Mail-Check für morelli.maurizio@kgs-pattensen.de
-    email = userinfo.get('email', '').lower().strip()
     if is_admin_email(email):
+        print(f"   → Admin (E-Mail-Fallback)")
         return 'admin'
     
-    # Standard: teacher
+    # Alle Benutzer mit @kgs-pattensen.de bekommen teacher-Rechte
+    if email.endswith('@kgs-pattensen.de'):
+        print(f"   → Teacher (KGS-Domain)")
+        return 'teacher'
+    
+    # Fallback: teacher
+    print(f"   → Teacher (Fallback)")
     return 'teacher'
