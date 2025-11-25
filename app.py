@@ -215,38 +215,19 @@ def check_booking_time(booking_date, period):
     
     return True, None
 
-# Route: Startseite (leitet zum Dashboard weiter)
+# Route: Startseite (leitet direkt zu IServ weiter)
 @app.route('/')
 def index():
-    """Startseite - leitet zum Dashboard oder Login weiter"""
+    """Startseite - leitet zum Dashboard oder IServ-Login weiter"""
     if 'user_id' in session:
         return redirect(url_for('dashboard'))
-    return redirect(url_for('login'))
+    return redirect(url_for('login_iserv'))
 
-# Route: Login-Seite
-@app.route('/login', methods=['GET', 'POST'])
+# Route: Login-Seite (nur IServ-Button)
+@app.route('/login')
 def login():
-    """Login-Seite für Lehrkräfte und Admins"""
-    if request.method == 'POST':
-        username = request.form.get('username', '').strip()
-        password = request.form.get('password', '')
-        
-        # Suche Benutzer in Datenbank
-        user = get_user_by_username(username)
-        
-        if user and verify_password(user, password):
-            # Login erfolgreich - speichere in Session
-            session['user_id'] = user['id']
-            session['user_username'] = user['username']
-            session['user_email'] = user['email'] if user['email'] else ''
-            session['user_role'] = user['role']
-            flash(f'Willkommen, {username}!', 'success')
-            return redirect(url_for('dashboard'))
-        else:
-            flash('Ungültiger Benutzername oder Passwort.', 'error')
-    
-    iserv_enabled = bool(os.environ.get('ISERV_CLIENT_ID') and os.environ.get('ISERV_CLIENT_SECRET'))
-    return render_template('login.html', iserv_enabled=iserv_enabled)
+    """Login-Seite - zeigt nur IServ-Login-Button"""
+    return render_template('login.html')
 
 # Route: IServ SSO Login initiieren
 @app.route('/login/iserv')

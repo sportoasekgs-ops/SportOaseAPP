@@ -35,7 +35,7 @@ def is_admin_email(email):
 
 def determine_user_role(userinfo):
     """
-    Bestimmt die Rolle des Benutzers basierend auf IServ-Daten
+    Bestimmt die Rolle des Benutzers basierend auf IServ-Gruppen
     
     Args:
         userinfo: Dictionary mit Benutzerdaten von IServ (email, name, groups, etc.)
@@ -43,11 +43,25 @@ def determine_user_role(userinfo):
     Returns:
         'admin' oder 'teacher'
     """
-    email = userinfo.get('email', '').lower().strip()
+    # Prüfe IServ-Gruppen (falls vorhanden)
+    groups = userinfo.get('groups', [])
     
-    # morelli.maurizio@kgs-pattensen.de ist Admin
+    # Wenn groups ein String ist, in Liste konvertieren
+    if isinstance(groups, str):
+        groups = [groups]
+    
+    # Administrator-Gruppe hat Admin-Rechte
+    if 'Administrator' in groups:
+        return 'admin'
+    
+    # Lehrer und Mitarbeitende haben Teacher-Rechte
+    if 'Lehrer' in groups or 'Mitarbeitende' in groups:
+        return 'teacher'
+    
+    # Fallback zu E-Mail-Check für morelli.maurizio@kgs-pattensen.de
+    email = userinfo.get('email', '').lower().strip()
     if is_admin_email(email):
         return 'admin'
     
-    # Alle anderen sind normale Lehrer
+    # Standard: teacher
     return 'teacher'

@@ -218,3 +218,9 @@
 [x] 213. ✅ Cache-Busting-Parameter zur CSS-Datei hinzugefügt (v=20251125)
 [x] 214. ✅ Workflow neu gestartet - IServ-Integration aktiv
 [x] 215. ✅ IServ-Login vollständig konfiguriert und einsatzbereit
+[x] 216. ✅ Login-Seite vereinfacht - nur IServ-Button (kein Formular mehr)
+[x] 217. ✅ Startseite leitet direkt zu IServ OAuth weiter
+[x] 218. ✅ Gruppen-basierte Rechtevergabe implementiert (Administrator/Lehrer/Mitarbeitende)
+[x] 219. ✅ determine_user_role Funktion angepasst für IServ-Gruppen
+[x] 220. ✅ Login-Route vereinfacht (kein POST mehr nötig)
+[x] 221. ✅ IServ SSO vollständig produktionsbereit
