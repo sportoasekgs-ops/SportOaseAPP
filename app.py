@@ -260,18 +260,15 @@ def iserv_embed_login():
     token = request.args.get('token', '').strip()
     timestamp = request.args.get('ts', '').strip()
     
+    # Debug-Log
+    print(f"🔐 IServ Embed Versuch: user={user}, email={email}, domain={domain}")
+    
     # Prüfe ob alle Parameter vorhanden sind
     if not user or not email:
         flash('Ungültige IServ-Anmeldung.', 'error')
         return render_template('login.html')
     
-    # Prüfe ob Domain korrekt ist (Sicherheitscheck)
-    allowed_domains = ['kgs-pattensen.de', 'kgs-pattensen']
-    if domain and domain not in allowed_domains:
-        flash('Ungültige Domain.', 'error')
-        return render_template('login.html')
-    
-    # Prüfe ob E-Mail zur Schule gehört
+    # Prüfe ob E-Mail zur Schule gehört (wichtigste Sicherheitsprüfung)
     if not email.endswith('@kgs-pattensen.de'):
         flash('Nur @kgs-pattensen.de E-Mail-Adressen sind erlaubt.', 'error')
         return render_template('login.html')
