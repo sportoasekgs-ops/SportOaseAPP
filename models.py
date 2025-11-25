@@ -195,47 +195,67 @@ def get_user_by_email(email):
     return user.to_dict() if user else None
 
 def get_or_create_oauth_user(email, username, oauth_provider, oauth_id, role='teacher'):
-    """Erstellt oder aktualisiert einen OAuth-Benutzer"""
+    """Erstellt oder aktualisiert einen OAuth-Benutzer - mit Fallback für alte DB-Struktur"""
     try:
-        # Zuerst nach oauth_provider + oauth_id suchen (eindeutig für OAuth-Benutzer)
-        user = User.query.filter_by(oauth_provider=oauth_provider, oauth_id=oauth_id).first()
+        user = None
+        has_oauth_columns = True
+        
+        # Versuche zuerst nach oauth_provider + oauth_id zu suchen
+        try:
+            user = User.query.filter_by(oauth_provider=oauth_provider, oauth_id=oauth_id).first()
+        except Exception as oauth_err:
+            # OAuth-Spalten existieren nicht in der DB
+            print(f"⚠️ OAuth-Spalten nicht in DB vorhanden: {oauth_err}")
+            has_oauth_columns = False
         
         if user:
-            # Benutzer existiert bereits, aktualisiere die Daten
+            # Benutzer mit OAuth gefunden, aktualisiere
             user.email = email
-            user.username = email  # E-Mail als Username verwenden
             user.role = role
             print(f"✅ OAuth-Benutzer aktualisiert: {email} (ID: {user.id}, Rolle: {role})")
         else:
-            # Prüfe, ob es bereits einen Benutzer mit dieser E-Mail gibt
+            # Suche nach E-Mail (funktioniert immer)
             existing_user = User.query.filter_by(email=email).first()
+            
             if existing_user:
-                # Aktualisiere den existierenden Benutzer mit OAuth-Daten
-                existing_user.oauth_provider = oauth_provider
-                existing_user.oauth_id = oauth_id
+                # Benutzer mit E-Mail gefunden
                 existing_user.role = role
-                existing_user.username = email
+                if has_oauth_columns:
+                    try:
+                        existing_user.oauth_provider = oauth_provider
+                        existing_user.oauth_id = oauth_id
+                    except:
+                        pass
                 user = existing_user
-                print(f"✅ Existierender Benutzer mit OAuth verknüpft: {email} (ID: {user.id}, Rolle: {role})")
+                print(f"✅ Benutzer per E-Mail gefunden und aktualisiert: {email} (ID: {user.id}, Rolle: {role})")
             else:
-                # Neuen Benutzer erstellen
-                user = User(
-                    username=email,  # E-Mail als Username verwenden
-                    email=email,
-                    role=role,
-                    oauth_provider=oauth_provider,
-                    oauth_id=oauth_id,
-                    password_hash=None
-                )
+                # Neuen Benutzer erstellen - OHNE OAuth-Spalten falls nicht vorhanden
+                if has_oauth_columns:
+                    user = User(
+                        username=email,
+                        email=email,
+                        role=role,
+                        oauth_provider=oauth_provider,
+                        oauth_id=oauth_id,
+                        password_hash=None
+                    )
+                else:
+                    # Fallback: Benutzer ohne OAuth-Spalten erstellen
+                    user = User(
+                        username=email,
+                        email=email,
+                        role=role,
+                        password_hash=None
+                    )
                 db.session.add(user)
-                print(f"✅ Neuer OAuth-Benutzer erstellt: {email} (Rolle: {role})")
+                print(f"✅ Neuer Benutzer erstellt: {email} (Rolle: {role}, OAuth-Spalten: {has_oauth_columns})")
         
         db.session.commit()
         return user.to_dict()
     except Exception as e:
         db.session.rollback()
-        print(f"❌ FEHLER beim Erstellen/Aktualisieren des OAuth-Benutzers: {e}")
-        print(f"   E-Mail: {email}, OAuth-Provider: {oauth_provider}, OAuth-ID: {oauth_id}")
+        print(f"❌ FEHLER beim Erstellen/Aktualisieren des Benutzers: {e}")
+        print(f"   E-Mail: {email}")
         import traceback
         traceback.print_exc()
         return None
