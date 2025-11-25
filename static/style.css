@@ -750,37 +750,41 @@ details.help-section[open] .toggle-arrow {
 }
 
 .period-fest .period-header {
-    background: #FEF3C7;
-    color: #92400E;
+    background: var(--primary-light);
+    color: var(--primary-dark);
 }
 
 .period-frei .period-header {
-    background: #D1FAE5;
-    color: #065F46;
+    background: var(--success-bg);
+    color: var(--success-text);
 }
 
 .period-blocked {
-    background: #FEE2E2 !important;
+    background: var(--bg-tertiary) !important;
+    opacity: 0.7;
 }
 
 .period-blocked:hover {
-    background: #FECACA !important;
+    background: var(--bg-secondary) !important;
+    opacity: 0.8;
 }
 
 .blocked-header {
-    background: #FEE2E2;
-    color: #991B1B;
-    border: 1px solid #FCA5A5;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: 1px dashed var(--border);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.25rem;
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
 }
 
 .blocked-icon {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: bold;
-    color: #DC2626;
+    color: var(--text-tertiary);
 }
 
 .period-past {
@@ -2116,27 +2120,31 @@ footer {
 }
 
 [data-theme="dark"] .period-blocked {
-    background: var(--blocked-bg) !important;
+    background: var(--bg-tertiary) !important;
 }
 
 [data-theme="dark"] .blocked-header {
-    background: var(--blocked-bg);
-    color: var(--blocked-text);
-    border-color: #7f1d1d;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border-color: var(--border);
+}
+
+[data-theme="dark"] .blocked-icon {
+    color: var(--text-tertiary);
 }
 
 [data-theme="dark"] .blocked-text {
-    color: var(--error-text);
+    color: var(--text-secondary);
 }
 
 [data-theme="dark"] .type-badge.type-fest {
-    background: #78350f;
-    color: #fcd34d;
+    background: var(--primary-light);
+    color: var(--primary);
 }
 
 [data-theme="dark"] .type-badge.type-frei {
-    background: #1e3a5f;
-    color: #7dd3fc;
+    background: var(--success-bg);
+    color: var(--success-text);
 }
 
 [data-theme="dark"] .capacity.full {

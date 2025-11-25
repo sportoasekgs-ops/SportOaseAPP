@@ -160,7 +160,7 @@
                         {% else %}
                             <div class="slot-compact">
                                 <div class="slot-header-row">
-                                    <span class="slot-type-label {% if day.schedule[period-1].type == 'fest' %}type-fest{% else %}type-frei{% endif %}">
+                                    <span class="slot-type-label {% if day.schedule[period-1].type == 'fest' %}type-fest{% else %}type-frei{% endif %}" title="{% if day.schedule[period-1].type == 'fest' %}{{ day.schedule[period-1].label }}{% else %}Freie Wahl{% endif %}">
                                         {% if day.schedule[period-1].type == 'fest' %}{{ day.schedule[period-1].label }}{% else %}Freie Wahl{% endif %}
                                     </span>
                                     <span class="slot-capacity">{{ day.schedule[period-1].total_students }}/5</span>
