@@ -87,8 +87,15 @@
                                 {% for booking in day.schedule[period-1].bookings %}
                                 <div class="booking-entry">
                                     <div class="booking-title">{{ booking.offer_label }}</div>
+                                    {% set can_see_students = (user_role == 'admin') or (booking.teacher_id == current_user_id) %}
                                     {% for student in booking.students %}
+                                    {% if can_see_students %}
                                     <div class="student-name">{{ student.name }} ({{ student.klasse }})</div>
+                                    {% else %}
+                                    <div class="student-name student-blurred">
+                                        <span class="blurred-text">Schüler</span> ({{ student.klasse }})
+                                    </div>
+                                    {% endif %}
                                     {% endfor %}
                                 </div>
                                 {% endfor %}

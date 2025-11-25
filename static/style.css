@@ -598,6 +598,20 @@ h4 {
     margin-left: 0.5rem;
 }
 
+/* Datenschutz: Geblurrte Schülernamen für andere Benutzer */
+.student-blurred .blurred-text {
+    filter: blur(4px);
+    user-select: none;
+    display: inline-block;
+    -webkit-filter: blur(4px);
+}
+
+.student-blurred {
+    color: var(--text-secondary);
+    opacity: 0.7;
+    font-style: italic;
+}
+
 /* Slot Actions - All Buttons Equal Size */
 .slot-actions {
     margin-top: 0.625rem;

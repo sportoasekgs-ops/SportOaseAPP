@@ -566,6 +566,7 @@ def dashboard():
         bookings_by_date_period[key].append({
             'teacher_name': booking_dict.get('teacher_name', 'N/A'),
             'teacher_class': booking_dict.get('teacher_class', 'N/A'),
+            'teacher_id': booking_dict.get('teacher_id'),
             'student_count': len(students),
             'students': students,
             'offer_label': booking_dict.get('offer_label', 'N/A')
@@ -626,6 +627,7 @@ def dashboard():
                          schedule=schedule,
                          week_overview=week_overview,
                          user_role=session.get('user_role'),
+                         current_user_id=session.get('user_id'),
                          calendar_week=calendar_week,
                          calendar_year=calendar_year,
                          prev_week_date=prev_week_monday.strftime('%Y-%m-%d'),
