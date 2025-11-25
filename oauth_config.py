@@ -19,7 +19,7 @@ def init_oauth(app):
         client_secret=os.environ.get('ISERV_CLIENT_SECRET'),
         server_metadata_url=f'{iserv_base_url}/.well-known/openid-configuration',
         client_kwargs={
-            'scope': 'openid profile email groups'
+            'scope': 'openid profile email groups roles'
         }
     )
     
