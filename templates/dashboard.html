@@ -158,53 +158,47 @@
                             </div>
                             {% endif %}
                         {% else %}
-                            <div class="period-header">
-                                {% if day.schedule[period-1].type == 'fest' %}
-                                <strong>{{ day.schedule[period-1].label }}</strong>
-                                {% else %}
-                                <strong>FREIE WAHL</strong>
-                                {% endif %}
-                            </div>
-                            {% if day.schedule[period-1].bookings %}
-                            <div class="booking-info">
-                                <div class="slot-stat">{{ day.schedule[period-1].total_students }}/5 belegt</div>
-                                {% for booking in day.schedule[period-1].bookings %}
-                                <div class="booking-entry">
-                                    <div class="booking-title">{{ booking.offer_label }}</div>
-                                    {% set can_see_students = (user_role == 'admin') or (booking.teacher_id == current_user_id) %}
-                                    {% for student in booking.students %}
-                                    {% if can_see_students %}
-                                    <div class="student-name">{{ student.name }} ({{ student.klasse }})</div>
-                                    {% else %}
-                                    <div class="student-name student-blurred">
-                                        <span class="blurred-text">Schüler</span> ({{ student.klasse }})
-                                    </div>
-                                    {% endif %}
-                                    {% endfor %}
+                            <div class="slot-compact">
+                                <div class="slot-header-row">
+                                    <span class="slot-type-label {% if day.schedule[period-1].type == 'fest' %}type-fest{% else %}type-frei{% endif %}">
+                                        {% if day.schedule[period-1].type == 'fest' %}{{ day.schedule[period-1].label }}{% else %}Freie Wahl{% endif %}
+                                    </span>
+                                    <span class="slot-capacity">{{ day.schedule[period-1].total_students }}/5</span>
                                 </div>
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-                            
-                            <div class="slot-actions">
+                                
                                 {% if day.schedule[period-1].can_book %}
-                                <a href="{{ url_for('book', date_str=day.date, period=period) }}" class="slot-btn slot-btn-primary">
-                                    Buchen ({{ day.schedule[period-1].available }} frei)
+                                <a href="{{ url_for('book', date_str=day.date, period=period) }}" class="slot-book-btn">
+                                    + Buchen ({{ day.schedule[period-1].available }} frei)
                                 </a>
                                 {% elif day.schedule[period-1].available == 0 and not day.schedule[period-1].is_past %}
-                                <div class="slot-btn slot-btn-disabled">Ausgebucht</div>
+                                <span class="slot-full">Ausgebucht</span>
+                                {% endif %}
+                                
+                                {% if day.schedule[period-1].bookings %}
+                                <div class="slot-bookings">
+                                    {% for booking in day.schedule[period-1].bookings %}
+                                    <div class="slot-booking-entry">
+                                        <span class="booking-offer">{{ booking.offer_label }}</span>
+                                        {% set can_see_students = (user_role == 'admin') or (booking.teacher_id == current_user_id) %}
+                                        {% for student in booking.students %}
+                                        {% if can_see_students %}
+                                        <span class="mini-student">{{ student.name[:10] }}{% if student.name|length > 10 %}..{% endif %}</span>
+                                        {% else %}
+                                        <span class="mini-student blurred">***</span>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
                                 {% endif %}
                                 
                                 {% if user_role == 'admin' and not day.schedule[period-1].is_past %}
-                                <form method="POST" action="{{ url_for('admin_block_slot') }}">
+                                <form method="POST" action="{{ url_for('admin_block_slot') }}" class="admin-block-form">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                                     <input type="hidden" name="date" value="{{ day.date }}">
                                     <input type="hidden" name="period" value="{{ period }}">
                                     <input type="hidden" name="reason" value="Beratung">
-                                    <button type="submit" class="slot-btn slot-btn-block">
-                                        <span class="btn-icon">🔒</span>
-                                        Blockieren
-                                    </button>
+                                    <button type="submit" class="slot-block-mini" title="Sperren">🔒</button>
                                 </form>
                                 {% endif %}
                             </div>
