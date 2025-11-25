@@ -39,6 +39,16 @@ The system utilizes PostgreSQL (Neon-backed via Replit) with Flask-SQLAlchemy 3.
 - **Teachers**: Create bookings, view dashboard
 - **Admins**: Full teacher permissions plus user/booking management
 
+**Allowed Groups/Roles for Teacher Access**:
+- Lehrer
+- Mitarbeitende
+- Mitarbeiter
+- Pädagogische Mitarbeiter
+- Sozialpädagogen
+- Beratung
+- Fairplaycoaches
+- Any group containing: "lehrer", "mitarbeiter", "pädagog", "sozial"
+
 ### UI/UX Decisions
 
 The UI features a modern card-based booking form design with improved visual hierarchy, professional gradient backgrounds, and shadow effects. Past dates are visually greyed out, and blocked slots are distinctly marked. Admin panels include quick-links and modal-based editing for slot management. A real-time notification system with a bell icon, unread badge, dropdown menu, and sound alerts for new bookings enhances the admin experience.
