@@ -4,14 +4,15 @@
 import os
 from authlib.integrations.flask_client import OAuth
 
+
 def init_oauth(app):
     """Initialisiert OAuth2 mit IServ-Konfiguration"""
     oauth = OAuth(app)
-    
+
     # IServ-Instanz-Domain aus Umgebungsvariablen
     iserv_domain = os.environ.get('ISERV_DOMAIN', 'kgs-pattensen.de')
     iserv_base_url = f'https://{iserv_domain}'
-    
+
     # Registriere IServ als OAuth-Provider
     # Scopes: openid, profile, email + groups für Schüler-Erkennung
     # Falls IServ 'groups' nicht unterstützt, werden die Basisinfos trotzdem geliefert
@@ -19,21 +20,22 @@ def init_oauth(app):
         name='iserv',
         client_id=os.environ.get('ISERV_CLIENT_ID'),
         client_secret=os.environ.get('ISERV_CLIENT_SECRET'),
-        server_metadata_url=f'{iserv_base_url}/.well-known/openid-configuration',
-        client_kwargs={
-            'scope': 'openid profile email groups'
-        }
-    )
-    
+        server_metadata_url=
+        f'{iserv_base_url}/.well-known/openid-configuration',
+        client_kwargs={'scope': 'openid profile email groups'})
+
     return oauth, iserv
+
 
 def get_admin_email():
     """Gibt die E-Mail-Adresse des Admin-Benutzers zurück"""
     return 'morelli.maurizio@kgs-pattensen.de'
 
+
 def is_admin_email(email):
     """Prüft, ob die E-Mail-Adresse dem Admin gehört"""
     return email and email.lower().strip() == get_admin_email().lower()
+
 
 def check_user_authorization(userinfo):
     """
@@ -51,79 +53,169 @@ def check_user_authorization(userinfo):
     """
     # Extrahiere alle Texte aus der userinfo (inkl. Gruppen, Rollen etc.)
     all_texts = extract_all_text(userinfo)
-    all_texts_lower = [t.lower().strip() for t in all_texts if isinstance(t, str)]
-    
-    print(f"   📋 Extrahierte Texte: {all_texts_lower[:20]}...")  # Erste 20 für Debug
-    
+    all_texts_lower = [
+        t.lower().strip() for t in all_texts if isinstance(t, str)
+    ]
+
+    print(f"   📋 Extrahierte Texte: {all_texts_lower[:20]}..."
+          )  # Erste 20 für Debug
+
     # ===== SCHÜLER-BLACKLIST (werden IMMER blockiert) =====
     student_keywords = [
-        'schüler', 'schueler', 'schülerin', 'schuelerin',
-        'schülerinnen', 'schuelerinnen',
+        'schüler',
+        'schueler',
+        'schülerin',
+        'schuelerin',
+        'schülerinnen',
+        'schuelerinnen',
         # Oberstufe
-        'ef', 'q1', 'q2', 'einführungsphase', 'qualifikationsphase',
-        '11a', '11b', '11c', '11d', '11e', '11f',
-        '12a', '12b', '12c', '12d', '12e', '12f', 
-        '13a', '13b', '13c', '13d', '13e', '13f',
+        'ef',
+        'q1',
+        'q2',
+        'einführungsphase',
+        'qualifikationsphase',
+        '11a',
+        '11b',
+        '11c',
+        '11d',
+        '11e',
+        '11f',
+        '12a',
+        '12b',
+        '12c',
+        '12d',
+        '12e',
+        '12f',
+        '13a',
+        '13b',
+        '13c',
+        '13d',
+        '13e',
+        '13f',
         # Mittelstufe
-        '5a', '5b', '5c', '5d', '5e', '5f', '5g', '5h',
-        '6a', '6b', '6c', '6d', '6e', '6f', '6g', '6h',
-        '7a', '7b', '7c', '7d', '7e', '7f', '7g', '7h',
-        '8a', '8b', '8c', '8d', '8e', '8f', '8g', '8h',
-        '9a', '9b', '9c', '9d', '9e', '9f', '9g', '9h',
-        '10a', '10b', '10c', '10d', '10e', '10f', '10g', '10h',
+        '5a',
+        '5b',
+        '5c',
+        '5d',
+        '5e',
+        '5f',
+        '5g',
+        '5h',
+        '6a',
+        '6b',
+        '6c',
+        '6d',
+        '6e',
+        '6f',
+        '6g',
+        '6h',
+        '7a',
+        '7b',
+        '7c',
+        '7d',
+        '7e',
+        '7f',
+        '7g',
+        '7h',
+        '8a',
+        '8b',
+        '8c',
+        '8d',
+        '8e',
+        '8f',
+        '8g',
+        '8h',
+        '9a',
+        '9b',
+        '9c',
+        '9d',
+        '9e',
+        '9f',
+        '9g',
+        '9h',
+        '10a',
+        '10b',
+        '10c',
+        '10d',
+        '10e',
+        '10f',
+        '10g',
+        '10h',
     ]
-    
+
     # Prüfe auf Schüler-Schlüsselwörter
     for text in all_texts_lower:
         for keyword in student_keywords:
             # Exakte Übereinstimmung oder als eigenes Wort (nicht Teil eines anderen Wortes)
-            if text == keyword or f' {keyword}' in f' {text} ' or text.startswith(keyword + ' ') or text.endswith(' ' + keyword):
+            if text == keyword or f' {keyword}' in f' {text} ' or text.startswith(
+                    keyword + ' ') or text.endswith(' ' + keyword):
                 # Ausnahme: "schüler" als Teil von "schülerberatung" etc. für Lehrer
-                if keyword in ['schüler', 'schueler'] and any(x in text for x in ['beratung', 'vertretung', 'sprecher', 'koordinat']):
+                if keyword in ['schüler', 'schueler'] and any(
+                        x in text for x in
+                    ['beratung', 'vertretung', 'sprecher', 'koordinat']):
                     continue
                 print(f"   ⛔ SCHÜLER erkannt: '{text}' enthält '{keyword}'")
                 return False, f"Schüler-Gruppe erkannt: {keyword}"
-    
+
     # ===== LEHRER-WHITELIST (explizit erlaubt) =====
     teacher_keywords = [
-        'lehrer', 'lehrerin', 'lehrkraft', 'lehrkräfte',
-        'kollegium', 'mitarbeiter', 'mitarbeitende',
-        'pädagogisch', 'paedagogisch',
-        'sekretariat', 'verwaltung', 'schulleitung',
-        'referendar', 'praktikant',
-        'fsj', 'bufdi', 'bundesfreiwilligendienst',
-        'sozialpädagog', 'sozialpaedagog',
-        'schulassist', 'integrationshelfer',
-        'administrator', 'admin',
+        'lehrer',
+        'lehrerin',
+        'lehrkraft',
+        'lehrkräfte',
+        'kollegium',
+        'mitarbeiter',
+        'mitarbeitende',
+        'pädagogisch',
+        'paedagogisch',
+        'sekretariat',
+        'verwaltung',
+        'schulleitung',
+        'referendar',
+        'praktikant',
+        'fsj',
+        'bufdi',
+        'bundesfreiwilligendienst',
+        'sozialpädagog',
+        'sozialpaedagog',
+        'schulassist',
+        'integrationshelfer',
+        'administrator',
+        'admin',
+        'pädagogische mitarbeiter',
     ]
-    
+
     # Prüfe auf Lehrer-Schlüsselwörter
     is_teacher = False
     teacher_group_found = None
     for text in all_texts_lower:
         for keyword in teacher_keywords:
             if keyword in text:
-                print(f"   ✅ LEHRER-Gruppe erkannt: '{text}' enthält '{keyword}'")
+                print(
+                    f"   ✅ LEHRER-Gruppe erkannt: '{text}' enthält '{keyword}'"
+                )
                 is_teacher = True
                 teacher_group_found = text
                 break
         if is_teacher:
             break
-    
+
     if is_teacher:
         return True, f"Lehrer-Gruppe: {teacher_group_found}"
-    
+
     # ===== FALLBACK: Keine eindeutige Gruppe gefunden =====
     # Wenn keine Gruppeninfo vorhanden ist, Zugang verweigern (sicherer Ansatz)
     # Prüfe ob überhaupt Gruppen-bezogene Daten vorhanden sind
-    has_group_data = any(key in userinfo for key in ['groups', 'roles', 'group', 'role', 'memberOf'])
-    
+    has_group_data = any(
+        key in userinfo
+        for key in ['groups', 'roles', 'group', 'role', 'memberOf'])
+
     if not has_group_data:
         print(f"   ⚠️ KEINE Gruppeninformationen in userinfo gefunden!")
         print(f"   ⚠️ Verfügbare Keys: {list(userinfo.keys())}")
         # Wenn keine Gruppeninfo, verweigern wir den Zugang zur Sicherheit
         return False, "Keine Gruppeninformationen verfügbar - Zugang verweigert"
-    
+
     # Gruppeninfo vorhanden, aber weder Lehrer noch Schüler erkannt
     print(f"   ⚠️ Weder Lehrer- noch Schüler-Gruppe eindeutig erkannt")
     return False, "Keine autorisierte Gruppe erkannt"
@@ -146,24 +238,24 @@ def determine_user_role(userinfo):
         'admin', 'teacher' oder None (kein Zugang)
     """
     email = userinfo.get('email', '').lower().strip()
-    
+
     # Log für Debugging
     print(f"🔍 Bestimme Rolle für: {email}")
     print(f"   UserInfo Keys: {list(userinfo.keys())}")
-    
+
     # 1. Admin-E-Mail hat immer Admin-Zugang (wird nie blockiert)
     if is_admin_email(email):
         print(f"   → Admin (morelli.maurizio@kgs-pattensen.de)")
         return 'admin'
-    
+
     # Prüfe E-Mail-Domain
     if not email.endswith('@kgs-pattensen.de'):
         print(f"   → KEIN ZUGANG (keine @kgs-pattensen.de E-Mail)")
         return None
-    
+
     # 2. Prüfe Autorisierung (Schüler/Lehrer-Erkennung)
     is_authorized, reason = check_user_authorization(userinfo)
-    
+
     if is_authorized:
         print(f"   → Teacher ({reason})")
         return 'teacher'
@@ -178,7 +270,7 @@ def extract_all_text(data):
     Rekursiv für verschachtelte Strukturen.
     """
     texts = []
-    
+
     if isinstance(data, str):
         texts.append(data)
     elif isinstance(data, list):
@@ -192,7 +284,7 @@ def extract_all_text(data):
                 texts.append(key)
             # Wert rekursiv extrahieren
             texts.extend(extract_all_text(value))
-    
+
     return texts
 
 
