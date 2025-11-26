@@ -837,13 +837,19 @@ def book(date_str, period):
             send_email_confirmation = request.form.get('send_email_confirmation') == '1'
             user_email = session.get('user_email', '')
             
+            print(f"[BUCHUNG] E-Mail-Checkbox aktiviert: {send_email_confirmation}")
+            print(f"[BUCHUNG] User E-Mail: {user_email}")
+            
             if send_email_confirmation and user_email:
+                print(f"[BUCHUNG] Versuche E-Mail-Bestätigung zu senden...")
                 try:
                     from email_service import send_user_booking_confirmation
-                    send_user_booking_confirmation(user_email, booking_data)
-                    print(f"Buchungsbestätigung gesendet an: {user_email}")
+                    result = send_user_booking_confirmation(user_email, booking_data)
+                    print(f"[BUCHUNG] E-Mail-Versand Ergebnis: {result}")
                 except Exception as e:
-                    print(f"Benutzer-E-Mail-Bestätigung fehlgeschlagen: {e}")
+                    print(f"[BUCHUNG] Benutzer-E-Mail-Bestätigung fehlgeschlagen: {e}")
+            else:
+                print(f"[BUCHUNG] Keine E-Mail gesendet (Checkbox: {send_email_confirmation}, Email: {bool(user_email)})")
             
             # Broadcast an SSE-Clients
             if notification_id:

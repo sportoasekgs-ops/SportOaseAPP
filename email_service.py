@@ -9,11 +9,19 @@ from config import SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM, ADMIN_
 
 def send_email_smtp(to_email, subject, body_html, body_text=None):
     """Sendet E-Mail über SMTP"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    logger.info(f"E-Mail-Versand wird versucht an: {to_email}")
+    logger.info(f"SMTP_USER konfiguriert: {bool(SMTP_USER)}")
+    logger.info(f"SMTP_PASS konfiguriert: {bool(SMTP_PASS)}")
+    
     try:
         if not SMTP_USER or not SMTP_PASS:
-            print(f"WARNUNG: SMTP nicht konfiguriert - E-Mail an {to_email} wird nicht gesendet")
-            print(f"Betreff: {subject}")
-            print(f"Body: {body_text or body_html[:200]}")
+            logger.warning(f"SMTP nicht konfiguriert - E-Mail an {to_email} wird nicht gesendet")
+            logger.warning(f"Betreff: {subject}")
+            print(f"[EMAIL] WARNUNG: SMTP nicht konfiguriert - E-Mail an {to_email} wird nicht gesendet")
+            print(f"[EMAIL] Betreff: {subject}")
             return False
         
         message = MIMEMultipart('alternative')
