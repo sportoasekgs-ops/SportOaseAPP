@@ -746,6 +746,41 @@ details.help-section[open] .toggle-arrow {
     font-weight: 500;
 }
 
+/* Heutiger Tag - dezent hervorheben */
+.week-table th.today-column {
+    background: linear-gradient(135deg, var(--primary-light) 0%, rgba(233, 30, 99, 0.15) 100%);
+    border-bottom-color: var(--primary);
+}
+
+.week-table td.today-column {
+    background: rgba(233, 30, 99, 0.04);
+    border-left: 2px solid var(--primary-light);
+    border-right: 2px solid var(--primary-light);
+}
+
+.week-table tr:last-child td.today-column {
+    border-bottom: 2px solid var(--primary-light);
+}
+
+.today-header {
+    position: relative;
+}
+
+.today-header::after {
+    content: "Heute";
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: var(--primary);
+    color: white;
+    font-size: 0.55rem;
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
 .week-table td {
     font-size: 0.8125rem;
     background: var(--bg-primary);
@@ -1325,11 +1360,11 @@ details.help-section[open] .toggle-arrow {
         border-right: 2px solid var(--border);
     }
     
-    /* Jede Tag-Spalte = ca. halbe Bildschirmbreite minus Stunde-Spalte */
+    /* Jede Tag-Spalte = volle Bildschirmbreite minus Stunde-Spalte (1 Tag sichtbar) */
     .week-table th:not(:first-child),
     .week-table td:not(:first-child) {
-        min-width: calc(50vw - 30px);
-        width: calc(50vw - 30px);
+        min-width: calc(100vw - 70px);
+        width: calc(100vw - 70px);
     }
     
     .day-name {
@@ -1613,15 +1648,15 @@ details.help-section[open] .toggle-arrow {
         min-width: 28px;
     }
     
-    /* Wochentabelle - 2 Tage sichtbar auf kleinen Handys */
+    /* Wochentabelle - 1 Tag sichtbar auf kleinen Handys */
     .week-overview {
         padding: 0.5rem;
     }
     
     .week-table th:not(:first-child),
     .week-table td:not(:first-child) {
-        min-width: calc(50vw - 25px);
-        width: calc(50vw - 25px);
+        min-width: calc(100vw - 60px);
+        width: calc(100vw - 60px);
     }
     
     .week-table th:first-child,
@@ -2736,6 +2771,439 @@ footer {
 .slot-block-mini:hover {
     background: var(--primary-light);
     border-color: var(--primary);
+}
+
+/* ===== Modern Admin Panel ===== */
+.admin-panel-modern {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 0;
+}
+
+.admin-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.admin-header h2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    font-size: 1.75rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.admin-icon {
+    font-size: 1.5rem;
+}
+
+.admin-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+.admin-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.admin-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.25rem 1rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.admin-card:hover {
+    border-color: var(--primary);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.admin-card .card-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.admin-card .card-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.admin-card .card-desc {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.admin-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    border-radius: var(--radius-lg);
+    color: white;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
+.admin-section-modern {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-light);
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.section-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.section-icon {
+    font-size: 1.2rem;
+}
+
+.info-hint {
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    font-style: italic;
+}
+
+.users-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.75rem;
+}
+
+.user-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--bg-secondary);
+    border-radius: var(--radius);
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.user-avatar.admin {
+    background: var(--primary);
+    color: white;
+}
+
+.user-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.user-email {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.role-badge-modern {
+    display: inline-block;
+    font-size: 0.65rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.role-badge-modern.admin {
+    background: var(--primary);
+    color: white;
+}
+
+.role-badge-modern.teacher {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+}
+
+.filter-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-inline form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-inline input[type="date"] {
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.85rem;
+}
+
+.btn-filter {
+    padding: 0.4rem 0.75rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.btn-filter-reset {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.bookings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1rem;
+}
+
+.booking-admin-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.booking-admin-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+}
+
+.booking-date-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.4rem 0.6rem;
+    border-radius: var(--radius);
+    min-width: 45px;
+}
+
+.date-day {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.date-month {
+    font-size: 0.7rem;
+    opacity: 0.9;
+}
+
+.booking-time {
+    flex: 1;
+}
+
+.period-num {
+    display: block;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.offer-name {
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
+.booking-admin-body {
+    padding: 1rem;
+}
+
+.teacher-info {
+    margin-bottom: 0.75rem;
+}
+
+.teacher-info strong {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+.teacher-class {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.students-info {
+    background: var(--bg-primary);
+    padding: 0.75rem;
+    border-radius: var(--radius);
+}
+
+.students-count {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.4rem;
+}
+
+.students-mini-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.students-mini-list li {
+    padding: 0.15rem 0;
+}
+
+.booking-admin-actions {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg-tertiary);
+    border-top: 1px solid var(--border-light);
+}
+
+.btn-action {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.btn-action.edit {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-action.edit:hover {
+    background: var(--primary-dark);
+}
+
+.btn-action.delete {
+    background: var(--error);
+    color: white;
+}
+
+.btn-action.delete:hover {
+    background: #c0392b;
+}
+
+.no-bookings-admin {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+}
+
+.no-bookings-admin .no-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .admin-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .admin-stats {
+        gap: 1rem;
+    }
+    
+    .stat-card {
+        padding: 0.75rem 1.25rem;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .users-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .bookings-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* ===== Meine Buchungen Seite ===== */

@@ -613,12 +613,17 @@ def dashboard():
                 'is_past': is_past,
                 'is_weekend': is_weekend
             })
+        # Prüfe ob heute
+        today = datetime.now(get_berlin_tz()).date()
+        is_today = day_date == today
+        
         week_overview.append({
             'weekday': wd,
             'name': weekday_names[i],
             'date': day_date_str,
             'date_formatted': day_date.strftime('%d.%m.'),
-            'schedule': day_schedule
+            'schedule': day_schedule,
+            'is_today': is_today
         })
     
     return render_template('dashboard.html',

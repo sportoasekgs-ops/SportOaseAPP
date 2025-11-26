@@ -129,8 +129,8 @@
                 <tr>
                     <th>Stunde</th>
                     {% for day in week_overview %}
-                    <th>
-                        <div class="week-day-header">
+                    <th class="{% if day.is_today %}today-column{% endif %}">
+                        <div class="week-day-header {% if day.is_today %}today-header{% endif %}">
                             <div class="day-name">{{ day.name }}</div>
                             <div class="day-date">{{ day.date_formatted }}</div>
                         </div>
@@ -143,7 +143,7 @@
                 <tr>
                     <td><strong>{{ period }}.</strong></td>
                     {% for day in week_overview %}
-                    <td class="{% if day.schedule[period-1].blocked %}period-blocked{% elif day.schedule[period-1].is_weekend %}period-past{% elif day.schedule[period-1].is_past %}period-past{% else %}period-{{ day.schedule[period-1].type }}{% endif %} {% if day.schedule[period-1].can_book %}clickable-slot{% endif %}">
+                    <td class="{% if day.is_today %}today-column{% endif %} {% if day.schedule[period-1].blocked %}period-blocked{% elif day.schedule[period-1].is_weekend %}period-past{% elif day.schedule[period-1].is_past %}period-past{% else %}period-{{ day.schedule[period-1].type }}{% endif %} {% if day.schedule[period-1].can_book %}clickable-slot{% endif %}">
                         {% if day.schedule[period-1].blocked %}
                             <div class="period-header blocked-header">
                                 <span class="blocked-icon">✕</span>
