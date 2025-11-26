@@ -812,31 +812,51 @@ details.help-section[open] .toggle-arrow {
 }
 
 .period-blocked {
-    background: var(--bg-tertiary) !important;
-    opacity: 0.7;
+    background: #fff3cd !important;
+    opacity: 1;
 }
 
 .period-blocked:hover {
-    background: var(--bg-secondary) !important;
-    opacity: 0.8;
+    background: #ffecb5 !important;
 }
 
 .blocked-header {
-    background: var(--bg-tertiary);
-    color: var(--text-secondary);
-    border: 1px dashed var(--border);
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    color: white;
+    border: none;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.25rem;
-    padding: 0.5rem;
-    border-radius: var(--radius-sm);
+    gap: 0.5rem;
+    padding: 1rem 0.75rem;
+    border-radius: var(--radius);
+    min-height: 80px;
+    justify-content: center;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
 }
 
 .blocked-icon {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     font-weight: bold;
-    color: var(--text-tertiary);
+    color: white;
+    background: rgba(0,0,0,0.15);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.blocked-header .slot-detail {
+    font-size: 0.85rem;
+    font-weight: 700;
+    opacity: 1;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0;
 }
 
 .period-past {
@@ -845,10 +865,9 @@ details.help-section[open] .toggle-arrow {
 }
 
 .slot-detail {
-    font-size: 0.6875rem;
-    font-weight: 400;
+    font-size: 0.75rem;
+    font-weight: 500;
     margin-top: 0.25rem;
-    opacity: 0.8;
 }
 
 /* ===== Neue Slot-Karten mit Kursfarben ===== */
@@ -1586,8 +1605,9 @@ details.help-section[open] .toggle-arrow {
     /* Jede Tag-Spalte = volle Bildschirmbreite minus Stunde-Spalte (1 Tag sichtbar) */
     .week-table th:not(:first-child),
     .week-table td:not(:first-child) {
-        min-width: calc(100vw - 70px);
-        width: calc(100vw - 70px);
+        min-width: calc(100vw - 55px);
+        width: calc(100vw - 55px);
+        padding: 0.35rem;
     }
     
     .day-name {
@@ -1878,8 +1898,9 @@ details.help-section[open] .toggle-arrow {
     
     .week-table th:not(:first-child),
     .week-table td:not(:first-child) {
-        min-width: calc(100vw - 60px);
-        width: calc(100vw - 60px);
+        min-width: calc(100vw - 50px);
+        width: calc(100vw - 50px);
+        padding: 0.3rem;
     }
     
     .week-table th:first-child,
