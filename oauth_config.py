@@ -108,6 +108,12 @@ def determine_user_role(userinfo):
                 print(f"   → Teacher (Match: '{term}' in '{name}')")
                 return 'teacher'
     
+    # Fallback: Wenn keine Gruppen erkannt wurden aber E-Mail von kgs-pattensen.de ist,
+    # und die OAuth-App nur für berechtigte Gruppen freigegeben ist, dann Zugang gewähren
+    if email.endswith('@kgs-pattensen.de'):
+        print(f"   → Teacher (Fallback: kgs-pattensen.de E-Mail, keine Gruppeninfo aber OAuth-App freigegeben)")
+        return 'teacher'
+    
     # Kein Zugang für andere Benutzer (z.B. Schüler)
     print(f"   → KEIN ZUGANG (keine berechtigte Gruppe gefunden)")
     return None
