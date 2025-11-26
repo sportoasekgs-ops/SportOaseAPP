@@ -8,7 +8,17 @@ import resend
 from config import ADMIN_EMAIL
 
 def get_resend_credentials():
-    """Holt Resend API-Key über Replit Connector"""
+    """Holt Resend API-Key - zuerst aus ENV, dann über Replit Connector"""
+    
+    # 1. Prüfe direkte Environment Variable (für Render)
+    env_api_key = os.environ.get('RESEND_API_KEY')
+    env_from_email = os.environ.get('RESEND_FROM_EMAIL', 'SportOase <onboarding@resend.dev>')
+    
+    if env_api_key:
+        print(f"[EMAIL] Resend API-Key aus Environment Variable gefunden")
+        return env_api_key, env_from_email
+    
+    # 2. Versuche Replit Connector (für Replit)
     hostname = os.environ.get('REPLIT_CONNECTORS_HOSTNAME')
     
     x_replit_token = None
@@ -18,7 +28,7 @@ def get_resend_credentials():
         x_replit_token = 'depl ' + os.environ.get('WEB_REPL_RENEWAL')
     
     if not x_replit_token or not hostname:
-        print("[EMAIL] Replit Connector nicht verfügbar")
+        print("[EMAIL] Weder ENV noch Replit Connector verfügbar")
         return None, None
     
     try:
@@ -39,7 +49,7 @@ def get_resend_credentials():
         from_email = settings.get('from_email')
         
         if api_key:
-            print(f"[EMAIL] Resend API-Key gefunden, From: {from_email}")
+            print(f"[EMAIL] Resend API-Key über Replit Connector gefunden")
             return api_key, from_email
         else:
             print("[EMAIL] Resend nicht konfiguriert")

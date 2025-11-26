@@ -95,10 +95,13 @@ SportOase Buchungssystem is a web-based booking management system for the school
 
 ## E-Mail Service
 
-E-Mails werden über **Resend** versendet (Replit Connector Integration).
-- Kein SMTP erforderlich
-- API-Key wird automatisch über Replit Connector bereitgestellt
-- Funktioniert in Development und Production
+E-Mails werden über **Resend** versendet.
+
+**In Replit:** Automatisch über Replit Connector
+
+**In Render:** Environment Variables setzen:
+- `RESEND_API_KEY` - Resend API-Key (von resend.com)
+- `RESEND_FROM_EMAIL` - Absenderadresse (z.B. `SportOase <noreply@yourdomain.com>`)
 
 ## Deployment
 
