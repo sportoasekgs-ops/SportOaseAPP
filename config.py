@@ -2,9 +2,15 @@
 # Diese Datei enthält alle wichtigen Einstellungen wie Stundenpläne und Zeitangaben
 
 import os
+from dotenv import load_dotenv
 
-# Zeitplan der Schulstunden (Beginn und Ende jeder Stunde)
-# Format: "HH:MM" für Start und Ende
+# .env laden
+load_dotenv()
+
+# =====================================================================
+#  Stundenzeiten
+# =====================================================================
+
 PERIOD_TIMES = {
     1: {
         "start": "07:50",
@@ -32,78 +38,86 @@ PERIOD_TIMES = {
     }
 }
 
-# Feste Angebote pro Wochentag und Stunde
-# "Mon" = Montag, "Tue" = Dienstag, etc.
-# Wenn eine Stunde hier nicht aufgeführt ist, ist sie FREI (Lehrkraft wählt Modul)
+# =====================================================================
+#  Feste Angebote pro Wochentag
+# =====================================================================
+
 FIXED_OFFERS = {
-    "Mon": {  # Montag
+    "Mon": {
         1: "Wochenstart-Aktivierung",
         3: "Konflikt-Reset & Deeskalation",
         5: "Koordinationszirkel"
     },
-    "Tue": {  # Dienstag - alle Stunden frei
-    },
-    "Wed": {  # Mittwoch
+    "Tue": {},
+    "Wed": {
         1: "Sozialtraining / Gruppenreset",
         3: "Aktivierung Mini-Fitness",
         5: "Motorik-Parcours"
     },
-    "Thu": {  # Donnerstag
+    "Thu": {
         2: "Konflikt-Reset",
         5: "Turnen + Balance"
     },
-    "Fri": {  # Freitag
+    "Fri": {
         2: "Atem & Reflexion",
         4: "Bodyscan Light",
         5: "Ruhezone / Entspannung"
     }
 }
 
-# Module, die bei freien Stunden wählbar sind
+# =====================================================================
+#  Frei wählbare Module
+# =====================================================================
+
 FREE_MODULES = [
     "Aktivierung", "Regulation / Entspannung", "Konflikt-Reset",
     "Egal / flexibel"
 ]
 
-# Klassenliste für Dropdown-Auswahl (Schuljahr 2025/2026)
+# =====================================================================
+#  Klassenliste
+# =====================================================================
+
 SCHOOL_CLASSES = [
-    # Jahrgang 5
-    "5a", "5b", "5c", "5d", "5e", "5f",
-    # Jahrgang 6 (KES)
-    "6a (KES)", "6b (KES)", "6c (KES)", "6d (KES)", "6e (KES)", "6f (KES)",
-    # Jahrgang 7 (KES)
-    "7a (KES)", "7b (KES)", "7c (KES)", "7d (KES)", "7e (KES)", "7f (KES)",
-    # Jahrgang 8
-    "G8G1", "G8G2", "G8G3", "H8H", "R8R1", "R8R2",
-    # Jahrgang 9
-    "G9G1", "G9G2", "G9G3", "H9H", "R9R1", "R9R2", "R9R3",
-    # Jahrgang 10
-    "G10G1", "G10G2", "G10G3", "H10H", "R10R1", "R10R2",
-    # Jahrgang 11
-    "G11a", "G11b", "G11c",
-    # Jahrgang 12/13
+    "5a", "5b", "5c", "5d", "5e", "5f", "6a (KES)", "6b (KES)", "6c (KES)",
+    "6d (KES)", "6e (KES)", "6f (KES)", "7a (KES)", "7b (KES)", "7c (KES)",
+    "7d (KES)", "7e (KES)", "7f (KES)", "G8G1", "G8G2", "G8G3", "H8H", "R8R1",
+    "R8R2", "G9G1", "G9G2", "G9G3", "H9H", "R9R1", "R9R2", "R9R3", "G10G1",
+    "G10G2", "G10G3", "H10H", "R10R1", "R10R2", "G11a", "G11b", "G11c",
     "G12Q1", "G13Q2"
 ]
 
-# Maximale Anzahl Schüler pro Stunde
-MAX_STUDENTS_PER_PERIOD = 5
+# =====================================================================
+#  Limitierungen / Regeln
+# =====================================================================
 
-# Vorlaufzeit für Buchungen in Minuten
+MAX_STUDENTS_PER_PERIOD = 5
 BOOKING_ADVANCE_MINUTES = 60
 
-# SMTP-Konfiguration (aus Umgebungsvariablen/Secrets)
-# WICHTIG: SMTP_USER und SMTP_PASS müssen als Secrets gesetzt werden!
-SMTP_HOST = os.environ.get('SMTP_HOST', 'smtp.gmail.com')
-SMTP_PORT = int(os.environ.get('SMTP_PORT', '587'))
-SMTP_USER = os.environ.get('SMTP_USER', '')  # Secret erforderlich
-SMTP_PASS = os.environ.get('SMTP_PASS', '')  # Secret erforderlich (Gmail App-Passwort!)
-SMTP_FROM = os.environ.get('SMTP_FROM', 'sportoase.kgs@gmail.com')
-ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'sportoase.kgs@gmail.com')
+# =====================================================================
+#  SMTP / Mail – ISERV-KOMPATIBEL
+# =====================================================================
 
-# Flask Session Secret (aus Umgebungsvariable)
-SECRET_KEY = os.environ.get('SESSION_SECRET',
-                            'dev-secret-key-change-in-production')
+# Bei IServ gilt IMMER:
+# - Port 465
+# - SMTP_SSL (kein STARTTLS auf Port 587)
 
-# Datenbank-Konfiguration (PostgreSQL)
-DATABASE_URL = os.environ.get('DATABASE_URL',
-                              'postgresql://localhost/sportoase')
+SMTP_HOST = os.getenv("SMTP_HOST", "")  # z.B. "smtp.kgs-pattensen.de"
+SMTP_PORT = int(os.getenv("SMTP_PORT", 465))  # IMMER 465 für IServ
+SMTP_USER = os.getenv("SMTP_USER", "")  # vollständige IServ-Mailadresse
+SMTP_PASS = os.getenv("SMTP_PASS", "")  # das IServ-Passwort
+SMTP_FROM = os.getenv("SMTP_FROM",
+                      SMTP_USER)  # sinnvollerweise = IServ-Adresse
+ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", SMTP_USER)  # Fallback: gleiche Adresse
+
+# =====================================================================
+#  Flask Session Key
+# =====================================================================
+
+SECRET_KEY = os.getenv("SESSION_SECRET", "dev-secret-key-change-in-production")
+
+# =====================================================================
+#  Datenbank
+# =====================================================================
+
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://localhost/sportoase")
