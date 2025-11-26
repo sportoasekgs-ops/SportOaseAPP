@@ -149,8 +149,20 @@ def check_user_authorization(userinfo):
         '10h',
     ]
 
+    # Hilfsfunktion: Prüft ob ein String eine UUID ist (Format: 8-4-4-4-12)
+    import re
+    uuid_pattern = re.compile(r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$', re.IGNORECASE)
+    
     # Prüfe auf Schüler-Schlüsselwörter
     for text in all_texts_lower:
+        # Überspringe UUIDs - diese können zufällig Klassennamen enthalten (z.B. "5ca49ea7..." beginnt mit "5c")
+        if uuid_pattern.match(text):
+            continue
+            
+        # Überspringe reine Zahlen (IDs wie 10290, 12432)
+        if text.isdigit():
+            continue
+            
         for keyword in student_keywords:
             # Exakte Übereinstimmung oder als eigenes Wort (nicht Teil eines anderen Wortes)
             if text == keyword or f' {keyword}' in f' {text} ' or text.startswith(
@@ -200,6 +212,10 @@ def check_user_authorization(userinfo):
         'päd. mitarbeiter',
         'päd mitarbeiter',
         'pm',
+        'beratung',
+        'fairplaycoach',
+        'fairplay',
+        'coach',
     ]
 
     # Prüfe auf Lehrer-Schlüsselwörter
