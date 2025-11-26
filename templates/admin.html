@@ -108,6 +108,12 @@
                             {% endfor %}
                         </ul>
                     </div>
+                    {% if booking.notes %}
+                    <div class="booking-notes">
+                        <span class="notes-icon">📝</span>
+                        <span class="notes-text">{{ booking.notes }}</span>
+                    </div>
+                    {% endif %}
                 </div>
                 <div class="booking-admin-actions">
                     <a href="{{ url_for('admin_edit_booking', booking_id=booking.id) }}" class="btn-action edit">✏️ Bearbeiten</a>

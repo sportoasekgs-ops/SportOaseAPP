@@ -51,6 +51,7 @@ class Booking(db.Model):
     offer_type = db.Column(db.String(10), nullable=False)
     offer_label = db.Column(db.String(100), nullable=False)
     calendar_event_id = db.Column(db.String(200), nullable=True)
+    notes = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     
     notifications = db.relationship('Notification', back_populates='booking', cascade='all, delete-orphan', passive_deletes=True)
@@ -69,6 +70,7 @@ class Booking(db.Model):
             'offer_type': self.offer_type,
             'offer_label': self.offer_label,
             'calendar_event_id': self.calendar_event_id,
+            'notes': self.notes,
             'created_at': self.created_at.isoformat() if isinstance(self.created_at, datetime) else self.created_at,
             'teacher_email': self.teacher.email if self.teacher else None
         }
@@ -253,7 +255,7 @@ def get_all_users():
     users = User.query.order_by(User.role, User.username).all()
     return [u.to_dict() for u in users]
 
-def create_booking(date, weekday, period, teacher_id, students, offer_type, offer_label, teacher_name=None, teacher_class=None, calendar_event_id=None):
+def create_booking(date, weekday, period, teacher_id, students, offer_type, offer_label, teacher_name=None, teacher_class=None, calendar_event_id=None, notes=None):
     """Erstellt eine neue Buchung in der Datenbank"""
     try:
         students_json = json.dumps(students, ensure_ascii=False)
@@ -268,6 +270,7 @@ def create_booking(date, weekday, period, teacher_id, students, offer_type, offe
             offer_type=offer_type,
             offer_label=offer_label,
             calendar_event_id=calendar_event_id,
+            notes=notes,
             created_at=datetime.now()
         )
         db.session.add(booking)
@@ -347,7 +350,7 @@ def get_booking_by_id(booking_id):
     booking = Booking.query.get(booking_id)
     return booking.to_dict() if booking else None
 
-def update_booking(booking_id, date, weekday, period, teacher_id, students, offer_type, offer_label, teacher_name=None, teacher_class=None):
+def update_booking(booking_id, date, weekday, period, teacher_id, students, offer_type, offer_label, teacher_name=None, teacher_class=None, notes=None):
     """Aktualisiert eine bestehende Buchung in der Datenbank"""
     try:
         booking = Booking.query.get(booking_id)
@@ -363,6 +366,7 @@ def update_booking(booking_id, date, weekday, period, teacher_id, students, offe
         booking.students_json = json.dumps(students, ensure_ascii=False)
         booking.offer_type = offer_type
         booking.offer_label = offer_label
+        booking.notes = notes
         
         db.session.commit()
         return True

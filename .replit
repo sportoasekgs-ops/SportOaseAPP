@@ -1,4 +1,4 @@
-modules = ["python-3.11", "web", "postgresql-16", "nodejs-20"]
+modules = ["python-3.11", "web", "nodejs-20", "postgresql-16"]
 [agent]
 expertMode = true
 integrations = ["google-mail:1.0.0", "resend:1.0.0"]
@@ -50,6 +50,10 @@ externalPort = 4200
 [[ports]]
 localPort = 39903
 externalPort = 3001
+
+[[ports]]
+localPort = 40777
+externalPort = 5173
 
 [[ports]]
 localPort = 45773

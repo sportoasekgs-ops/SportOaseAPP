@@ -784,6 +784,9 @@ def book(date_str, period):
         else:
             offer_label = period_info['label']
         
+        # Hole optionale Notizen
+        notes = request.form.get('notes', '').strip()
+        
         # Erstelle Buchung in Datenbank
         booking_id = create_booking(
             date=date_str,
@@ -794,7 +797,8 @@ def book(date_str, period):
             offer_type=period_info['type'],
             offer_label=offer_label,
             teacher_name=teacher_name,
-            teacher_class=teacher_class
+            teacher_class=teacher_class,
+            notes=notes if notes else None
         )
         
         if booking_id:
@@ -1111,7 +1115,7 @@ def edit_my_booking(booking_id):
         else:
             offer_label = booking['offer_label']
         
-        # Aktualisiere Buchung
+        # Aktualisiere Buchung (Notizen bleiben unverändert bei Lehrer-Bearbeitung)
         if update_booking(
             booking_id=booking_id,
             date=booking['date'],
@@ -1122,7 +1126,8 @@ def edit_my_booking(booking_id):
             offer_type=booking['offer_type'],
             offer_label=offer_label,
             teacher_name=booking.get('teacher_name'),
-            teacher_class=booking.get('teacher_class')
+            teacher_class=booking.get('teacher_class'),
+            notes=booking.get('notes')
         ):
             flash('Buchung erfolgreich aktualisiert!', 'success')
             return redirect(url_for('meine_buchungen'))
@@ -1340,6 +1345,9 @@ def admin_create_booking():
         else:
             offer_label = period_info['label']
         
+        # Hole optionale Notizen (Admin-Buchungen)
+        notes = request.form.get('notes', '').strip()
+        
         booking_id = create_booking(
             date=date_str,
             weekday=weekday,
@@ -1349,7 +1357,8 @@ def admin_create_booking():
             offer_type=period_info['type'],
             offer_label=offer_label,
             teacher_name=teacher_name,
-            teacher_class=teacher_class
+            teacher_class=teacher_class,
+            notes=notes if notes else None
         )
         
         if booking_id:
@@ -1483,6 +1492,9 @@ def admin_edit_booking(booking_id):
         else:
             offer_label = period_info['label']
         
+        # Hole optionale Notizen (Admin kann Notizen bearbeiten)
+        notes = request.form.get('notes', '').strip()
+        
         if update_booking(
             booking_id=booking_id,
             date=date_str,
@@ -1493,7 +1505,8 @@ def admin_edit_booking(booking_id):
             offer_type=period_info['type'],
             offer_label=offer_label,
             teacher_name=teacher_name,
-            teacher_class=teacher_class
+            teacher_class=teacher_class,
+            notes=notes if notes else None
         ):
             flash(f'Buchung erfolgreich aktualisiert!', 'success')
             return redirect(url_for('admin'))

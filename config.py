@@ -63,6 +63,73 @@ FIXED_OFFERS = {
 }
 
 # =====================================================================
+#  Angebotsbeschreibungen
+# =====================================================================
+
+OFFER_DESCRIPTIONS = {
+    "Wochenstart-Aktivierung": {
+        "title": "WOCHENSTART-AKTIV",
+        "description": "Aktiver Start in die Woche mit Bewegungs- und Energieübungen, um wach und motiviert in den Montag zu gehen.",
+        "icon": "☀️"
+    },
+    "Freie Wahl": {
+        "title": "FREIE WAHL",
+        "description": "Offene Stunde: Die Lehrkräfte wählen selbst eine passende Beschäftigung – Rückzug, Spielen, kreative Angebote oder ruhige Aufgaben.",
+        "icon": "⭐"
+    },
+    "Sozialtraining / Gruppenreset": {
+        "title": "SOZIALTRAINING / GRUPPENRESET",
+        "description": "Gemeinsame Übungen für Teamfähigkeit, Rücksichtnahme und ein positives Miteinander. Stärkt Klassenklima und soziale Kompetenzen.",
+        "icon": "👥"
+    },
+    "Konflikt-Reset & Deeskalation": {
+        "title": "KONFLIKT-RESET & DEESKALATION",
+        "description": "Training für Selbstkontrolle und Konfliktlösung mit kontrollierten Box-Übungen zum Stressabbau. Danach ruhige Reflexion und Deeskalationsstrategien.",
+        "icon": "🥊"
+    },
+    "Konflikt-Reset": {
+        "title": "KONFLIKT-RESET",
+        "description": "Kurze Einheit zur Beruhigung: Box-Übungen zur Energieableitung, anschließend Techniken für Ruhe, Klarheit und Selbstbeherrschung.",
+        "icon": "🛡️"
+    },
+    "Atem & Reflexion": {
+        "title": "ATEM & REFLEXION",
+        "description": "Ruhige Atemübungen und kurze Reflexionsphasen zur Stressreduktion, Selbstwahrnehmung und inneren Balance.",
+        "icon": "🌬️"
+    },
+    "Aktivierung Mini-Fitness": {
+        "title": "AKTIVIERUNG MINI-FITNESS",
+        "description": "Kurze Fitness- und Bewegungsübungen, um den Kreislauf anzuregen, überschüssige Energie abzubauen und Konzentration zu stärken.",
+        "icon": "⚡"
+    },
+    "Koordinationszirkel": {
+        "title": "KOORDINATIONSZIRKEL",
+        "description": "Übungen an verschiedenen Stationen für Gleichgewicht, Feinmotorik, Körperkontrolle und Konzentration.",
+        "icon": "🎯"
+    },
+    "Motorik-Parcours": {
+        "title": "MOTORIK-PARCOURS",
+        "description": "Bewegungsparcours mit Balancieren, Springen und Klettern – fördert Koordination, Mut, Kraft und Motorik.",
+        "icon": "🏃"
+    },
+    "Turnen + Balance": {
+        "title": "TURNEN + BALANCE",
+        "description": "Turn- und Balanceübungen zur Förderung von Körpergefühl, Stabilität und Gleichgewicht.",
+        "icon": "🤸"
+    },
+    "Ruhezone / Entspannung": {
+        "title": "RUHEZONE / ENTSPANNUNG",
+        "description": "Sanfte Entspannungsangebote wie leise Spiele, Ruheübungen oder geführte Entspannung – ideal zum Runterkommen.",
+        "icon": "🍃"
+    },
+    "Bodyscan Light": {
+        "title": "BODYSCAN LIGHT",
+        "description": "Geführte, leichte Körperwahrnehmungsübung zur Entspannung. Hilft Stress abzubauen und Ruhe zu finden.",
+        "icon": "🧘"
+    },
+}
+
+# =====================================================================
 #  Module
 # =====================================================================
 

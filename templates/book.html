@@ -68,6 +68,13 @@
         </div>
         {% endif %}
         
+        <h3>Notizen (optional)</h3>
+        <div class="form-group">
+            <label for="notes">Notizen für den Admin</label>
+            <textarea id="notes" name="notes" rows="3" placeholder="z.B. Besonderheiten, Hinweise oder Fragen..." style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; resize: vertical;"></textarea>
+            <p class="hint-text">Diese Notizen werden nur dem Admin angezeigt.</p>
+        </div>
+        
         <div class="form-group email-confirmation-group">
             <label class="checkbox-label">
                 <input type="checkbox" name="send_email_confirmation" id="send_email_confirmation" value="1">

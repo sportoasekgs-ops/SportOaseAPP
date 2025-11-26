@@ -528,6 +528,37 @@ details.help-section[open] .toggle-arrow {
     color: var(--text-secondary);
 }
 
+.help-card-full {
+    grid-column: 1 / -1;
+}
+
+.offer-descriptions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.offer-desc {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    padding: 0.875rem;
+}
+
+.offer-desc strong {
+    display: block;
+    color: var(--primary);
+    font-size: 0.875rem;
+    margin-bottom: 0.375rem;
+}
+
+.offer-desc p {
+    color: var(--text-secondary);
+    font-size: 0.8125rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
 .type-badge {
     padding: 0.25rem 0.75rem;
     border-radius: var(--radius-sm);
@@ -3488,6 +3519,37 @@ footer {
 
 .students-mini-list li {
     padding: 0.15rem 0;
+}
+
+.booking-notes {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    background: #FFF3E0;
+    border-radius: var(--radius);
+    border-left: 3px solid #FF9800;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.notes-icon {
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.notes-text {
+    font-size: 0.8rem;
+    color: #795548;
+    line-height: 1.4;
+}
+
+[data-theme="dark"] .booking-notes {
+    background: #3E2723;
+    border-left-color: #FFB74D;
+}
+
+[data-theme="dark"] .notes-text {
+    color: #FFCC80;
 }
 
 .booking-admin-actions {
