@@ -68,15 +68,9 @@
         </div>
         {% endif %}
         
-        <div class="form-group email-confirmation-group">
-            <label class="checkbox-label">
-                <input type="checkbox" name="send_email_confirmation" id="send_email_confirmation" value="1">
-                <span class="checkbox-text">
-                    <span class="checkbox-icon">📧</span>
-                    E-Mail-Bestätigung an meine Adresse senden
-                </span>
-            </label>
-            <p class="hint-text">Eine Bestätigung mit allen Buchungsdetails wird an {{ user_email }} gesendet.</p>
+        <div class="email-info-box">
+            <span class="email-icon">📧</span>
+            <span class="email-text">Eine Buchungsbestätigung wird automatisch an <strong>{{ user_email }}</strong> gesendet.</span>
         </div>
         
         <div style="display: flex; gap: 1rem; margin-top: 2rem;">

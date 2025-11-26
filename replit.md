@@ -85,15 +85,17 @@ SportOase Buchungssystem is a web-based booking management system for the school
 
 ## Environment Variables
 
-| Variable | Description |
-|----------|-------------|
-| `DATABASE_URL` | PostgreSQL connection string |
-| `SESSION_SECRET` | Flask session secret (required) |
-| `ISERV_CLIENT_ID` | OAuth Client ID from IServ |
-| `ISERV_CLIENT_SECRET` | OAuth Client Secret from IServ |
-| `ISERV_DOMAIN` | `kgs-pattensen.de` |
-| `SMTP_USER` | Gmail address for notifications |
-| `SMTP_PASS` | Gmail App password |
+| Variable | Description | Location |
+|----------|-------------|----------|
+| `DATABASE_URL` | PostgreSQL connection string | Render |
+| `SESSION_SECRET` | Flask session secret (required) | Replit + Render |
+| `ISERV_CLIENT_ID` | OAuth Client ID from IServ | Replit + Render |
+| `ISERV_CLIENT_SECRET` | OAuth Client Secret from IServ | Replit + Render |
+| `ISERV_DOMAIN` | `kgs-pattensen.de` | Replit + Render |
+| `SMTP_USER` | Gmail address for notifications | Render only |
+| `SMTP_PASS` | Gmail App password | Render only |
+
+**Note**: SMTP credentials are configured in Render production environment only. E-Mail notifications only work in production.
 
 ## Deployment
 
