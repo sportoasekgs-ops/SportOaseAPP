@@ -91,11 +91,12 @@ MAX_STUDENTS_PER_PERIOD = 5
 # Vorlaufzeit für Buchungen in Minuten
 BOOKING_ADVANCE_MINUTES = 60
 
-# SMTP-Konfiguration (aus Umgebungsvariablen)
+# SMTP-Konfiguration (aus Umgebungsvariablen/Secrets)
+# WICHTIG: SMTP_USER und SMTP_PASS müssen als Secrets gesetzt werden!
 SMTP_HOST = os.environ.get('SMTP_HOST', 'smtp.gmail.com')
 SMTP_PORT = int(os.environ.get('SMTP_PORT', '587'))
-SMTP_USER = os.environ.get('SMTP_USER', 'sportoase.kgs@gmail.com')
-SMTP_PASS = os.environ.get('SMTP_PASS', 'Unhack85!$')
+SMTP_USER = os.environ.get('SMTP_USER', '')  # Secret erforderlich
+SMTP_PASS = os.environ.get('SMTP_PASS', '')  # Secret erforderlich (Gmail App-Passwort!)
 SMTP_FROM = os.environ.get('SMTP_FROM', 'sportoase.kgs@gmail.com')
 ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'sportoase.kgs@gmail.com')
 
