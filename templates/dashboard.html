@@ -146,7 +146,6 @@
                     <td class="{% if day.is_today %}today-column{% endif %} {% if day.schedule[period-1].blocked %}period-blocked{% elif day.schedule[period-1].is_weekend %}period-past{% elif day.schedule[period-1].is_past %}period-past{% else %}period-{{ day.schedule[period-1].type }}{% endif %} {% if day.schedule[period-1].can_book %}clickable-slot{% endif %}">
                         {% if day.schedule[period-1].blocked %}
                             <div class="period-header blocked-header">
-                                <span class="blocked-icon">{{ day.schedule[period-1].blocked_icon or '🔧' }}</span>
                                 <div class="slot-detail">{{ day.schedule[period-1].blocked_reason }}</div>
                             </div>
                             {% if user_role == 'admin' %}
