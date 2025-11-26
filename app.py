@@ -1245,7 +1245,8 @@ def admin():
             'offer_label': booking_dict['offer_label'],
             'offer_type': booking_dict['offer_type'],
             'students': students,
-            'student_count': len(students)
+            'student_count': len(students),
+            'notes': booking_dict.get('notes')
         })
     
     return render_template('admin.html',
