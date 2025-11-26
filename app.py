@@ -833,10 +833,11 @@ def book(date_str, period):
             except Exception as e:
                 print(f"E-Mail-Benachrichtigung fehlgeschlagen: {e}")
             
-            # Sende E-Mail-Bestätigung an den buchenden Lehrer (IMMER)
+            # Sende E-Mail-Bestätigung an Lehrer (nur wenn Checkbox aktiviert)
+            send_email_confirmation = request.form.get('send_email_confirmation') == '1'
             user_email = session.get('user_email', '')
             
-            if user_email:
+            if send_email_confirmation and user_email:
                 try:
                     from email_service import send_user_booking_confirmation
                     send_user_booking_confirmation(user_email, booking_data)
