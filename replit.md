@@ -92,10 +92,13 @@ SportOase Buchungssystem is a web-based booking management system for the school
 | `ISERV_CLIENT_ID` | OAuth Client ID from IServ | Replit + Render |
 | `ISERV_CLIENT_SECRET` | OAuth Client Secret from IServ | Replit + Render |
 | `ISERV_DOMAIN` | `kgs-pattensen.de` | Replit + Render |
-| `SMTP_USER` | Gmail address for notifications | Render only |
-| `SMTP_PASS` | Gmail App password | Render only |
 
-**Note**: SMTP credentials are configured in Render production environment only. E-Mail notifications only work in production.
+## E-Mail Service
+
+E-Mails werden über **Resend** versendet (Replit Connector Integration).
+- Kein SMTP erforderlich
+- API-Key wird automatisch über Replit Connector bereitgestellt
+- Funktioniert in Development und Production
 
 ## Deployment
 
