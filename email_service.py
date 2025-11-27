@@ -8,6 +8,32 @@ import resend
 from config import ADMIN_EMAIL
 
 
+def format_date_german(date_str):
+    """Konvertiert YYYY-MM-DD zu TT.MM.JJJJ"""
+    try:
+        if '-' in str(date_str):
+            parts = str(date_str).split('-')
+            if len(parts) == 3:
+                return f"{parts[2]}.{parts[1]}.{parts[0]}"
+    except:
+        pass
+    return str(date_str)
+
+
+def get_german_weekday(weekday_abbr):
+    """Konvertiert englische Wochentag-Abkürzung zu deutschem Namen"""
+    weekday_map = {
+        'Mon': 'Montag',
+        'Tue': 'Dienstag',
+        'Wed': 'Mittwoch',
+        'Thu': 'Donnerstag',
+        'Fri': 'Freitag',
+        'Sat': 'Samstag',
+        'Sun': 'Sonntag'
+    }
+    return weekday_map.get(weekday_abbr, weekday_abbr)
+
+
 def get_resend_credentials():
     """Holt Resend API-Key - zuerst aus ENV, dann über Replit Connector"""
 
@@ -108,8 +134,10 @@ def create_booking_notification_email(data):
     """Erstellt eine formatierte E-Mail für Buchungsbenachrichtigungen"""
     teacher = data.get("teacher_name", "Unbekannt")
     teacher_class = data.get("teacher_class", "")
-    date = data.get("date", "")
-    weekday = data.get("weekday", "")
+    date_raw = data.get("date", "")
+    date = format_date_german(date_raw)
+    weekday_raw = data.get("weekday", "")
+    weekday = get_german_weekday(weekday_raw)
     period = data.get("period", "")
     offer = data.get("offer_label", "")
     offer_type = data.get("offer_type", "")
@@ -192,8 +220,10 @@ def create_user_confirmation_email(data):
     """Erstellt eine Bestätigungs-E-Mail für den buchenden Benutzer"""
     teacher = data.get("teacher_name", "Unbekannt")
     teacher_class = data.get("teacher_class", "")
-    date = data.get("date", "")
-    weekday = data.get("weekday", "")
+    date_raw = data.get("date", "")
+    date = format_date_german(date_raw)
+    weekday_raw = data.get("weekday", "")
+    weekday = get_german_weekday(weekday_raw)
     period = data.get("period", "")
     offer = data.get("offer_label", "")
     offer_type = data.get("offer_type", "")
@@ -279,6 +309,7 @@ def send_exclusive_approved_email(teacher_email, teacher_name, student_name,
     from config import PERIOD_TIMES
 
     period_time = PERIOD_TIMES.get(period, "")
+    date_formatted = format_date_german(date_str)
 
     subject = f"✅ Exklusive Buchung genehmigt – SportOase"
 
@@ -293,7 +324,7 @@ def send_exclusive_approved_email(teacher_email, teacher_name, student_name,
             <p>Ihre exklusive Buchung wurde von einem Administrator genehmigt.</p>
             <p>Der gesamte Slot ist jetzt für Ihren Schüler reserviert:</p>
             <ul style="list-style: none; padding: 0;">
-                <li>📅 <strong>Datum:</strong> {date_str}</li>
+                <li>📅 <strong>Datum:</strong> {date_formatted}</li>
                 <li>⏰ <strong>Stunde:</strong> {period}. Stunde ({period_time})</li>
                 <li>👤 <strong>Schüler:</strong> {student_name}</li>
             </ul>
@@ -315,7 +346,7 @@ Hallo {teacher_name},
 
 Ihre exklusive Buchung wurde von einem Administrator genehmigt.
 
-Datum: {date_str}
+Datum: {date_formatted}
 Stunde: {period}. Stunde ({period_time})
 Schüler: {student_name}
 
@@ -335,6 +366,7 @@ def send_exclusive_rejected_email(teacher_email, teacher_name, student_name,
     from config import PERIOD_TIMES
 
     period_time = PERIOD_TIMES.get(period, "")
+    date_formatted = format_date_german(date_str)
 
     subject = f"❌ Exklusive Buchung abgelehnt – SportOase"
 
@@ -348,7 +380,7 @@ def send_exclusive_rejected_email(teacher_email, teacher_name, student_name,
             <p>Hallo <strong>{teacher_name}</strong>,</p>
             <p>Leider wurde Ihre exklusive Buchung von einem Administrator abgelehnt:</p>
             <ul style="list-style: none; padding: 0;">
-                <li>📅 <strong>Datum:</strong> {date_str}</li>
+                <li>📅 <strong>Datum:</strong> {date_formatted}</li>
                 <li>⏰ <strong>Stunde:</strong> {period}. Stunde ({period_time})</li>
                 <li>👤 <strong>Schüler:</strong> {student_name}</li>
             </ul>
@@ -373,7 +405,7 @@ Hallo {teacher_name},
 
 Leider wurde Ihre exklusive Buchung von einem Administrator abgelehnt:
 
-Datum: {date_str}
+Datum: {date_formatted}
 Stunde: {period}. Stunde ({period_time})
 Schüler: {student_name}
 
