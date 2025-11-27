@@ -243,6 +243,45 @@ body {
     }
 }
 
+/* Exklusiver Slot in Wochenübersicht */
+.period-exclusive {
+    background: linear-gradient(135deg, #fef3c7, #fde68a) !important;
+    border: 2px solid #f59e0b !important;
+}
+
+.exclusive-header {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    padding: 0.5rem;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.exclusive-star {
+    font-size: 1.1rem;
+    margin-right: 0.25rem;
+}
+
+.exclusive-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    font-size: 0.8rem;
+}
+
+.exclusive-student {
+    font-weight: 600;
+    color: #92400e;
+}
+
+.exclusive-teacher {
+    font-size: 0.75rem;
+    color: #78716c;
+}
+
 /* Pending exclusive booking indicator */
 .pending-exclusive {
     background: #fef3c7;

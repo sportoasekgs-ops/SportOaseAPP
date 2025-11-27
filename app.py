@@ -710,6 +710,18 @@ def book(date_str, period):
         flash(f'Dieser Slot ist für {reason} blockiert und kann nicht gebucht werden.', 'error')
         return redirect(url_for('dashboard', date=date_str))
     
+    # Prüfe, ob bereits eine genehmigte exklusive Buchung existiert
+    from models import Booking
+    exclusive_booking = Booking.query.filter_by(
+        date=date_str,
+        period=period,
+        is_exclusive=True,
+        is_approved=True
+    ).first()
+    if exclusive_booking:
+        flash('Dieser Slot ist für ein Einzelangebot reserviert und kann nicht gebucht werden.', 'error')
+        return redirect(url_for('dashboard', date=date_str))
+    
     # Prüfe Zeitfenster
     can_book, time_message = check_booking_time(booking_date, period)
     if not can_book:

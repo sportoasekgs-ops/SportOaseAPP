@@ -420,9 +420,26 @@
                         <td><strong>{{ period }}.</strong></td>
                         {% for day in week_overview %}
                         <td
-                            class="{% if day.is_today %}today-column{% endif %} {% if day.schedule[period-1].blocked %}period-blocked{% elif day.schedule[period-1].is_weekend %}period-past{% elif day.schedule[period-1].is_past %}period-past{% else %}period-{{ day.schedule[period-1].type }}{% endif %} {% if day.schedule[period-1].can_book %}clickable-slot{% endif %}"
+                            class="{% if day.is_today %}today-column{% endif %} {% if day.schedule[period-1].blocked %}period-blocked{% elif day.schedule[period-1].is_exclusive %}period-exclusive{% elif day.schedule[period-1].is_weekend %}period-past{% elif day.schedule[period-1].is_past %}period-past{% else %}period-{{ day.schedule[period-1].type }}{% endif %} {% if day.schedule[period-1].can_book %}clickable-slot{% endif %}"
                         >
-                            {% if day.schedule[period-1].blocked %}
+                            {% if day.schedule[period-1].is_exclusive %}
+                            <!-- Exklusiver Slot - Einzelangebot -->
+                            <div class="period-header exclusive-header">
+                                <div class="slot-detail">
+                                    <span class="exclusive-star">⭐</span> Einzelangebot
+                                </div>
+                            </div>
+                            <div class="exclusive-info">
+                                {% set exc_booking = day.schedule[period-1].exclusive_booking %}
+                                {% set can_see_exc = (user_role == 'admin') or (exc_booking.teacher_id == current_user_id) %}
+                                {% if can_see_exc %}
+                                <span class="exclusive-student">{{ exc_booking.students[0].name }} ({{ exc_booking.students[0].klasse }})</span>
+                                <span class="exclusive-teacher">von {{ exc_booking.teacher_name }}</span>
+                                {% else %}
+                                <span class="exclusive-student">Reserviert</span>
+                                {% endif %}
+                            </div>
+                            {% elif day.schedule[period-1].blocked %}
                             <div class="period-header blocked-header">
                                 <div class="slot-detail">
                                     {{ day.schedule[period-1].blocked_reason }}
