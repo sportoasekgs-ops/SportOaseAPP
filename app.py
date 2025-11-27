@@ -1372,6 +1372,9 @@ def reject_exclusive(booking_id):
     """Lehnt eine exklusive Buchung ab (löscht sie)"""
     from models import reject_exclusive_booking, get_booking_by_id
     
+    # Hole Ablehnungsgrund aus dem Formular
+    rejection_reason = request.form.get('reason', '').strip()
+    
     # Hole Buchungsdetails für E-Mail vor dem Löschen
     booking = get_booking_by_id(booking_id)
     teacher_email = None
@@ -1399,7 +1402,8 @@ def reject_exclusive(booking_id):
                 teacher_name=teacher_name,
                 student_name=student_name,
                 date_str=date_str,
-                period=period
+                period=period,
+                rejection_reason=rejection_reason
             )
         
         flash('Exklusive Buchung wurde abgelehnt und gelöscht. Die Lehrkraft wurde benachrichtigt.', 'success')

@@ -87,12 +87,9 @@
                             ✅ Genehmigen
                         </button>
                     </form>
-                    <form method="POST" action="{{ url_for('reject_exclusive', booking_id=booking.id) }}" style="display: inline;" onsubmit="return confirm('Sind Sie sicher, dass Sie diese exklusive Buchung ablehnen möchten? Die Buchung wird gelöscht und die Lehrkraft per E-Mail benachrichtigt.');">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                        <button type="submit" class="btn-reject" title="Ablehnen">
-                            ❌ Ablehnen
-                        </button>
-                    </form>
+                    <button type="button" class="btn-reject" title="Ablehnen" onclick="openRejectModal({{ booking.id }}, '{{ booking.teacher_name }}', '{{ booking.date }}')">
+                        ❌ Ablehnen
+                    </button>
                 </div>
             </div>
             {% endfor %}
@@ -192,4 +189,48 @@
         {% endif %}
     </section>
 </div>
+
+<!-- Modal für Ablehnung mit Begründung -->
+<div id="rejectModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>❌ Exklusive Buchung ablehnen</h3>
+            <button type="button" class="modal-close" onclick="closeRejectModal()">&times;</button>
+        </div>
+        <form method="POST" id="rejectForm">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <div class="modal-body">
+                <p class="modal-info" id="rejectInfo"></p>
+                <div class="form-group">
+                    <label for="rejectReason">Begründung (optional):</label>
+                    <textarea name="reason" id="rejectReason" rows="3" placeholder="z.B. Slot wird für andere Aktivität benötigt..." style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; resize: vertical;"></textarea>
+                    <p class="hint-text">Die Begründung wird der Lehrkraft in der E-Mail mitgeteilt.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeRejectModal()">Abbrechen</button>
+                <button type="submit" class="btn btn-danger">Ablehnen & E-Mail senden</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openRejectModal(bookingId, teacherName, date) {
+    document.getElementById('rejectForm').action = '/admin/reject_exclusive/' + bookingId;
+    document.getElementById('rejectInfo').innerHTML = 'Buchung von <strong>' + teacherName + '</strong> am <strong>' + date + '</strong> ablehnen?';
+    document.getElementById('rejectReason').value = '';
+    document.getElementById('rejectModal').style.display = 'flex';
+}
+
+function closeRejectModal() {
+    document.getElementById('rejectModal').style.display = 'none';
+}
+
+document.getElementById('rejectModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeRejectModal();
+    }
+});
+</script>
 {% endblock %}

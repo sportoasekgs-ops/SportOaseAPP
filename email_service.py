@@ -321,7 +321,7 @@ def send_exclusive_approved_email(teacher_email, teacher_name, student_name,
         </div>
         <div style="background: #d4edda; border-radius: 8px; padding: 20px; border-left: 4px solid #28a745;">
             <p>Hallo <strong>{teacher_name}</strong>,</p>
-            <p>Ihre exklusive Buchung wurde von einem Administrator genehmigt.</p>
+            <p>Ihre exklusive Buchung wurde <strong>von Mauro genehmigt</strong>.</p>
             <p>Der gesamte Slot ist jetzt für Ihren Schüler reserviert:</p>
             <ul style="list-style: none; padding: 0;">
                 <li>📅 <strong>Datum:</strong> {date_formatted}</li>
@@ -344,7 +344,7 @@ Exklusive Buchung genehmigt – SportOase
 
 Hallo {teacher_name},
 
-Ihre exklusive Buchung wurde von einem Administrator genehmigt.
+Ihre exklusive Buchung wurde von Mauro genehmigt.
 
 Datum: {date_formatted}
 Stunde: {period}. Stunde ({period_time})
@@ -361,12 +361,23 @@ SportOase – Ernst-Reuter-Schule Pattensen
 
 
 def send_exclusive_rejected_email(teacher_email, teacher_name, student_name,
-                                  date_str, period):
+                                  date_str, period, rejection_reason=None):
     """Sendet Ablehnungs-E-Mail wenn eine exklusive Buchung abgelehnt wurde"""
     from config import PERIOD_TIMES
 
     period_time = PERIOD_TIMES.get(period, "")
     date_formatted = format_date_german(date_str)
+    
+    reason_html = ""
+    reason_text = ""
+    if rejection_reason:
+        reason_html = f"""
+            <div style="background: #fff3cd; border-radius: 6px; padding: 12px; margin: 15px 0; border-left: 4px solid #ffc107;">
+                <strong>Begründung von Mauro:</strong><br>
+                {rejection_reason}
+            </div>
+        """
+        reason_text = f"\nBegründung von Mauro:\n{rejection_reason}\n"
 
     subject = f"❌ Exklusive Buchung abgelehnt – SportOase"
 
@@ -378,17 +389,18 @@ def send_exclusive_rejected_email(teacher_email, teacher_name, student_name,
         </div>
         <div style="background: #f8d7da; border-radius: 8px; padding: 20px; border-left: 4px solid #dc3545;">
             <p>Hallo <strong>{teacher_name}</strong>,</p>
-            <p>Leider wurde Ihre exklusive Buchung von einem Administrator abgelehnt:</p>
+            <p>Leider wurde Ihre exklusive Buchung <strong>von Mauro abgelehnt</strong>:</p>
             <ul style="list-style: none; padding: 0;">
                 <li>📅 <strong>Datum:</strong> {date_formatted}</li>
                 <li>⏰ <strong>Stunde:</strong> {period}. Stunde ({period_time})</li>
                 <li>👤 <strong>Schüler:</strong> {student_name}</li>
             </ul>
+            {reason_html}
             <p style="color: #721c24;">
                 Die Buchung wurde storniert. Sie können den Schüler gerne regulär (ohne exklusive Reservierung) anmelden, falls Plätze verfügbar sind.
             </p>
             <p>
-                Bei Fragen oder Rückfragen wenden Sie sich bitte direkt an die SportOase-Leitung.
+                Bei Fragen oder Rückfragen wenden Sie sich bitte direkt an Mauro.
             </p>
         </div>
         <p style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 12px;">
@@ -403,15 +415,15 @@ Exklusive Buchung abgelehnt – SportOase
 
 Hallo {teacher_name},
 
-Leider wurde Ihre exklusive Buchung von einem Administrator abgelehnt:
+Leider wurde Ihre exklusive Buchung von Mauro abgelehnt:
 
 Datum: {date_formatted}
 Stunde: {period}. Stunde ({period_time})
 Schüler: {student_name}
-
+{reason_text}
 Die Buchung wurde storniert. Sie können den Schüler gerne regulär (ohne exklusive Reservierung) anmelden, falls Plätze verfügbar sind.
 
-Bei Fragen oder Rückfragen wenden Sie sich bitte direkt an die SportOase-Leitung.
+Bei Fragen oder Rückfragen wenden Sie sich bitte direkt an Mauro.
 
 ---
 Bei Fragen wenden Sie sich bitte an: morelli.maurizio@kgs-pattensen.de
