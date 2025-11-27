@@ -40,6 +40,22 @@
         </div>
         
         <h3>Schüler*innen</h3>
+        
+        <!-- Exklusive Buchung - prominente Platzierung -->
+        <div class="form-group exclusive-booking-group exclusive-highlight" id="exclusiveBookingGroup">
+            <label class="checkbox-label exclusive-checkbox">
+                <input type="checkbox" name="is_exclusive" id="is_exclusive" value="1" onchange="toggleExclusiveMode()">
+                <span class="checkbox-text">
+                    <span class="checkbox-icon">🔒</span>
+                    <strong>Exklusive Nutzung der SportOase</strong>
+                </span>
+            </label>
+            <p class="hint-text warning-text">
+                Die gesamte SportOase wird für diesen Zeitslot nur für <strong>einen Schüler</strong> reserviert. 
+                Diese Buchung muss vom Admin freigegeben werden.
+            </p>
+        </div>
+        
         <div class="form-group">
             <label for="num_students">Anzahl Schüler*innen (1-5)</label>
             <select id="num_students" name="num_students" onchange="updateStudentFields()" required>
@@ -75,20 +91,6 @@
             <p class="hint-text">Diese Notizen werden nur dem Admin angezeigt.</p>
         </div>
         
-        <div class="form-group exclusive-booking-group" id="exclusiveBookingGroup">
-            <label class="checkbox-label exclusive-checkbox">
-                <input type="checkbox" name="is_exclusive" id="is_exclusive" value="1">
-                <span class="checkbox-text">
-                    <span class="checkbox-icon">🔒</span>
-                    Exklusive Nutzung der SportOase
-                </span>
-            </label>
-            <p class="hint-text warning-text">
-                <strong>Hinweis:</strong> Bei exklusiver Nutzung wird die gesamte SportOase für diesen Zeitslot nur für diesen einen Schüler reserviert. 
-                Diese Buchung muss vom Admin freigegeben werden. Sie erhalten eine E-Mail nach der Freigabe.
-            </p>
-        </div>
-        
         <div class="form-group email-confirmation-group">
             <label class="checkbox-label">
                 <input type="checkbox" name="send_email_confirmation" id="send_email_confirmation" value="1">
@@ -111,20 +113,38 @@
 // Klassenliste für Schüler*innen-Dropdown
 const schoolClasses = {{ school_classes | tojson | safe }};
 
+// Exklusiv-Modus umschalten
+function toggleExclusiveMode() {
+    const exclusiveCheckbox = document.getElementById('is_exclusive');
+    const numStudentsSelect = document.getElementById('num_students');
+    
+    if (exclusiveCheckbox.checked) {
+        // Exklusiv aktiviert: nur 1 Schüler, Auswahl deaktivieren
+        numStudentsSelect.value = '1';
+        numStudentsSelect.disabled = true;
+        numStudentsSelect.style.opacity = '0.6';
+        numStudentsSelect.style.cursor = 'not-allowed';
+        updateStudentFields();
+    } else {
+        // Exklusiv deaktiviert: Auswahl wieder aktivieren
+        numStudentsSelect.disabled = false;
+        numStudentsSelect.style.opacity = '1';
+        numStudentsSelect.style.cursor = 'pointer';
+    }
+}
+
 function updateStudentFields() {
     const numStudents = parseInt(document.getElementById('num_students').value);
     const container = document.getElementById('studentFields');
     const teacherClass = document.getElementById('teacher_class').value;
-    const exclusiveGroup = document.getElementById('exclusiveBookingGroup');
     const exclusiveCheckbox = document.getElementById('is_exclusive');
     
     container.innerHTML = '';
     
-    if (numStudents === 1) {
-        exclusiveGroup.style.display = 'block';
-    } else {
-        exclusiveGroup.style.display = 'none';
+    // Wenn mehr als 1 Schüler, deaktiviere Exklusiv-Checkbox
+    if (numStudents > 1 && exclusiveCheckbox.checked) {
         exclusiveCheckbox.checked = false;
+        toggleExclusiveMode();
     }
     
     // Erstelle Optionen für Klassen-Dropdown mit Vorauswahl der Lehrer-Klasse
