@@ -303,6 +303,88 @@ def send_user_booking_confirmation(email, data):
     return send_email_resend(email, subject, html, text)
 
 
+def send_exclusive_pending_email(email, data):
+    """Sendet E-Mail bei ausstehender Einzelbuchung (Freigabe erforderlich)"""
+    from config import PERIOD_TIMES
+    
+    students = data.get('students', [])
+    if not students:
+        return False
+    
+    student = students[0]
+    student_name = student.get('name', 'Unbekannt')
+    student_class = student.get('klasse', '')
+    
+    teacher = data.get('teacher_name', 'Unbekannt')
+    teacher_class = data.get('teacher_class', '')
+    date = format_date_german(data.get('date', 'Unbekannt'))
+    weekday = data.get('weekday', '')
+    period = data.get('period', '?')
+    period_time = PERIOD_TIMES.get(period, "")
+    offer = data.get('offer_label', 'Unbekannt')
+    
+    subject = f"⏳ Einzelbuchung angefragt – Freigabe ausstehend"
+    
+    html = f"""
+    <!DOCTYPE html><html><head><meta charset="utf-8"></head>
+    <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: linear-gradient(135deg, #E91E63, #d81b60); padding: 15px 20px; border-radius: 8px 8px 0 0;">
+            <h2 style="color: white; margin: 0; font-size: 18px;">⏳ Einzelbuchung angefragt</h2>
+        </div>
+        <div style="border: 1px solid #ddd; border-top: none; padding: 20px; border-radius: 0 0 8px 8px;">
+            <div style="background: #fff3cd; border-radius: 8px; padding: 15px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
+                <p style="margin: 0; color: #856404; font-weight: bold;">
+                    ⚠️ Ihre Buchung wartet auf Freigabe durch Mauro
+                </p>
+                <p style="margin: 10px 0 0 0; color: #856404; font-size: 14px;">
+                    Sie erhalten eine E-Mail, sobald Ihre Anfrage bearbeitet wurde.
+                </p>
+            </div>
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                <p style="margin: 10px 0; padding: 12px; background: white; border-radius: 4px; border-left: 4px solid #ffc107;">
+                    <strong style="color: #E91E63;">Lehrkraft:</strong> {teacher} {f"({teacher_class})" if teacher_class else ""}
+                </p>
+                <p style="margin: 10px 0; padding: 12px; background: white; border-radius: 4px; border-left: 4px solid #ffc107;">
+                    <strong style="color: #E91E63;">Datum:</strong> {date} ({weekday})
+                </p>
+                <p style="margin: 10px 0; padding: 12px; background: white; border-radius: 4px; border-left: 4px solid #ffc107;">
+                    <strong style="color: #E91E63;">Stunde:</strong> {period}. Stunde ({period_time})
+                </p>
+                <p style="margin: 10px 0; padding: 12px; background: white; border-radius: 4px; border-left: 4px solid #ffc107;">
+                    <strong style="color: #E91E63;">Angebot:</strong> {offer}
+                </p>
+                <p style="margin: 10px 0; padding: 12px; background: white; border-radius: 4px; border-left: 4px solid #ffc107;">
+                    <strong style="color: #E91E63;">Schüler:</strong> {student_name} ({student_class})
+                </p>
+            </div>
+            <p style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 12px;">
+                Bei Fragen wenden Sie sich bitte an: morelli.maurizio@kgs-pattensen.de<br>
+                SportOase – Ernst-Reuter-Schule Pattensen
+            </p>
+        </div>
+    </body></html>
+    """
+    
+    text = f"""
+Einzelbuchung angefragt – SportOase
+
+Ihre Buchung wartet auf Freigabe durch Mauro.
+Sie erhalten eine E-Mail, sobald Ihre Anfrage bearbeitet wurde.
+
+Lehrkraft: {teacher} {f"({teacher_class})" if teacher_class else ""}
+Datum: {date} ({weekday})
+Stunde: {period}. Stunde ({period_time})
+Angebot: {offer}
+Schüler: {student_name} ({student_class})
+
+---
+Bei Fragen wenden Sie sich bitte an: morelli.maurizio@kgs-pattensen.de
+SportOase – Ernst-Reuter-Schule Pattensen
+    """
+    
+    return send_email_resend(email, subject, html, text)
+
+
 def send_exclusive_approved_email(teacher_email, teacher_name, student_name,
                                   date_str, period):
     """Sendet Bestätigungs-E-Mail wenn eine exklusive Buchung genehmigt wurde"""

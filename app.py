@@ -906,9 +906,16 @@ def book(date_str, period):
             if send_email_confirmation and user_email:
                 print(f"[BUCHUNG] Versuche E-Mail-Bestätigung an {user_email} zu senden...")
                 try:
-                    from email_service import send_user_booking_confirmation
-                    result = send_user_booking_confirmation(user_email, booking_data)
-                    print(f"[BUCHUNG] E-Mail-Versand Ergebnis: {result}")
+                    if is_exclusive:
+                        # Bei Einzelbuchung: "Buchung steht aus" statt "erfolgreich gebucht"
+                        from email_service import send_exclusive_pending_email
+                        result = send_exclusive_pending_email(user_email, booking_data)
+                        print(f"[BUCHUNG] Einzelbuchung-Pending-E-Mail Ergebnis: {result}")
+                    else:
+                        # Normale Buchung: Standard-Bestätigung
+                        from email_service import send_user_booking_confirmation
+                        result = send_user_booking_confirmation(user_email, booking_data)
+                        print(f"[BUCHUNG] E-Mail-Versand Ergebnis: {result}")
                 except Exception as e:
                     print(f"[BUCHUNG] Benutzer-E-Mail-Bestätigung fehlgeschlagen: {e}")
             else:
