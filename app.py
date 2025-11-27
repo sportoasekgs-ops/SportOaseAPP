@@ -1344,34 +1344,90 @@ def admin():
 @app.route('/admin/approve_exclusive/<int:booking_id>', methods=['POST'])
 @admin_required
 def approve_exclusive(booking_id):
-    """Genehmigt eine exklusive Buchung"""
-    from models import approve_exclusive_booking, get_booking_by_id
+    """Genehmigt eine exklusive Buchung und entfernt alle anderen Buchungen für denselben Slot"""
+    from models import approve_exclusive_booking, get_booking_by_id, Booking
+    from database import db
     
+    # Hole zuerst Buchungsdetails
+    booking = get_booking_by_id(booking_id)
+    if not booking:
+        flash('Buchung nicht gefunden.', 'error')
+        return redirect(url_for('admin'))
+    
+    booking_dict = dict(booking)
+    date_str = booking_dict['date']
+    period = booking_dict['period']
+    teacher_email = booking_dict.get('teacher_email')
+    teacher_name = booking_dict.get('teacher_name', 'Lehrkraft')
+    students = json.loads(booking_dict['students_json']) if booking_dict.get('students_json') else []
+    student_name = students[0]['name'] if students else 'Schüler/in'
+    
+    # Finde alle anderen Buchungen für denselben Slot (nicht-exklusiv oder andere IDs)
+    conflicting_bookings = Booking.query.filter(
+        Booking.date == date_str,
+        Booking.period == period,
+        Booking.id != booking_id
+    ).all()
+    
+    # Sammle Daten für E-Mail-Benachrichtigungen VOR dem Löschen
+    affected_teachers = []
+    for conflict in conflicting_bookings:
+        conflict_students = json.loads(conflict.students_json) if conflict.students_json else []
+        affected_teachers.append({
+            'email': conflict.teacher_email,
+            'name': conflict.teacher_name or 'Lehrkraft',
+            'booking_info': {
+                'date': conflict.date,
+                'period': conflict.period,
+                'offer_label': conflict.offer_label,
+                'students': conflict_students
+            }
+        })
+    
+    # Genehmige exklusive Buchung
     success = approve_exclusive_booking(booking_id)
+    
     if success:
-        # Hole Buchungsdetails für E-Mail
-        booking = get_booking_by_id(booking_id)
-        if booking:
-            booking_dict = dict(booking)
-            teacher_email = booking_dict.get('teacher_email')
-            teacher_name = booking_dict.get('teacher_name', 'Lehrkraft')
-            students = json.loads(booking_dict['students_json']) if booking_dict.get('students_json') else []
-            student_name = students[0]['name'] if students else 'Schüler/in'
-            date_str = booking_dict['date']
-            period = booking_dict['period']
-            
-            # Sende Bestätigungs-E-Mail
-            if teacher_email:
-                from email_service import send_exclusive_approved_email
-                send_exclusive_approved_email(
-                    teacher_email=teacher_email,
-                    teacher_name=teacher_name,
-                    student_name=student_name,
-                    date_str=date_str,
-                    period=period
-                )
+        # Lösche alle konfliktierenden Buchungen
+        removed_count = 0
+        for conflict in conflicting_bookings:
+            db.session.delete(conflict)
+            removed_count += 1
         
-        flash('Exklusive Buchung wurde genehmigt. Der Slot ist jetzt vollständig reserviert.', 'success')
+        if removed_count > 0:
+            db.session.commit()
+            print(f"[EXCLUSIVE] {removed_count} konfliktierende Buchungen für {date_str} Stunde {period} entfernt")
+        
+        # Sende Bestätigungs-E-Mail an den Antragsteller
+        if teacher_email:
+            from email_service import send_exclusive_approved_email
+            send_exclusive_approved_email(
+                teacher_email=teacher_email,
+                teacher_name=teacher_name,
+                student_name=student_name,
+                date_str=date_str,
+                period=period
+            )
+        
+        # Sende Stornierungs-E-Mails an betroffene Lehrer
+        from email_service import send_booking_removed_due_to_exclusive
+        for teacher in affected_teachers:
+            if teacher['email']:
+                try:
+                    send_booking_removed_due_to_exclusive(
+                        teacher_email=teacher['email'],
+                        teacher_name=teacher['name'],
+                        booking_info=teacher['booking_info'],
+                        exclusive_info={'teacher': teacher_name, 'student': student_name}
+                    )
+                    print(f"[EXCLUSIVE] Stornierungs-E-Mail an {teacher['email']} gesendet")
+                except Exception as e:
+                    print(f"[EXCLUSIVE] E-Mail an {teacher['email']} fehlgeschlagen: {e}")
+        
+        if removed_count > 0:
+            flash(f'Exklusive Buchung genehmigt. {removed_count} andere Buchung(en) wurden storniert und die Lehrkräfte benachrichtigt.', 'success')
+        else:
+            flash('Exklusive Buchung wurde genehmigt. Der Slot ist jetzt vollständig reserviert.', 'success')
     else:
         flash('Fehler beim Genehmigen der Buchung.', 'error')
     

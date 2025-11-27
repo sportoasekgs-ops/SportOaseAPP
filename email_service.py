@@ -513,3 +513,83 @@ SportOase – Ernst-Reuter-Schule Pattensen
     """
 
     return send_email_resend(teacher_email, subject, html, text)
+
+
+def send_booking_removed_due_to_exclusive(teacher_email, teacher_name, booking_info, exclusive_info):
+    """Sendet E-Mail wenn eine Buchung wegen genehmigter Exklusivbuchung entfernt wurde"""
+    from config import PERIOD_TIMES
+    
+    date_formatted = format_date_german(booking_info.get('date', 'Unbekannt'))
+    period = booking_info.get('period', '?')
+    period_time = PERIOD_TIMES.get(period, "")
+    students = booking_info.get('students', [])
+    offer = booking_info.get('offer_label', 'Unbekannt')
+    
+    students_list = ", ".join([f"{s.get('name', '?')} ({s.get('klasse', '?')})" for s in students])
+    
+    subject = f"⚠️ Buchung storniert – Exklusivfreigabe – SportOase"
+    
+    html = f"""
+    <!DOCTYPE html><html><head><meta charset="utf-8"></head>
+    <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: linear-gradient(135deg, #E91E63, #d81b60); padding: 15px 20px; border-radius: 8px 8px 0 0;">
+            <h2 style="color: white; margin: 0; font-size: 18px;">⚠️ Buchung storniert</h2>
+        </div>
+        <div style="border: 1px solid #ddd; border-top: none; padding: 20px; border-radius: 0 0 8px 8px;">
+            <div style="background: #fff3cd; border-radius: 8px; padding: 15px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
+                <p style="margin: 0; color: #856404;">
+                    <strong>Hallo {teacher_name},</strong>
+                </p>
+                <p style="margin: 10px 0 0 0; color: #856404;">
+                    Leider wurde Ihre Buchung automatisch storniert, da eine <strong>exklusive Einzelbuchung</strong> für denselben Slot von Mauro genehmigt wurde.
+                </p>
+            </div>
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+                <h4 style="margin: 0 0 15px 0; color: #E91E63;">Ihre stornierte Buchung:</h4>
+                <p style="margin: 8px 0; padding: 10px; background: white; border-radius: 4px; border-left: 4px solid #dc3545;">
+                    <strong>📅 Datum:</strong> {date_formatted}
+                </p>
+                <p style="margin: 8px 0; padding: 10px; background: white; border-radius: 4px; border-left: 4px solid #dc3545;">
+                    <strong>⏰ Stunde:</strong> {period}. Stunde ({period_time})
+                </p>
+                <p style="margin: 8px 0; padding: 10px; background: white; border-radius: 4px; border-left: 4px solid #dc3545;">
+                    <strong>📚 Angebot:</strong> {offer}
+                </p>
+                <p style="margin: 8px 0; padding: 10px; background: white; border-radius: 4px; border-left: 4px solid #dc3545;">
+                    <strong>👥 Schüler:</strong> {students_list}
+                </p>
+            </div>
+            <p style="color: #666; font-size: 14px;">
+                Bitte buchen Sie Ihre Schüler für einen anderen Slot neu ein. 
+                Bei Fragen wenden Sie sich bitte an Mauro.
+            </p>
+            <p style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 12px;">
+                Bei Fragen wenden Sie sich bitte an: morelli.maurizio@kgs-pattensen.de<br>
+                SportOase – Ernst-Reuter-Schule Pattensen
+            </p>
+        </div>
+    </body></html>
+    """
+    
+    text = f"""
+Buchung storniert – Exklusivfreigabe – SportOase
+
+Hallo {teacher_name},
+
+Leider wurde Ihre Buchung automatisch storniert, da eine exklusive Einzelbuchung für denselben Slot von Mauro genehmigt wurde.
+
+Ihre stornierte Buchung:
+- Datum: {date_formatted}
+- Stunde: {period}. Stunde ({period_time})
+- Angebot: {offer}
+- Schüler: {students_list}
+
+Bitte buchen Sie Ihre Schüler für einen anderen Slot neu ein.
+Bei Fragen wenden Sie sich bitte an Mauro.
+
+---
+Bei Fragen wenden Sie sich bitte an: morelli.maurizio@kgs-pattensen.de
+SportOase – Ernst-Reuter-Schule Pattensen
+    """
+    
+    return send_email_resend(teacher_email, subject, html, text)
