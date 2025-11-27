@@ -2267,11 +2267,11 @@ details.help-section[open] .toggle-arrow {
         border-right: 2px solid var(--border);
     }
     
-    /* Jede Tag-Spalte = volle Bildschirmbreite minus Stunde-Spalte (1 Tag sichtbar) */
+    /* Jede Tag-Spalte = 2 Tage sichtbar auf Tablets */
     .week-table th:not(:first-child),
     .week-table td:not(:first-child) {
-        min-width: calc(100vw - 55px);
-        width: calc(100vw - 55px);
+        min-width: 160px;
+        width: 160px;
         padding: 0.35rem;
     }
     
@@ -2570,22 +2570,23 @@ details.help-section[open] .toggle-arrow {
         min-width: 28px;
     }
     
-    /* Wochentabelle - 1 Tag sichtbar auf kleinen Handys */
+    /* Wochentabelle - 2 Tage sichtbar auf kleinen Handys */
     .week-overview {
-        padding: 0.5rem;
+        padding: 0.4rem;
     }
     
     .week-table th:not(:first-child),
     .week-table td:not(:first-child) {
-        min-width: calc(100vw - 50px);
-        width: calc(100vw - 50px);
-        padding: 0.3rem;
+        min-width: 140px;
+        width: 140px;
+        padding: 0.25rem;
     }
     
     .week-table th:first-child,
     .week-table td:first-child {
-        width: 40px;
-        min-width: 40px;
+        width: 36px;
+        min-width: 36px;
+        font-size: 0.65rem;
     }
     
     .day-name {
