@@ -553,6 +553,7 @@ def dashboard():
     # Organisiere Buchungen nach Datum und Stunde
     bookings_by_date_period = {}
     exclusive_by_date_period = {}
+    pending_exclusive_by_date_period = {}
     
     for booking in week_bookings:
         booking_dict = dict(booking)
@@ -576,6 +577,10 @@ def dashboard():
         # Speichere exklusive genehmigte Buchungen separat
         if booking_dict.get('is_exclusive') and booking_dict.get('is_approved'):
             exclusive_by_date_period[key] = booking_info
+        
+        # Speichere ausstehende exklusive Buchungen (noch nicht genehmigt)
+        if booking_dict.get('is_exclusive') and not booking_dict.get('is_approved'):
+            pending_exclusive_by_date_period[key] = booking_info
     
     week_overview = []
     weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
@@ -594,6 +599,7 @@ def dashboard():
             exclusive_booking = exclusive_by_date_period.get(key)
             
             total_students = sum(b['student_count'] for b in period_bookings)
+            pending_exclusive = pending_exclusive_by_date_period.get(key)
             
             # Bei exklusiver Buchung ist der Slot voll belegt
             if exclusive_booking:
@@ -625,7 +631,8 @@ def dashboard():
                 'is_past': is_past,
                 'is_weekend': is_weekend,
                 'is_exclusive': exclusive_booking is not None,
-                'exclusive_booking': exclusive_booking
+                'exclusive_booking': exclusive_booking,
+                'pending_exclusive': pending_exclusive
             })
         # Prüfe ob heute
         today = datetime.now(get_berlin_tz()).date()

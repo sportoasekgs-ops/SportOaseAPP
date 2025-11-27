@@ -519,6 +519,13 @@
                                     else %}Freie Wahl{% endif %}
                                 </div>
 
+                                {% if slot.pending_exclusive %}
+                                <div class="pending-exclusive-hint">
+                                    <span class="pending-icon">⏳</span>
+                                    <span class="pending-text">Einzelbuchung angefragt</span>
+                                </div>
+                                {% endif %}
+
                                 {% if slot.bookings %}
                                 <div class="slot-students-list">
                                     {% for booking in slot.bookings %} {% set

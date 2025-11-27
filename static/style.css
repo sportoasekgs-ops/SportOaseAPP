@@ -297,6 +297,30 @@ body {
     font-weight: 500;
 }
 
+/* Pending Exclusive Hint in Slot */
+.pending-exclusive-hint {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border: 1px dashed #f59e0b;
+    border-radius: 6px;
+    padding: 0.35rem 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    font-size: 0.7rem;
+    color: #92400e;
+    margin-bottom: 0.4rem;
+}
+
+.pending-exclusive-hint .pending-icon {
+    font-size: 0.8rem;
+}
+
+.pending-exclusive-hint .pending-text {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
 /* Pending Exclusive Admin Section */
 .pending-stat {
     background: #fef3c7 !important;
