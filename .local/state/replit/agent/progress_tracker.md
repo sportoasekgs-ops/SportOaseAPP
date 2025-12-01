@@ -233,3 +233,8 @@
 [x] 228. ✅ Render Environment Variables dokumentiert
 [x] 229. ✅ IServ Weiterleitungs-URIs dokumentiert
 [x] 230. ✅ 🎉 APP VOLLSTÄNDIG PRODUCTION-READY FÜR RENDER!
+[x] 231. ✅ IServ OAuth auf ROLLEN statt Gruppen umgestellt
+[x] 232. ✅ determine_user_role Funktion vereinfacht - prüft nur noch Rollen
+[x] 233. ✅ Ausführliches Logging für IServ-Rollen hinzugefügt
+[x] 234. ✅ Scope von 'groups' auf 'roles' geändert
+[x] 235. ✅ Workflow erfolgreich neu gestartet mit vereinfachter Rollen-Prüfung
