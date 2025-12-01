@@ -50,11 +50,23 @@ SportOase Buchungssystem is a web-based booking management system for the school
 
 ### Authentication & Authorization
 
-**IServ SSO**: OAuth2/OpenID Connect integration
-- Admin: `morelli.maurizio@kgs-pattensen.de` or IServ "Administrator" group
-- Teacher: IServ groups (Lehrer, Mitarbeitende, Pädagogische Mitarbeiter, etc.)
+**IServ SSO**: OAuth2/OpenID Connect integration (Scope: `openid profile email roles`)
 
-**Roles**:
+**Admin-Zugang**:
+- E-Mail: `morelli.maurizio@kgs-pattensen.de` (immer Admin)
+
+**Lehrer-Zugang** (basierend auf IServ-ROLLEN):
+- Schulleitung
+- Lehrer / Lehrerin
+- Sozialpädagogen / Sozialpädagogin
+- Pädagogische Mitarbeiter
+- Mitarbeiter / Mitarbeiterin
+
+**Kein Zugang**:
+- Schüler (automatisch blockiert)
+- Alle anderen Rollen
+
+**App-Rechte**:
 - **Teachers**: Create bookings, edit/delete own bookings (up to 1 hour before)
 - **Admins**: Full access, no time restrictions
 

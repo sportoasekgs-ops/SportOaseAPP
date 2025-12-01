@@ -39,58 +39,33 @@ def is_admin_email(email):
 
 def extract_roles_from_userinfo(userinfo):
     """
-    Extrahiert ALLE Rollen aus IServ userinfo.
-    Gibt eine Liste von Rollennamen zurück (lowercase).
+    Extrahiert Rollennamen aus IServ userinfo.
     
-    IServ kann Rollen in verschiedenen Formaten liefern:
-    - Liste von Strings: ['Lehrer', 'Mitarbeiter']
-    - Liste von Objekten: [{'name': 'Lehrer', 'id': 123}]
-    - Verschachtelte Objekte: [{'role': {'name': 'Lehrer'}}]
-    - Dictionary: {'123': {'name': 'Lehrer'}}
-    - roleAssignments: [{'role': {'displayName': 'Lehrer'}}]
+    IServ-Format laut Dokumentation (Scope: roles):
+    {
+        "roles": [
+            {"uuid": "...", "id": 123, "name": "Lehrer"},
+            {"uuid": "...", "id": 456, "name": "Mitarbeiter"}
+        ]
+    }
+    
+    Gibt eine Liste von Rollennamen zurück (lowercase).
     """
     roles = []
     
-    def extract_names_recursive(data, depth=0):
-        """Rekursiv Namen aus verschachtelten Strukturen extrahieren"""
-        if depth > 5:  # Verhindere unendliche Rekursion
-            return []
+    # IServ liefert Rollen im Feld "roles" als Liste von Objekten
+    if 'roles' in userinfo:
+        roles_data = userinfo['roles']
         
-        names = []
-        
-        if isinstance(data, str):
-            names.append(data.lower().strip())
-            
-        elif isinstance(data, list):
-            for item in data:
-                names.extend(extract_names_recursive(item, depth + 1))
-                
-        elif isinstance(data, dict):
-            # Extrahiere direkte name/displayName Felder
-            for name_key in ['name', 'displayName', 'display_name', 'title', 'label']:
-                if name_key in data and isinstance(data[name_key], str):
-                    names.append(data[name_key].lower().strip())
-            
-            # Rekursiv in verschachtelten Objekten suchen
-            for key in ['role', 'roleInfo', 'roleData', 'assignment']:
-                if key in data:
-                    names.extend(extract_names_recursive(data[key], depth + 1))
-            
-            # Alle Werte durchsuchen (für IServ-Format {'123': {'name': '...'}})
-            for key, value in data.items():
-                if isinstance(value, dict):
-                    names.extend(extract_names_recursive(value, depth + 1))
-                elif isinstance(value, list):
-                    names.extend(extract_names_recursive(value, depth + 1))
-        
-        return names
-    
-    # Felder die Rollen enthalten können
-    role_fields = ['roles', 'role', 'roleAssignments', 'roleAssignment', 'userRoles']
-    
-    for field in role_fields:
-        if field in userinfo:
-            roles.extend(extract_names_recursive(userinfo[field]))
+        if isinstance(roles_data, list):
+            for role_item in roles_data:
+                if isinstance(role_item, dict):
+                    # IServ-Format: {"uuid": "...", "id": 123, "name": "Lehrer"}
+                    if 'name' in role_item and isinstance(role_item['name'], str):
+                        roles.append(role_item['name'].lower().strip())
+                elif isinstance(role_item, str):
+                    # Fallback: direkter String
+                    roles.append(role_item.lower().strip())
     
     # Entferne Duplikate und leere Strings
     return list(set(r for r in roles if r))
@@ -146,37 +121,33 @@ def determine_user_role(userinfo):
         print(f"   ❌ KEIN ZUGANG - Keine @kgs-pattensen.de E-Mail")
         return None, None
 
-    # 2. Prüfe auf erlaubte Rollen (Lehrer/Mitarbeiter)
-    # Diese Keywords werden in den Rollen gesucht
+    # 2. Prüfe auf erlaubte Rollen
+    # NUR diese Rollen haben Zugang (nach Kundenwunsch):
+    # - Schulleitung
+    # - Lehrer
+    # - Sozialpädagogen
+    # - Pädagogische Mitarbeiter
+    # - Mitarbeiter
     allowed_role_keywords = [
+        'schulleitung',
         'lehrer',
         'lehrerin',
-        'lehrkraft',
+        'sozialpädagog',
+        'sozialpaedagog',
+        'sozialpädagogin',
+        'pädagogische mitarbeiter',
+        'paedagogische mitarbeiter',
+        'pädagogischer mitarbeiter',
         'mitarbeiter',
         'mitarbeiterin',
-        'mitarbeitende',
-        'pädagogisch',
-        'paedagogisch',
-        'sekretariat',
-        'verwaltung',
-        'schulleitung',
-        'administrator',
-        'admin',
-        'sozialpädagog',
-        'sozialarbeit',
-        'referendar',
-        'praktikant',
-        'fsj',
-        'bufdi',
     ]
     
-    # Prüfe auf Schüler-Rolle (Blockierung)
+    # Schüler werden blockiert
     blocked_role_keywords = [
         'schüler',
         'schueler',
         'schülerin',
         'schuelerin',
-        'student',
     ]
     
     # Zuerst prüfen ob Schüler-Rolle vorhanden

@@ -240,3 +240,7 @@
 [x] 235. ✅ Workflow erfolgreich neu gestartet mit vereinfachter Rollen-Prüfung
 [x] 236. ✅ Rekursive Rollen-Extraktion für verschachtelte IServ-Strukturen hinzugefügt
 [x] 237. ✅ Architect-Feedback eingearbeitet (nested dict/list handling)
+[x] 238. ✅ IServ-Dokumentation analysiert (doku.iserv.de/manage/system/sso/)
+[x] 239. ✅ Rollen-Extraktion auf IServ-Format angepasst (roles: [{uuid, id, name}])
+[x] 240. ✅ Erlaubte Rollen definiert: Schulleitung, Lehrer, Sozialpädagogen, Pädagogische Mitarbeiter, Mitarbeiter
+[x] 241. ✅ replit.md Dokumentation aktualisiert mit Rollen-basierter Authentifizierung
