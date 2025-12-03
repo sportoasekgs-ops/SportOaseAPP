@@ -279,26 +279,15 @@ def determine_user_role(userinfo):
         'admins',
         'role_admin',
         'role_secretary',
+        # Administrator (IServ Admin-Rolle)
+        'administrator',
+        'role_administrator',
     ]
     
-    # Schüler werden blockiert
-    blocked_keywords = [
-        'schüler',
-        'schueler',
-        'schülerin',
-        'schuelerin',
-        'student',
-        'students',
-    ]
+    # WICHTIG: Erst erlaubte Rollen prüfen, DANN blockieren
+    # Ein Lehrer der auch in einer "Schüler"-Gruppe ist, soll trotzdem Zugang haben!
     
-    # Zuerst prüfen ob blockierte Rolle/Gruppe vorhanden
-    for membership in all_memberships:
-        for blocked in blocked_keywords:
-            if blocked in membership:
-                print(f"   ❌ KEIN ZUGANG - Schüler-Rolle/Gruppe erkannt: '{membership}'")
-                return None, None
-    
-    # Dann prüfen ob erlaubte Rolle/Gruppe vorhanden
+    # 2. Prüfe ob erlaubte Rolle/Gruppe vorhanden ist
     for membership in all_memberships:
         for allowed in allowed_keywords:
             if allowed in membership:
@@ -306,6 +295,29 @@ def determine_user_role(userinfo):
                 display_role = membership.replace('_', ' ').title()
                 print(f"   ✅ Zugang gewährt - Rolle/Gruppe erkannt: '{membership}' (matched '{allowed}')")
                 return 'teacher', display_role
+    
+    # 3. Nur wenn KEINE erlaubte Rolle gefunden wurde, prüfe auf Schüler-Blockierung
+    blocked_keywords = [
+        'schüler',
+        'schueler',
+        'schülerin',
+        'schuelerin',
+        'student',
+        'students',
+        'role_student',
+    ]
+    
+    is_student_only = False
+    for membership in all_memberships:
+        for blocked in blocked_keywords:
+            if blocked in membership:
+                is_student_only = True
+                print(f"   ⚠️ Schüler-Rolle/Gruppe erkannt: '{membership}'")
+                break
+    
+    if is_student_only:
+        print(f"   ❌ KEIN ZUGANG - Nur Schüler-Rolle gefunden, keine Lehrer/Mitarbeiter-Rolle")
+        return None, None
     
     # Keine passende Rolle/Gruppe gefunden
     if all_memberships:
