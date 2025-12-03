@@ -1486,7 +1486,6 @@ details.help-section[open] .toggle-arrow {
     display: flex;
     flex-direction: column;
     background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(240,240,240,0.9) 100%);
-    border-left: 4px solid;
     transition: all 0.2s;
     overflow: hidden;
     max-width: 100%;
